@@ -379,7 +379,7 @@ namespace codi {
           CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, Identifier* rhsIdentifiers,
                                                   Real* jacobians) {
             rhsIdentifiers[pos] = node.getIdentifier();
-            jacobians[pos] = ComputationTraits::adjointConversion<Real>(jacobianExpr);
+            jacobians[pos] = jacobianExpr;
             pos++;
           }
       };

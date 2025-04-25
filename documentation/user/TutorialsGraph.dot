@@ -16,6 +16,8 @@ digraph Tutorials {
 
   T06 [label="T6 - Higher order types helper acces"];
 
+  T07 [label="T7 - Aggregated type implementation"];
+
   // Example nodes
   node [shape=box color=green];
   E01 [label="E1 - Old tangent leftovers forward mode"];
@@ -56,7 +58,7 @@ digraph Tutorials {
 
   E19 [label="E19 - Evaluation helper handle creation"];
 
-  E20 [label="E20 - Aggregated active type handling"];
+  E20 [label="E20 - Aggregated active type handling in external functions"];
 
   E21 [label="E21 - Special handling of linear system solvers"];
 
@@ -101,6 +103,7 @@ digraph Tutorials {
   T02:e -> T04:w;
   T02:e -> T05:w;
   T02:e -> T06:w;
+  T02:e -> T07:w;
   T04:e -> E02:w;
   T06:e -> E04:w;
   T06:e -> E05:w;

@@ -34,6 +34,7 @@
  */
 #pragma once
 
+#include <complex>
 #include <map>
 #include <type_traits>
 #include <utility>
@@ -125,6 +126,11 @@ namespace codi {
       std::string convert_value(T const& v) {
         return std::to_string(v);
 
+      }
+
+      template<typename T>
+      std::string convert_value(std::complex<T> const& v) {
+        return "(" + std::to_string(std::real(v)) + " + " + std::to_string(std::imag(v)) + ")";
       }
 
       template<typename T>

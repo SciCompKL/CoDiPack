@@ -56,6 +56,11 @@ namespace codi {
   template<typename T_Tape>
   struct StaticContextActiveType;
 
+  namespace RealTraits {
+    template<typename T_Real, typename>
+    struct AggregatedTypeTraits;
+  }
+
   /// Traits for everything that can be an expression e.g. codi::RealReverse, a + b, etc..
   namespace ExpressionTraits {
 
@@ -261,7 +266,7 @@ namespace codi {
         /// \copydoc CompileTimeTraversalLogic::leaf()
         template<typename Node, typename = EnableIfConstantExpression<Node>>
         CODI_INLINE static size_t constexpr leaf() {
-          return 1;
+          return ::codi::RealTraits::AggregatedTypeTraits<typename Node::Real, void>::Elements;
         }
         using CompileTimeTraversalLogic<size_t, NumberOfConstantTypeArguments>::leaf;
 

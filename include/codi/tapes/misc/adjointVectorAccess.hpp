@@ -36,6 +36,7 @@
 
 #include <array>
 #include <cstddef>
+#include <vector>
 
 #include "../../config.h"
 #include "../../misc/macros.hpp"
@@ -71,14 +72,15 @@ namespace codi {
 
     private:
 
-      Gradient lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
+      std::vector<Gradient> lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
+      size_t lhsPos;              ///< Defines which lhs is currently used. Index into the lhs vector.
 
       std::array<Real, GradientTraits::dim<Gradient>()> buffer;  ///< Temporary storage for getAdjointVec.
 
     public:
 
       /// Constructor. See interface documentation for details about the adjoint vector.
-      AdjointVectorAccess(AdjointVector adjointVector) : adjointVector(adjointVector), lhs(), buffer() {}
+      AdjointVectorAccess(AdjointVector adjointVector) : adjointVector(adjointVector), lhs(1), lhsPos(0) {}
 
       /*******************************************************************************/
       /// @name Misc
@@ -90,7 +92,7 @@ namespace codi {
 
       /// \copydoc codi::VectorAccessInterface::isLhsZero
       bool isLhsZero() {
-        return RealTraits::isTotalZero(lhs);
+        return RealTraits::isTotalZero(lhs[lhsPos]);
       }
 
       /// \copydoc codi::VectorAccessInterface::clone
@@ -103,13 +105,13 @@ namespace codi {
 
       /// \copydoc codi::VectorAccessInterface::setLhsAdjoint
       void setLhsAdjoint(Identifier const& index) {
-        lhs = adjointVector[index];
+        lhs[lhsPos] = adjointVector[index];
         adjointVector[index] = Gradient();
       }
 
       /// \copydoc codi::VectorAccessInterface::updateAdjointWithLhs
       void updateAdjointWithLhs(Identifier const& index, Real const& jacobian) {
-        adjointVector[index] += jacobian * lhs;
+        adjointVector[index] += jacobian * lhs[lhsPos];
       }
 
       /*******************************************************************************/
@@ -117,13 +119,29 @@ namespace codi {
 
       /// \copydoc codi::VectorAccessInterface::setLhsTangent
       void setLhsTangent(Identifier const& index) {
-        adjointVector[index] = lhs;
-        lhs = Gradient();
+        adjointVector[index] = lhs[lhsPos];
+        lhs[lhsPos] = Gradient();
       }
 
       /// \copydoc codi::VectorAccessInterface::updateTangentWithLhs
       void updateTangentWithLhs(Identifier const& index, Real const& jacobian) {
-        lhs += jacobian * adjointVector[index];
+        lhs[lhsPos] += jacobian * adjointVector[index];
+      }
+
+      /*******************************************************************************/
+      /// @name Indirect adjoint/tangent access for functions with multiple outputs
+
+      /// \copydoc codi::VectorAccessInterface::setSizeForIndirectAccess
+      void setSizeForIndirectAccess(size_t size) {
+        if (lhs.size() < size) {
+          lhs.resize(size);
+        }
+      }
+
+      /// \copydoc codi::VectorAccessInterface::setActiveVariableForIndirectAccess
+      void setActiveVariableForIndirectAccess(size_t pos) {
+        codiAssert(pos < lhs.size());
+        lhsPos = pos;
       }
 
       /*******************************************************************************/

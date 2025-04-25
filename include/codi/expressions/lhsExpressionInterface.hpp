@@ -247,6 +247,11 @@ namespace codi {
       CODI_INLINE static void setValue(Type& v, Real const& value) {
         v.setValue(value);
       }
+
+      /// \copydoc DataExtraction::setIdentifier()
+      CODI_INLINE static void setIdentifier(Type& v, Identifier const& identifier) {
+        v.getIdentifier() = identifier;
+      }
   };
 
   /// Specialization of RealTraits::DataRegistration for CoDiPack types.
@@ -270,6 +275,17 @@ namespace codi {
       CODI_INLINE static Real registerExternalFunctionOutput(Type& v) {
         return Type::getTape().registerExternalFunctionOutput(v);
       }
+  };
+
+  /// Specialize real traits for lhs expressions.
+  template<typename T_Type>
+  struct RealTraits::AggregatedTypeTraits<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>>
+      : RealTraits::ArrayAggregatedTypeTraitsBase<T_Type, T_Type, typename T_Type::Real, 1> {
+
+    /// \copydoc codi::ComputeOperation::getMathRep
+    static CODI_INLINE std::string getMathRep() {
+      return "()";
+    }
   };
 #endif
 }

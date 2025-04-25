@@ -40,6 +40,8 @@
 #include <type_traits>
 
 #include "../config.h"
+#include "../expressions/aggregate/aggregatedActiveType.hpp"
+#include "../expressions/aggregate/arrayAccessExpression.hpp"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/helpers/forEachLeafLogic.hpp"
@@ -288,10 +290,8 @@ namespace codi {
       struct PushJacobianLogic : public JacobianComputationLogic<PushJacobianLogic> {
         public:
           /// General implementation. Checks for invalid and passive values/Jacobians.
-          template<typename Node, typename Jacobian, typename DataVector>
-          CODI_INLINE void handleJacobianOnActive(Node const& node, Jacobian jacobianExpr, DataVector& dataVector) {
-            Real jacobian = ComputationTraits::adjointConversion<Real>(jacobianExpr);
-
+          template<typename Node, typename DataVector>
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
               if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
                 if (CODI_ENABLE_CHECK(Config::CheckJacobianIsZero, !RealTraits::isTotalZero(jacobian))) {
@@ -302,12 +302,10 @@ namespace codi {
           }
 
           /// Specialization for ReferenceActiveType nodes. Delays Jacobian push.
-          template<typename Type, typename Jacobian, typename DataVector>
-          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Jacobian jacobianExpr,
+          template<typename Type, typename DataVector>
+          CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian,
                                                   DataVector& dataVector) {
             CODI_UNUSED(dataVector);
-
-            Real jacobian = ComputationTraits::adjointConversion<Real>(jacobianExpr);
 
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
               // Do a delayed push for these leaf nodes, accumulate the jacobian in the local member.
@@ -360,12 +358,132 @@ namespace codi {
 
       /// @{
 
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
+      /// Implementation for AggregatedActiveType.
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             ExpressionInterface<Aggregated, Rhs> const& rhs) {
+        using AggregatedTraits = RealTraits::AggregatedTypeTraits<Aggregated>;
+
+        int constexpr Elements = AggregatedTraits::Elements;
+
+        bool freeAndUpdate = true;
+
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
+          size_t constexpr MaxArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+
+          codiAssert(MaxArgs < Config::MaxArgumentSize);
+
+          statementData.reserveItems(Elements);
+
+          // Push the Jacobians
+          typename JacobianData::InternalPosHandle jacobianStart = jacobianData.reserveItems(MaxArgs * Elements);
+          std::array<size_t, Elements> numberOfArguments;
+          size_t totalNumberOfArguments = 0;
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+            pushJacobians(ArrayAccessExpression<Aggregated, i.value, Rhs>(rhs));
+
+            size_t newTotalNumberOfArguments = jacobianData.getPushedDataCount(jacobianStart);
+            numberOfArguments[i.value] = newTotalNumberOfArguments - totalNumberOfArguments;
+            totalNumberOfArguments = newTotalNumberOfArguments;
+          });
+
+          if (0 != totalNumberOfArguments) {
+            freeAndUpdate = false;
+
+            // This implementation avoids the creation of self reference adjoint equations. See paper (TODO: add when
+            // released.) Section 4.1 for a detailed description. In short: For e.g. a = a * b with complex numbers
+            // the adjoint assignment of a.i modifies \bar a.r which is used in the adjoint assignment of a.r. This is
+            // wrong since the original value of \bar a.r needs to be used. If now self references are present, this
+            // problem does not arise.
+
+            // Create new identifiers to prevent self references.
+            std::array<Identifier, Elements> identifiers = {};
+            static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+              if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments[i.value])) {
+                indexManager.get().template assignIndex<Impl>(identifiers[i.value]);
+              }
+            });
+
+            // Update all lhs entries
+            Aggregated real = rhs.cast().getValue();
+            size_t eventJacobianOffset = 0;
+
+            static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+              indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+
+              if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments[i.value])) {
+                lhs.values[i.value].getIdentifier() = identifiers[i.value];
+                cast().pushStmtData(lhs.values[i.value].getIdentifier(),
+                                    (Config::ArgumentSize)numberOfArguments[i.value]);
+
+                if (Config::StatementEvents) {
+                  Real* jacobians;
+                  Identifier* rhsIdentifiers;
+                  jacobianData.getDataPointers(jacobians, rhsIdentifiers);
+                  jacobians -= totalNumberOfArguments;
+                  rhsIdentifiers -= totalNumberOfArguments;
+
+                  EventSystem<Impl>::notifyStatementStoreOnTapeListeners(
+                      cast(), lhs.values[i.value].getIdentifier(),
+                      AggregatedTraits::template arrayAccess<i.value>(real), numberOfArguments[i.value],
+                      &rhsIdentifiers[eventJacobianOffset], &jacobians[eventJacobianOffset]);
+
+                  eventJacobianOffset += numberOfArguments[i.value];
+                }
+              }
+
+              lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
+            });
+          }
+        }
+
+        if (freeAndUpdate) {
+          Aggregated real = rhs.cast().getValue();
+
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+            lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+          });
+        }
+      }
+
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
+      /// Optimization for copy statements of aggregated types.
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             AggregatedActiveType<Aggregated, Type, Rhs> const& rhs) {
+        using AggregatedTraits = RealTraits::AggregatedTypeTraits<Aggregated>;
+
+        int constexpr Elements = AggregatedTraits::Elements;
+
+        if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
+          if (IndexManager::CopyNeedsStatement || !Config::CopyOptimization) {
+            store(lhs, static_cast<ExpressionInterface<Aggregated, Rhs> const&>(rhs));
+            return;
+          } else {
+            static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+              indexManager.get().template copyIndex<Impl>(lhs.values[i.value].getIdentifier(),
+                                                          rhs.values[i.value].getIdentifier());
+            });
+          }
+        } else {
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+          });
+        }
+
+        static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+          lhs.values[i.value].value() = rhs.values[i.value].getValue();
+        });
+      }
+
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store()
       template<typename Lhs, typename Rhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
                              ExpressionInterface<Real, Rhs> const& rhs) {
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, cast().isActive())) {
-          size_t constexpr MaxArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
+          size_t constexpr MaxArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::template eval<Rhs>();
 
           codiAssert(MaxArgs < Config::MaxArgumentSize);
 

@@ -68,6 +68,10 @@ namespace codi {
    *    - updateTangentWithLhs(): Update an internal value with the \f$ \dot u \f$ value.
    *    - setLhsTangent(): Set \f$ \dot w \f$ to the internal value.
    *
+   *  - Indirect adjoint/tangent access for functions with multiple outputs:
+   *    - setSizeForIndirectAccess(): Set the number of lhs variables.
+   *    - setActiveVariableForIndirectAccess(): Set the index for the current lhs tangent or adjoint updates.
+   *
    *  - Direct adjoint vector access: The arrays need to have the size of getVectorSize()
    *    - getAdjointVec(): Get the adjoint vector at the specified location.
    *    - resetAdjointVec(): Reset the adjoint vector at the specified location to zero.
@@ -123,6 +127,15 @@ namespace codi {
                                         Real const& jacobian) = 0;  ///< Perform \f$ \text{internalMem} \aeq jacobian *
                                                                     ///< \dot
                                                                     /// u_{\text{index}} \f$.
+
+      /*******************************************************************************/
+      /// @name Indirect adjoint/tangent access for functions with multiple outputs
+
+      virtual void setSizeForIndirectAccess(size_t size) = 0;  ///< Set the number of lhs variables \f$ wArray \f$ and
+                                                               ///< allocate enough space to store them.
+
+      virtual void setActiveVariableForIndirectAccess(size_t pos) = 0;  ///< Set \f$ w = wArray[pos]\f$ for the other
+                                                                        ///< indirect access routines.
 
       /*******************************************************************************/
       /// @name Direct adjoint access

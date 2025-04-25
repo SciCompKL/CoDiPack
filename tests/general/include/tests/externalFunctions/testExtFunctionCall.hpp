@@ -44,7 +44,7 @@ struct TestExtFunctionCall : public TestInterface {
 
     template<typename Number>
     static void func(Number* x, Number* y) {
-      Number w = MultiplyExternalFunction<Number>::create(x[0], x[1]);
+      Number w = MultiplyExternalFunction<Number, typename Number::Tape>::create(x[0], x[1], Number::getTape());
       y[0] = w * w;
     }
 };

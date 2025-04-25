@@ -40,6 +40,7 @@
 #include "../misc/macros.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
+#include "expressionMemberOperations.hpp"
 #include "logic/nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -56,7 +57,7 @@ namespace codi {
    * @tparam T_Impl  Class implementing this interface.
    */
   template<typename T_Real, typename T_Impl>
-  struct ExpressionInterface : public NodeInterface<T_Impl> {
+  struct ExpressionInterface : public NodeInterface<T_Impl>, public ExpressionMemberOperations<T_Real, T_Impl> {
     public:
 
       using Real = CODI_DD(T_Real, double);               ///< See ExpressionInterface.
@@ -142,7 +143,7 @@ namespace codi {
 
       static int constexpr MaxDerivativeOrder = 1 + RealTraits::MaxDerivativeOrder<Real>();
 
-      static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
+      static CODI_INLINE PassiveReal getPassiveValue(Type const& v) {
         return RealTraits::getPassiveValue(v.getValue());
       }
   };

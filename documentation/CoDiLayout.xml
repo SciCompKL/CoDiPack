@@ -17,6 +17,7 @@
       <tab type="user" title="Tutorial 4 - Vector mode AD" url="@ref Tutorial_04_Vector_mode_AD"/>
       <tab type="user" title="Tutorial 5 - Repeated tape recordings" url="@ref Tutorial_05_Repeated_tape_recordings"/>
       <tab type="user" title="Tutorial 6 - Higher order derivatives" url="@ref Tutorial_06_Higher_order_types_helper_acces"/>
+      <tab type="user" title="Tutorial 7 - Aggregated type implementation" url="@ref Tutorial_07_Aggregated_type_implementation"/>
       <tab type="user" title="Example 1 - Old tangent leftovers in forward mode AD" url="@ref Example_01_Old_tangent_leftovers_forward_mode"/>
       <tab type="user" title="Example 2 - Custom adjoint vector evaluation" url="@ref Example_02_Custom_adjoint_vector_evaluation"/>
       <tab type="user" title="Example 3 - Positional tape evaluations" url="@ref Example_03_Positional_tape_evaluations"/>
@@ -36,7 +37,7 @@
       <tab type="user" title="Example 17 - EvaluationHelper" url="@ref Example_17_EvaluationHelper"/>
       <tab type="user" title="Example 18 - EvaluationHelper function object declaration" url="@ref Example_18_EvaluationHelper_function_objects"/>
       <tab type="user" title="Example 19 - EvaluationHelper handle creation" url="@ref Example_19_EvaluationHelper_handle_creation"/>
-      <tab type="user" title="Example 20 - Aggregated active type handling" url="@ref Example_20_Aggregated_active_type_handling"/>
+      <tab type="user" title="Example 20 - Aggregated active type handling in external functions" url="@ref Example_20_Aggregated_active_type_handling_in_external_functions"/>
       <tab type="user" title="Example 21 - Special handling of linear system solvers" url="@ref Example_21_Special_handling_of_linear_system_solvers"/>
       <tab type="user" title="Example 22 - Event system" url="@ref Example_22_Event_system"/>
       <tab type="user" title="Example 23 - OpenMP parallel codes" url="@ref Example_23_OpenMP_Parallel_Codes"/>

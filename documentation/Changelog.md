@@ -84,7 +84,7 @@ Changelog {#Changelog}
    * Drop of modular class architecture.
    * Iterators for expression trees.
    * First support for aggregated types in external functions (e.g. std::complex).
-     See \ref Example_20_Aggregated_active_type_handling.
+     See \ref Example_20_Aggregated_active_type_handling_in_external_functions.
    * Autocompletion of template arguments in IDEs. See \ref TemplateDeclaration.
    * Overhaul of tutorials and examples. See \ref TutorialsAndExamples.
 

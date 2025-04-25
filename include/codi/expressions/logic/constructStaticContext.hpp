@@ -148,8 +148,15 @@ namespace codi {
         CODI_UNUSED(primalVector, identifiers);
 
         using ConversionOperator = typename Rhs::template ConversionOperator<PassiveInnerReal>;
+        using AggregateTraits = RealTraits::AggregatedTypeTraits<Real>;
 
-        return ConversionOperator::fromDataStore(constantData[constantValueOffset]);
+        Real value{};
+        static_for<AggregateTraits::Elements>([&](auto i) CODI_LAMBDA_INLINE {
+          AggregateTraits::template arrayAccess<i.value>(value) =
+              ConversionOperator::fromDataStore(constantData[constantValueOffset + i.value]);
+        });
+
+        return ResultType(value);
       }
   };
 
