@@ -43,6 +43,7 @@
 #include "../../misc/macros.hpp"
 #include "../../misc/memberStore.hpp"
 #include "statementEvaluatorInterface.hpp"
+#include "statementEvaluatorTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -51,13 +52,8 @@ namespace codi {
    * @brief Only stores the function handle for the reverse evaluation.
    *
    * Uses the StatementEvaluatorTapeInterface.
-   *
-   * @tparam T_Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
-  template<typename T_Real>
-  struct ReverseStatementEvaluator : public StatementEvaluatorInterface<T_Real> {
-      using Real = CODI_DD(T_Real, double);  ///< See ReverseStatementEvaluator.
-
+  struct ReverseStatementEvaluator : public StatementEvaluatorInterface {
     public:
 
       /*******************************************************************************/
@@ -66,55 +62,29 @@ namespace codi {
 
       using Handle = void*;  ///< Function pointer to the reverse evaluation.
 
-      /// Throws CODI_EXCEPTION on call.
-      template<typename Tape, typename... Args>
-      static Real callForward(Handle const& h, Args&&... args) {
-        CODI_UNUSED(h, args...);
+      /// \copydoc StatementEvaluatorInterface::call
+      template<StatementCall type, typename Tape, typename... Args>
+      static void call(Handle const& h, Args&&... args) {
+        using Stmt = ActiveType<Tape>;
+        using CallGen = typename Tape::template StatementCallGenerator<type, Stmt>;
 
-        CODI_EXCEPTION("ReverseStatementEvaluator does not support forward evaluation calls.");
+        using Function = decltype(&CallGen::evaluate);
 
-        return Real();
-      }
+        Function func = (Function)h;
 
-      /// Throws CODI_EXCEPTION on call.
-      template<typename Tape, typename... Args>
-      static Real callPrimal(Handle const& h, Args&&... args) {
-        CODI_UNUSED(h, args...);
-
-        CODI_EXCEPTION("ReverseStatementEvaluator does not support primal evaluation calls.");
-
-        return Real();
-      }
-
-      /// \copydoc StatementEvaluatorInterface::callReverse
-      template<typename Tape, typename... Args>
-      static void callReverse(Handle const& h, Args&&... args) {
-        HandleTyped<Tape> func = (HandleTyped<Tape>)h;
-
-        func(std::forward<Args>(args)...);
-      }
-
-      /// \copydoc StatementEvaluatorInterface::getWriteInformation
-      template<typename Tape, typename... Args>
-      static WriteInfo getWriteInformation(Handle const& h, Args&&... args) {
-        CODI_UNUSED(h, args...);
-
-        CODI_EXCEPTION("ReverseStatementEvaluator does not support get write information calls.");
-        return WriteInfo();
+        if (StatementCall::Reverse == type) {
+          func(std::forward<Args>(args)...);
+        } else {
+          CODI_EXCEPTION("ReverseStatementEvaluator only supports reverse evaluation calls.");
+        }
       }
 
       /// \copydoc StatementEvaluatorInterface::createHandle
-      template<typename Tape, typename Generator, typename Expr>
+      template<typename Tape, typename Generator, typename Stmt>
       static Handle createHandle() {
-        return (Handle*)Generator::template statementEvaluateReverse<Expr>;
+        return (Handle*)Generator::template statementEvaluateReverse<Stmt>;
       }
 
       /// @}
-
-    protected:
-
-      /// Full reverse function type.
-      template<typename Tape>
-      using HandleTyped = decltype(&Tape::template statementEvaluateReverse<ActiveType<Tape>>);
   };
 }

@@ -64,7 +64,7 @@ namespace codi {
 
   /**
    * @brief This class is used during the writing process of a primal value tape. The WriteInfo is returned by
-   * codi::PrimalValueBaseTape::statementGetWriteInformation method.
+   * StatementEvaluator call with StatementCall::WriteInformation.
    */
   struct WriteInfo {
       size_t numberOfActiveArguments;    ///< Number of active arguments.

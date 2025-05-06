@@ -167,8 +167,8 @@ namespace codi {
           } else CODI_Likely {
             Gradient lhsTangent = Gradient();
 
-            primalVector[curAdjointPos] = StatementEvaluator::template callForward<PrimalValueLinearTape>(
-                stmtEvalHandle[curStatementPos], primalVector, adjointVector, lhsTangent, nPassiveValues,
+            StatementEvaluator::template call<StatementCall::Forward, PrimalValueLinearTape>(
+                stmtEvalHandle[curStatementPos], primalVector[curAdjointPos], primalVector, adjointVector, lhsTangent, nPassiveValues,
                 curConstantPos, constantValues, curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
 
 #if CODI_VariableAdjointInterfaceInPrimalTapes
@@ -227,8 +227,8 @@ namespace codi {
           } else if (Config::StatementInputTag == nPassiveValues) CODI_Unlikely {
             // Do nothing.
           } else CODI_Likely {
-            primalVector[curAdjointPos] = StatementEvaluator::template callPrimal<PrimalValueLinearTape>(
-                stmtEvalHandle[curStatementPos], primalVector, nPassiveValues, curConstantPos, constantValues,
+            StatementEvaluator::template call<StatementCall::Primal, PrimalValueLinearTape>(
+                stmtEvalHandle[curStatementPos], primalVector[curAdjointPos], primalVector, nPassiveValues, curConstantPos, constantValues,
                 curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
 
             EventSystem<PrimalValueLinearTape>::notifyStatementEvaluatePrimalListeners(tape, curAdjointPos,
@@ -305,7 +305,7 @@ namespace codi {
             EventSystem<PrimalValueLinearTape>::notifyStatementEvaluatePrimalListeners(tape, curAdjointPos,
                                                                                        primalVector[curAdjointPos]);
 
-            StatementEvaluator::template callReverse<PrimalValueLinearTape>(
+            StatementEvaluator::template call<StatementCall::Reverse, PrimalValueLinearTape>(
                 stmtEvalHandle[curStatementPos], primalVector, adjointVector, lhsAdjoint, nPassiveValues,
                 curConstantPos, constantValues, curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
           }
@@ -349,8 +349,9 @@ namespace codi {
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
             writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
           } else CODI_Likely {
-            WriteInfo writeInfo = StatementEvaluator::template getWriteInformation<PrimalValueLinearTape>(
-                stmtEvalHandle[curStatementPos], primalVector, nPassiveValues, curConstantPos, constantValues,
+            WriteInfo writeInfo;
+            StatementEvaluator::template call<StatementCall::WriteInformation, PrimalValueLinearTape>(
+                stmtEvalHandle[curStatementPos], writeInfo, primalVector, nPassiveValues, curConstantPos, constantValues,
                 curPassivePos, passiveValues, curRhsIdentifiersPos, rhsIdentifiers);
 
             if (Config::StatementInputTag == nPassiveValues) CODI_Unlikely {

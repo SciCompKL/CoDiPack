@@ -36,7 +36,7 @@
 
 #include "../../misc/macros.hpp"
 #include "../../misc/memberStore.hpp"
-#include "../io/tapeReaderWriterInterface.hpp"
+#include "statementEvaluatorTapeInterface.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -80,31 +80,28 @@ namespace codi {
    * requires a different generator. Therefore, `createHandle` has two template arguments, one for the tape and one for
    * the generator.
    *
-   * In general, implementations of this interface need to store functions pointers to the `statementEvaluate*`
-   * functions of the StatementEvaluatorTapeInterface or function pointers to the `statementEvaluate*Inner` of the
-   * StatementEvaluatorInnerTapeInterface.
+   * In general, implementations of this interface need to store functions pointers to the `evaluate`
+   * functions of the StatementCallGenerator structures in the StatementEvaluatorTapeInterface or the `evaluateInner`
+   * function for the StatementEvaluatorInnerTapeInterface.
    *
    * A usual call flow for the first approach is (see also the code for ReverseStatementEvaluator):
    * \code{.cpp}
    *   // During recording in tape.store.
-   *   // Instantiates e.g Tape::statementEvaluateReverse<Expr>
+   *   // Instantiates e.g Tape::StatementCallGenerator<StatementCall::Reverse, Expr>::evaluate
    *   auto handle = StatementEvaluatorInterface::createHandle<Tape, Tape, Expr>();
    *   tapeData.pushHandle(handle);
    *
    *   // During reverse interpretation of the tape.
    *   auto handle = tapeData.popHandle(handle);
    *
-   *   // This calls Tape::statementEvaluateReverse<Expr>(tapeData);
-   *   StatementEvaluatorInterface::callReverse(handle, tapeData);
+   *   // This calls Tape::StatementCallGenerator<StatementCall::Reverse, Expr>::evaluate(tapeData);
+   *   StatementEvaluatorInterface::call<StatementCall::Reverse, Tape>(handle, tapeData);
    * \endcode
    *
    * @tparam T_Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
-  template<typename T_Real>
   struct StatementEvaluatorInterface {
     public:
-
-      using Real = CODI_DD(T_Real, double);  ///< See StatementEvaluatorInterface.
 
       /*******************************************************************************/
       /// @name Interface definition
@@ -113,23 +110,8 @@ namespace codi {
 
       /// @tparam Tape  Has to implement StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface,
       ///               depending on the interface the implementation uses.
-      template<typename Tape, typename... Args>
-      static Real callForward(Handle const& h, Args&&... args);
-
-      /// @tparam Tape  Has to implement StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface,
-      ///               depending on the interface the implementation uses.
-      template<typename Tape, typename... Args>
-      static Real callPrimal(Handle const& h, Args&&... args);
-
-      /// @tparam Tape  Has to implement StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface,
-      ///               depending on the interface the implementation uses.
-      template<typename Tape, typename... Args>
-      static void callReverse(Handle const& h, Args&&... args);
-
-      /// @tparam Tape  Has to implement StatementEvaluatorTapeInterface or StatementEvaluatorInnerTapeInterface,
-      ///               depending on the interface the implementation uses.
-      template<typename Tape, typename... Args>
-      static WriteInfo getWriteInformation(Handle const& h, Args&&... args);
+      template<StatementCall type, typename Tape, typename... Args>
+      static void call(Handle const& h, Args&&... args);
 
       /// @tparam Tape       Usually not required. Access tape specific configurations.
       /// @tparam Generator  Has to implement the StatementEvaluatorTapeInterface or
