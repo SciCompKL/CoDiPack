@@ -43,21 +43,25 @@ namespace codi {
 
   /// Define all static sizes of an Expression.
   struct StatementSizes {
+      size_t const outputArgs;    ///< Number of output arguments.
       size_t const inputArgs;     ///< Number of input arguments.
       size_t const constantArgs;  ///< Number of constant arguments.
 
       /// Constructor
-      StatementSizes(size_t const inputArgs, size_t const constantArgs)
-          : inputArgs(inputArgs), constantArgs(constantArgs) {}
+      StatementSizes(size_t const outputArgs, size_t const inputArgs, size_t const constantArgs)
+          : outputArgs(outputArgs), inputArgs(inputArgs), constantArgs(constantArgs) {}
 
       /// Creation function from AssignStatement.
-      template<typename Rhs>
+      template<typename Stmt>
       static StatementSizes create() {
+        using Rhs = typename Stmt::Rhs;
+        using Lhs = typename Stmt::Lhs;
 
         size_t constexpr inputArgs = ExpressionTraits::NumberOfActiveTypeArguments<Rhs>::value;
         size_t constexpr constantArgs = ExpressionTraits::NumberOfConstantTypeArguments<Rhs>::value;
+        size_t constexpr outputArgs = ExpressionTraits::NumberOfActiveTypeArguments<Lhs>::value;
 
-        return StatementSizes(inputArgs, constantArgs);
+        return StatementSizes(outputArgs, inputArgs, constantArgs);
       }
   };
 }

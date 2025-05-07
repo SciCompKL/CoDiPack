@@ -208,27 +208,27 @@ namespace codi {
     struct AggregatedTypeTraits<std::complex<T_InnerReal>>
         : public ArrayAggregatedTypeTraitsBase<std::complex<T_InnerReal>, T_InnerReal,
                                                std::complex<RealTraits::Real<T_InnerReal>>, 2> {
-
-      /// \copydoc codi::ComputeOperation::getMathRep
-      static CODI_INLINE std::string getMathRep() {
-        return "complex()";
-      }
+      public:
+        /// \copydoc codi::ComputeOperation::getMathRep
+        static CODI_INLINE std::string getMathRep() {
+          return "complex()";
+        }
     };
 
     /// Specialize real traits for std::complex.
     template<typename T_InnerReal>
     struct AggregatedTypeTraits<ActiveComplex<T_InnerReal>>
-        : public ArrayAggregatedTypeTraitsBase<ActiveComplex<T_InnerReal>, T_InnerReal,
-                                                typename std::conditional<
-                                                  std::is_floating_point<RealTraits::Real<T_InnerReal>>::value,
-                                                  std::complex<RealTraits::Real<T_InnerReal>>,
-                                                  ActiveComplex<RealTraits::Real<T_InnerReal>>
-                                                >::type, 2> {
-
-      /// \copydoc codi::ComputeOperation::getMathRep
-      static CODI_INLINE std::string getMathRep() {
-        return "complex()";
-      }
+        : public ArrayAggregatedTypeTraitsBase<
+              ActiveComplex<T_InnerReal>, T_InnerReal,
+              typename std::conditional<std::is_floating_point<RealTraits::Real<T_InnerReal>>::value,
+                                        std::complex<RealTraits::Real<T_InnerReal>>,
+                                        ActiveComplex<RealTraits::Real<T_InnerReal>>>::type,
+              2> {
+      public:
+        /// \copydoc codi::ComputeOperation::getMathRep
+        static CODI_INLINE std::string getMathRep() {
+          return "complex()";
+        }
     };
   }
 

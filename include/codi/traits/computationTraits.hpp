@@ -38,10 +38,10 @@
 #include <type_traits>
 
 #include "../config.h"
+#include "../expressions/complex/complexPredef.hpp"
 #include "../misc/macros.hpp"
 #include "../misc/self.hpp"
 #include "expressionTraits.hpp"
-#include "../expressions/complex/complexPredef.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -143,7 +143,6 @@ namespace codi {
   /// Transpose specialization for floating point numbers.
   template<typename T>
   struct ComputationTraits::TransposeImpl<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
-
     public:
       using Jacobian = T;
       using Return = T;
@@ -159,7 +158,6 @@ namespace codi {
       T, std::enable_if_t<
              ExpressionTraits::isExpression<T> &
              std::is_floating_point<typename RealTraits::TraitsImplementation<T, void>::PassiveReal>::value>> {
-
     public:
       using Jacobian = T;
       using Return = T;

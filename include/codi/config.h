@@ -476,6 +476,28 @@ namespace codi {
     bool constexpr ForcedInlines = CODI_ForcedInlines;
 #undef CODI_ForcedInlines
 
+#ifndef CODI_Restrict
+  /// See codi::Config::Restrict.
+  #define CODI_Restrict 1
+#endif
+#if CODI_Restrict
+  #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
+    #define CODI_RESTRICT __restrict
+  #elif defined(__GNUC__)
+    #define CODI_RESTRICT __restrict__
+  #else
+    #warning Could not determine compiler for restrict definitions. Using nothing.
+    /// See codi::Config::Restrict.
+    #define CODI_RESTRICT /* no restrict */
+  #endif
+#else
+  /// See codi::Config::Restrict.
+  #define CODI_RESTRICT /* no restrict */
+#endif
+    /// Annotate pointers with the restrict keyword in order to improve the performance of CoDiPack.
+    bool constexpr Restrict = CODI_Restrict;
+#undef CODI_Restrict
+
     /// @}
   }
 }

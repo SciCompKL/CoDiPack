@@ -34,7 +34,8 @@
  */
 #include "basePreaccumulation.hpp"
 
-struct TestPreaccumulationLocalAdjointVectorOffset : public BasePreaccumulation<TestPreaccumulationLocalAdjointVectorOffset> {
+struct TestPreaccumulationLocalAdjointVectorOffset
+    : public BasePreaccumulation<TestPreaccumulationLocalAdjointVectorOffset> {
   public:
     NAME("PreaccumulationLocalAdjointVectorOffset")
 

@@ -125,7 +125,6 @@ namespace codi {
       template<typename T>
       std::string convert_value(T const& v) {
         return std::to_string(v);
-
       }
 
       template<typename T>

@@ -35,7 +35,8 @@
 #include "basePreaccumulationForwardInvalidAdjoint.hpp"
 
 struct TestPreaccumulationLocalAdjointVectorOffsetForwardInvalidAdjoint
-    : public BasePreaccumulationForwardInvalidAdjoint<TestPreaccumulationLocalAdjointVectorOffsetForwardInvalidAdjoint> {
+    : public BasePreaccumulationForwardInvalidAdjoint<
+          TestPreaccumulationLocalAdjointVectorOffsetForwardInvalidAdjoint> {
   public:
     NAME("PreaccumulationLocalAdjointVectorOffsetForwardInvalidAdjoint")
 

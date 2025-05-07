@@ -40,7 +40,6 @@
 #include "../../misc/macros.hpp"
 #include "../../misc/self.hpp"
 
-
 /** \copydoc codi::Namespace */
 namespace codi {
 

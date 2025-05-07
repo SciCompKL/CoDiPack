@@ -67,6 +67,7 @@ namespace codi {
    * StatementEvaluator call with StatementCall::WriteInformation.
    */
   struct WriteInfo {
+      size_t numberOfOutputArguments;    ///< Number of output arguments.
       size_t numberOfActiveArguments;    ///< Number of active arguments.
       size_t numberOfConstantArguments;  ///< Number of constant arguments.
       std::string stmtExpression;        ///< Used to generate a .hpp file for reading back a primal value tape.
@@ -140,7 +141,9 @@ namespace codi {
        * @brief  Called once at the beginning of the tape write process. Should initialize all required data structures
        * and files.
        */
-      virtual void start(Tape& tape) { CODI_UNUSED(tape); }
+      virtual void start(Tape& tape) {
+        CODI_UNUSED(tape);
+      }
 
       /**
        * @brief  Called for each statement. The method writes the current statement to the file. This
@@ -156,13 +159,12 @@ namespace codi {
        * @brief  Called for each statement. The method writes the current statement to the file. This
        * overload is used for the primal value writers and contains additional arguments, such as the WriteInfo.
        */
-      virtual void writeStatement(WriteInfo const& info, Identifier const& curLhsIdentifier, Real const& primalValue,
-                                  Config::ArgumentSize const& nPassiveValues, size_t const& curRhsIdentifiersPos,
-                                  Identifier const* const rhsIdentifiers, size_t const& curPassiveValuePos,
-                                  Real const* const passiveValues, size_t& curConstantPos,
-                                  Real const* const constantValues, EvalHandle stmtEvalHandle) {
-        CODI_UNUSED(info, curLhsIdentifier, primalValue, nPassiveValues, curRhsIdentifiersPos, rhsIdentifiers,
-                    passiveValues, curPassiveValuePos, curConstantPos, constantValues, stmtEvalHandle);
+      virtual void writeStatement(WriteInfo const& info, Identifier const* lhsIdentifiers, Real const* lhsPrimalValues,
+                                  Config::ArgumentSize const& nPassiveValues, Identifier const* const rhsIdentifiers,
+                                  Real const* const passiveValues, Real const* const constantValues,
+                                  EvalHandle stmtEvalHandle) {
+        CODI_UNUSED(info, lhsIdentifiers, lhsPrimalValues, nPassiveValues, rhsIdentifiers, passiveValues,
+                    constantValues, stmtEvalHandle);
       }
 
       /// Used for statements that contain a low level function.
@@ -256,7 +258,9 @@ namespace codi {
       virtual ~TapeReaderInterface() {}  ///< Destructor
 
       /// This method uses the the fileName to reproduce a valid tape.
-      virtual void readFile(std::string const& name) { CODI_UNUSED(name); }
+      virtual void readFile(std::string const& name) {
+        CODI_UNUSED(name);
+      }
 
       virtual Tape& getTape() = 0;  ///< Used to get a reference to the restored tape.
 

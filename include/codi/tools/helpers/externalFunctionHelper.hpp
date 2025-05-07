@@ -254,7 +254,9 @@ namespace codi {
           CODI_INLINE void evalPrimFunc(Tape* t, VectorAccessInterface<Real, Identifier>* ra) {
             CODI_UNUSED(t);
 
-            Synchronization::serialize([&]() { initRun(ra); });
+            Synchronization::serialize([&]() {
+              initRun(ra);
+            });
 
             Synchronization::synchronize();
 
@@ -262,7 +264,9 @@ namespace codi {
 
             Synchronization::synchronize();
 
-            Synchronization::serialize([&]() { finalizeRun(ra); });
+            Synchronization::serialize([&]() {
+              finalizeRun(ra);
+            });
 
             Synchronization::synchronize();
           }
@@ -611,10 +615,14 @@ namespace codi {
           Synchronization::synchronize();
 
           // Clear the assembled data in a serial manner.
-          Synchronization::serialize([&]() { data = nullptr; });
+          Synchronization::serialize([&]() {
+            data = nullptr;
+          });
         } else {
           // Clear the assembled data in a serial manner.
-          Synchronization::serialize([&]() { delete data; });
+          Synchronization::serialize([&]() {
+            delete data;
+          });
         }
 
         // Create a new data object for the next call in a serial manner.

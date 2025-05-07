@@ -86,7 +86,7 @@ namespace codi {
           Base::placeUnusedRhsNodes(&rhsIdentifiers[curJacobianPos], nJacobians);
 
           // Add the curLhsIdentifier node.
-          Base::createNode(curLhsIdentifier, this->formatNodeLabel(curLhsIdentifier));
+          std::string to = Base::createNode(1, &curLhsIdentifier, "");
 
           // Loop through rhsIdentifiers and create the edges. The this->identifierExtensions is used to find the
           // current extension for each of the rhsIdentifiers.
@@ -95,10 +95,10 @@ namespace codi {
             if (printJacobians) {
               labelText = std::to_string(rhsJacobians[curJacobianPos + argCount]);
             }
-            Base::createEdge(rhsIdentifiers[curJacobianPos + argCount], curLhsIdentifier, labelText);
+            Base::createEdge(rhsIdentifiers[curJacobianPos + argCount], to, labelText);
           }
 
-          this->identifierExtensions[curLhsIdentifier] += 1;
+          Base::updateLhsIdentifiers(1, &curLhsIdentifier);
         }
       }
   };
@@ -136,18 +136,15 @@ namespace codi {
           : Base(true, name, in, out) {};
 
       /**
-       * \copydoc codi::TapeWriterInterface::writeStatement(WriteInfo const&, Identifier const&, Real const&,
-       *                                                    Config::ArgumentSize const&, size_t const&,
-       *                                                    Identifier const* const, size_t const&,
-       *                                                    Real const* const, size_t&, Real const* const,
-       *                                                    EvalHandle)
+       * \copydoc codi::TapeWriterInterface::writeStatement(WriteInfo const&, Identifier const*, Real const*,
+       *                                                    Config::ArgumentSize const&, Identifier const* const,
+       *                                                    Real const* const, Real const* const, EvalHandle)
        */
-      void writeStatement(WriteInfo const& info, Identifier const& curLhsIdentifier, Real const& primalValue,
-                          Config::ArgumentSize const& nPassiveValues, size_t const& curRhsIdentifiersPos,
-                          Identifier const* const rhsIdentifiers, size_t const& curPassiveValuePos,
-                          Real const* const passiveValues, size_t& curConstantPos, Real const* const constantValues,
+      void writeStatement(WriteInfo const& info, Identifier const* lhsIdentifiers, Real const* primalValues,
+                          Config::ArgumentSize const& nPassiveValues, Identifier const* const rhsIdentifiers,
+                          Real const* const passiveValues, Real const* const constantValues,
                           EvalHandle stmtEvalHandle) {
-        CODI_UNUSED(primalValue, curPassiveValuePos, passiveValues, curConstantPos, constantValues, stmtEvalHandle);
+        CODI_UNUSED(primalValues, passiveValues, constantValues, stmtEvalHandle);
 
         std::string node;
         if (nPassiveValues == Config::StatementInputTag) CODI_Unlikely {
@@ -155,24 +152,23 @@ namespace codi {
         } else CODI_Likely {
           //  Ensure that the all the rhsIdentifiers have been added before connecting edges to them. The mathRep string
           //  is also modified to include the identifier and value.
-          Base::placeUnusedRhsNodes(&rhsIdentifiers[curRhsIdentifiersPos], info.numberOfActiveArguments);
+          Base::placeUnusedRhsNodes(rhsIdentifiers, info.numberOfActiveArguments);
 
           // The mathRep string is modified to include the identifier and value.
           std::string mathRep =
-              Base::modifyMathRep(info.mathRepresentation, curLhsIdentifier, &rhsIdentifiers[curRhsIdentifiersPos],
-                                  info.numberOfActiveArguments);
+              Base::modifyMathRep(info.mathRepresentation, rhsIdentifiers, info.numberOfActiveArguments);
           // Add the curLhsIdentifier node.
-          Base::createNode(curLhsIdentifier, mathRep);
+          std::string lhsNodeName = Base::createNode(info.numberOfOutputArguments, lhsIdentifiers, mathRep);
 
           // Loop through rhsIdentifiers and create the edges. The identifierExtensions is used to find the current
           // extension for each of the rhsIdentifiers.
           for (size_t argCount = 0; argCount < info.numberOfActiveArguments; argCount++) {
-            Base::createEdge(rhsIdentifiers[curRhsIdentifiersPos + argCount], curLhsIdentifier);
+            Base::createEdge(rhsIdentifiers[argCount], lhsNodeName);
           }
 
           // Only record the increased extension after recording the edges. This ensure that if the lhs equals the rhs,
-          // that it results in tow unique nodes.
-          this->identifierExtensions[curLhsIdentifier] += 1;
+          // that it results in two unique nodes.
+          Base::updateLhsIdentifiers(info.numberOfOutputArguments, lhsIdentifiers);
         }
       }
   };

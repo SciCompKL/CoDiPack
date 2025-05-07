@@ -183,18 +183,19 @@ namespace codi {
     template<typename Tape>
     using EnableIfNoEditing = typename std::enable_if<!SupportsEditing<Tape>::value>::type;
 
-
     /// If the tape inherits from TagTapeBase.
     template<typename Tape, typename = void>
     struct IsTagTape : std::false_type {};
 
 #ifndef DOXYGEN_DISABLE
     template<typename Tape>
-    struct IsTagTape<Tape, typename enable_if_base_of<TagTapeReverse<typename Tape::Real, typename Tape::Tag>, Tape>::type>
+    struct IsTagTape<Tape,
+                     typename enable_if_base_of<TagTapeReverse<typename Tape::Real, typename Tape::Tag>, Tape>::type>
         : std::true_type {};
 
     template<typename Tape>
-    struct IsTagTape<Tape, typename enable_if_base_of<TagTapeForward<typename Tape::Real, typename Tape::Tag>, Tape>::type>
+    struct IsTagTape<Tape,
+                     typename enable_if_base_of<TagTapeForward<typename Tape::Real, typename Tape::Tag>, Tape>::type>
         : std::true_type {};
 #endif
 
@@ -214,7 +215,8 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
     template<typename Tape>
-    struct IsTagTapeReverse<Tape, typename enable_if_base_of<TagTapeReverse<typename Tape::Real, typename Tape::Tag>, Tape>::type>
+    struct IsTagTapeReverse<
+        Tape, typename enable_if_base_of<TagTapeReverse<typename Tape::Real, typename Tape::Tag>, Tape>::type>
         : std::true_type {};
 #endif
 

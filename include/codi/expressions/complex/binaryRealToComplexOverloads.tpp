@@ -69,10 +69,10 @@
   #include "../../traits/realTraits.hpp"
   #include "../activeType.hpp"
   #include "../activeTypeStatelessTape.hpp"
-  #include "../parallelActiveType.hpp"
   #include "../computeExpression.hpp"
   #include "../constantExpression.hpp"
   #include "../expressionInterface.hpp"
+  #include "../parallelActiveType.hpp"
   #include "adjointComplexToRealCast.hpp"
   #define OPERATION_LOGIC BinaryOperation
   #define FUNCTION func
@@ -111,15 +111,16 @@ namespace codi {
   /// Function overload for FUNCTION(ActiveTypeStatelessTape, ActiveTypeStatelessTape).
   template<typename Tape>
   CODI_INLINE auto FUNCTION(ActiveTypeStatelessTape<Tape> const& argA, ActiveTypeStatelessTape<Tape> const& argB) {
-    return ComputeExpression<std::complex<typename Tape::Real>, OPERATION_LOGIC, ActiveTypeStatelessTape<Tape>, ActiveTypeStatelessTape<Tape>>(
-        argA, argB);
+    return ComputeExpression<std::complex<typename Tape::Real>, OPERATION_LOGIC, ActiveTypeStatelessTape<Tape>,
+                             ActiveTypeStatelessTape<Tape>>(argA, argB);
   }
 
   /// Function overload for FUNCTION(ParallelActiveType, ParallelActiveType).
   template<typename Tape, typename Toolbox>
-  CODI_INLINE auto FUNCTION(ParallelActiveType<Tape, Toolbox> const& argA, ParallelActiveType<Tape, Toolbox> const& argB) {
-    return ComputeExpression<std::complex<typename Tape::Real>, OPERATION_LOGIC, ParallelActiveType<Tape, Toolbox>, ParallelActiveType<Tape, Toolbox>>(
-        argA, argB);
+  CODI_INLINE auto FUNCTION(ParallelActiveType<Tape, Toolbox> const& argA,
+                            ParallelActiveType<Tape, Toolbox> const& argB) {
+    return ComputeExpression<std::complex<typename Tape::Real>, OPERATION_LOGIC, ParallelActiveType<Tape, Toolbox>,
+                             ParallelActiveType<Tape, Toolbox>>(argA, argB);
   }
 
 // Create a correct include environment for viewing and programming in an IDE.

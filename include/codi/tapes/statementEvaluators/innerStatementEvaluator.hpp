@@ -41,6 +41,7 @@
 #include "../../expressions/activeType.hpp"
 #include "../../misc/macros.hpp"
 #include "../../traits/expressionTraits.hpp"
+#include "../misc/assignStatement.hpp"
 #include "../misc/statementSizes.hpp"
 #include "directStatementEvaluator.hpp"
 #include "statementEvaluatorInterface.hpp"
@@ -112,12 +113,13 @@ namespace codi {
       /// \copydoc StatementEvaluatorInterface::call
       template<StatementCall type, typename Tape, typename... Args>
       static void call(Handle const& h, Args&&... args) {
-        using Stmt = ActiveType<Tape>;
+        using Stmt = AssignStatement<ActiveType<Tape>, ActiveType<Tape>>;
         using CallGen = typename Tape::template StatementCallGenerator<type, Stmt>;
 
         using Function = decltype(&CallGen::evaluateInner);
 
-        CallGen::evaluateFull(((Function)h->functions.funcs[(size_t)type]), h->stmtSizes.inputArgs, h->stmtSizes.constantArgs, std::forward<Args>(args)...);
+        CallGen::evaluateFull(((Function)h->functions.funcs[(size_t)type]), h->stmtSizes.outputArgs,
+                              h->stmtSizes.inputArgs, h->stmtSizes.constantArgs, std::forward<Args>(args)...);
       }
 
       /// \copydoc StatementEvaluatorInterface::createHandle

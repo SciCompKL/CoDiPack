@@ -115,5 +115,10 @@ namespace codi {
       /// Register a low level function on the tape.
       Config::LowLevelFunctionToken registerLowLevelFunction(
           LowLevelFunctionEntry<LowLevelFunctionTapeInterface, Real, Identifier> const& entry);
+
+      /// Skip the data for a low level function.
+      static void skipLowLevelFunction(bool forward, size_t& curLLFByteDataPos, char* dataPtr,
+                                       size_t& curLLFTInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+                                       Config::LowLevelFunctionDataSize* const dataSizePtr);
   };
 }

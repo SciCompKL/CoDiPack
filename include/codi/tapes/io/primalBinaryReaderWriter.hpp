@@ -86,30 +86,27 @@ namespace codi {
       }
 
       /**
-       * \copydoc codi::TapeWriterInterface::writeStatement(WriteInfo const&, Identifier const&, Real const&,
-       *                                                    Config::ArgumentSize const&, size_t const&,
-       *                                                    Identifier const* const, size_t const&,
-       *                                                    Real const* const, size_t&, Real const* const,
-       *                                                    EvalHandle)
+       * \copydoc codi::TapeWriterInterface::writeStatement(WriteInfo const&, Identifier const*, Real const*,
+       *                                                    Config::ArgumentSize const&, Identifier const* const,
+       *                                                    Real const* const, Real const* const, EvalHandle)
        */
-      void writeStatement(WriteInfo const& info, Identifier const& curLhsIdentifier, Real const& primalValue,
-                          Config::ArgumentSize const& nPassiveValues, size_t const& curRhsIdentifiersPos,
-                          Identifier const* const rhsIdentifiers, size_t const& curPassiveValuePos,
-                          Real const* const passiveValues, size_t& curConstantPos, Real const* const constantValues,
+      void writeStatement(WriteInfo const& info, Identifier const* lhsIdentifiers, Real const* primalValues,
+                          Config::ArgumentSize const& nPassiveValues, Identifier const* const rhsIdentifiers,
+                          Real const* const passiveValues, Real const* const constantValues,
                           EvalHandle stmtEvalHandle) {
-        fwrite(&curLhsIdentifier, sizeof(Identifier), 1, fileHandleBin);
-        fwrite(&primalValue, sizeof(Real), 1, fileHandleBin);
+        fwrite(&info.numberOfOutputArguments, sizeof(Config::ArgumentSize), 1, fileHandleBin);
+        fwrite(lhsIdentifiers, sizeof(Identifier), info.numberOfOutputArguments, fileHandleBin);
+        fwrite(primalValues, sizeof(Real), info.numberOfOutputArguments, fileHandleBin);
         fwrite(&nPassiveValues, sizeof(Config::ArgumentSize), 1, fileHandleBin);
 
         if (nPassiveValues == Config::StatementInputTag) CODI_Unlikely {
           // Do nothing.
         } else CODI_Likely {
           fwrite(&info.numberOfActiveArguments, sizeof(Config::ArgumentSize), 1, fileHandleBin);
-          fwrite(&rhsIdentifiers[curRhsIdentifiersPos], sizeof(Identifier), info.numberOfActiveArguments,
-                 fileHandleBin);
-          fwrite(&passiveValues[curPassiveValuePos], sizeof(Real), nPassiveValues, fileHandleBin);
+          fwrite(rhsIdentifiers, sizeof(Identifier), info.numberOfActiveArguments, fileHandleBin);
+          fwrite(passiveValues, sizeof(Real), nPassiveValues, fileHandleBin);
           fwrite(&info.numberOfConstantArguments, sizeof(Config::ArgumentSize), 1, fileHandleBin);
-          fwrite(&constantValues[curConstantPos], sizeof(Real), info.numberOfConstantArguments, fileHandleBin);
+          fwrite(constantValues, sizeof(Real), info.numberOfConstantArguments, fileHandleBin);
         }
         // Register the statement expression (in the form of a string) for the evalHandleKey.
 
@@ -186,12 +183,13 @@ namespace codi {
       void readFile(std::string const& name) {
         FILE* fileHandleReadBin = nullptr;
 
-        Identifier lhsIdentifier;
-        Real primalValue;
+        Config::ArgumentSize nOutputValues;
+        std::vector<Identifier> lhsIdentifiers(Config::MaxArgumentSize, 0);
+        std::vector<Real> primalValues(Config::MaxArgumentSize, 0.0);
         Config::ArgumentSize nPassiveValues;
         Config::ArgumentSize nActiveValues;
         std::vector<Identifier> rhsIdentifiers(Config::MaxArgumentSize, 0);
-        std::vector<Real> rhsPrimalValues(Config::MaxArgumentSize, 0);
+        std::vector<Real> rhsPrimalValues(Config::MaxArgumentSize, 0.0);
         Config::ArgumentSize nConstants;
         std::vector<Real> constants(Config::MaxArgumentSize, 0);
 
@@ -208,8 +206,9 @@ namespace codi {
 
         this->openFile(fileHandleReadBin, this->fileName, "rb");
 
-        while (fread(&lhsIdentifier, sizeof(Identifier), 1, fileHandleReadBin) == 1) {
-          fread(&primalValue, sizeof(Real), 1, fileHandleReadBin);
+        while (fread(&nOutputValues, sizeof(Config::ArgumentSize), 1, fileHandleReadBin) == 1) {
+          fread(lhsIdentifiers.data(), sizeof(Identifier), nOutputValues, fileHandleReadBin);
+          fread(primalValues.data(), sizeof(Real), nOutputValues, fileHandleReadBin);
           fread(&nPassiveValues, sizeof(Config::ArgumentSize), 1, fileHandleReadBin);
 
           if (nPassiveValues == Config::StatementLowLevelFunctionTag) CODI_Unlikely {
@@ -225,9 +224,9 @@ namespace codi {
           }
 
           fread(&evalHandleKey, sizeof(EvalHandleKey), 1, fileHandleReadBin);
-          this->tape.createStatementManual(lhsIdentifier, primalValue, nActiveValues, rhsIdentifiers.data(),
-                                           nPassiveValues, rhsPrimalValues.data(), nConstants, constants.data(),
-                                           evalHandles[evalHandleKey]);
+          this->tape.createStatementManual(nOutputValues, lhsIdentifiers.data(), primalValues.data(), nActiveValues,
+                                           rhsIdentifiers.data(), nPassiveValues, rhsPrimalValues.data(), nConstants,
+                                           constants.data(), evalHandles[evalHandleKey]);
         }
 
         fclose(fileHandleReadBin);

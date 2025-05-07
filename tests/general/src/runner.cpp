@@ -44,11 +44,11 @@
 #include "../include/testInterface.hpp"
 
 #ifndef REGISTER_EVENTS
-#define REGISTER_EVENTS 0
+  #define REGISTER_EVENTS 0
 #endif
 
 #if REGISTER_EVENTS
-#include "../../events/include/reverseCallbacks.hpp"
+  #include "../../events/include/reverseCallbacks.hpp"
 #endif
 
 #ifndef DRIVER

@@ -41,8 +41,8 @@
 #include "../computeExpression.hpp"
 #include "../expressionInterface.hpp"
 #include "../real/allOperators.hpp"
-#include "realToComplexCast.hpp"
 #include "complexPredef.hpp"
+#include "realToComplexCast.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
@@ -129,7 +129,6 @@ namespace codi {
         return -std::imag(result) * std::real(adjoint) + std::real(result) * std::imag(adjoint);
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "polar()";
@@ -170,7 +169,6 @@ namespace codi {
         // Complex cast for argA, since the real log for negative numbers is not defined.
         return log(ComplexReal(argA)) * result;
       }
-
 
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
@@ -228,10 +226,9 @@ namespace codi {
         }
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
-        return "abs()";
+        return "abs";
       }
 
     private:
@@ -274,10 +271,9 @@ namespace codi {
         return Jacobian(-imag(argument) * divisor, -real(argument) * divisor);
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
-        return "arg()";
+        return "arg";
       }
 
     private:
@@ -323,10 +319,9 @@ namespace codi {
         return conj(adjoint);
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
-        return "conj()";
+        return "conj";
       }
   };
 
@@ -356,10 +351,9 @@ namespace codi {
         return Jacobian(0.0, -1.0);
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
-        return "imag()";
+        return "imag";
       }
   };
 
@@ -389,10 +383,9 @@ namespace codi {
         return Jacobian(2.0 * real(arg), -2.0 * imag(arg));
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
-        return "norm()";
+        return "norm";
       }
   };
 
@@ -422,10 +415,9 @@ namespace codi {
         return 1.0;
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
-        return "proj()";
+        return "proj";
       }
   };
 
@@ -455,10 +447,9 @@ namespace codi {
         return Jacobian(1.0, 0.0);
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
-        return "real()";
+        return "real";
       }
   };
 

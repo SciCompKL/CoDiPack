@@ -240,6 +240,9 @@ namespace codi {
 
       FILE* fileHandleGraph = nullptr;  ///< The handle for the writer.
 
+      Identifier aggregateCounter;               ///< Counts up or types of aggregate nodes.
+      bool lastNodeWasAggregate;                 ///< Indicates if the lats created node was for an aggreate.
+      std::vector<Identifier> identifierPrefix;  ///< Used to prefix nodes of aggregated types. Zero means no prefix.
       std::vector<Identifier> identifierExtensions;  ///< Used to differentiate multiple instances of the same
                                                      ///< identifier.
       std::vector<IdentifierType> identifierType;    ///< Used to differentiate between an input, output and temp
@@ -250,12 +253,16 @@ namespace codi {
           : Base(name, in, out),
             writeDotHeaderFooter(writeDotHeaderFooter),
             fileHandleGraph(nullptr),
+            aggregateCounter(0),
+            lastNodeWasAggregate(false),
+            identifierPrefix(0),
             identifierExtensions(0),
             identifierType(0) {}  ///< Constructor.
 
       /// \copydoc codi::TapeWriterInterface::start()
       void start(Tape& tape) {
         // Resize vectors to maximum index.
+        identifierPrefix.resize(tape.getIndexManager().getLargestCreatedIndex() + 1, 0);
         identifierExtensions.resize(tape.getIndexManager().getLargestCreatedIndex() + 1, 0);
         identifierType.resize(tape.getIndexManager().getLargestCreatedIndex() + 1, IdentifierType::Temp);
 
@@ -288,10 +295,30 @@ namespace codi {
       }
 
     protected:
+
+      /// Create the prefix for a node name.
+      std::string formatAggregateName(Identifier const& aggregate) {
+        return "Aggregate" + std::to_string(aggregate);
+      }
+
+      /// Create the prefix for a node name.
+      std::string formatNodePrefix(Identifier const& identifier) {
+        std::string prefix = "";
+        if (0 != identifierPrefix[identifier]) {
+          prefix = formatAggregateName(identifierPrefix[identifier]) + ":";
+        }
+        return prefix;
+      }
+
       /// Add the identifier extension of the identifier to the node name.
       std::string formatNodeName(Identifier const& identifier, int extensionOffset = 0) {
         return "A" + std::to_string(identifier) + "_" +
                std::to_string(identifierExtensions[identifier] + extensionOffset);
+      }
+
+      /// Prefixes the node name with the prefix for the identifier.
+      std::string formatNodeNameForLink(Identifier const& identifier) {
+        return formatNodePrefix(identifier) + formatNodeName(identifier);
       }
 
       /// Returns the color for a given identifier.
@@ -306,15 +333,45 @@ namespace codi {
       }
 
       /// Creates a new node for a given Identifier and label.
-      void createNode(Identifier const& identifier, std::string const& label) {
-        std::string node = formatNodeName(identifier, 1) + " [label = \"" + label + "\", color=\"" +
-                           nodeColorProperties(identifier) + "\"];\n";
+      std::string createNode(size_t nIdentifiers, Identifier const* identifiers, std::string const& label) {
+        std::string name = "";
+        std::string finalLabel = "";
+        std::string shape = "";
+        if (1 == nIdentifiers) {
+          name = formatNodeName(identifiers[0], 1);
+          finalLabel = formatNodeLabel(identifiers[0]);
+          if (0 != label.size()) {
+            finalLabel += " = " + label;
+          }
+        } else {
+          aggregateCounter += 1;
+          lastNodeWasAggregate = true;
+          name = formatAggregateName(aggregateCounter);
+          finalLabel = "{ " + label + " | {";
+
+          // Update the prefix for the lhs identifiers.
+          for (size_t i = 0; i < nIdentifiers; i += 1) {
+            if (0 != i) {
+              finalLabel += " | ";
+            }
+            finalLabel += "<" + formatNodeName(identifiers[i], 1) + "> " + formatNodeLabel(identifiers[i]);
+          }
+
+          finalLabel += "}}";
+          shape = ", shape=\"record\"";
+        }
+
+        std::string node =
+            name + " [label = \"" + finalLabel + "\", color=\"" + nodeColorProperties(identifiers[0]) + "\"" + shape + "];\n";
         fprintf(this->fileHandleGraph, "%s", node.c_str());
+
+        return name;
       }
 
       /// Return a string with the current identifier type and the identifier value.
       std::string formatNodeLabel(Identifier const& identifier) {
         std::string result;
+
         if (this->identifierType[identifier] == IdentifierType::Input) {
           result = "X";
         } else if (this->identifierType[identifier] == IdentifierType::Output) {
@@ -341,9 +398,10 @@ namespace codi {
        * @brief Replaces all general identifiers in the math representation with the input, output or temporary
        * annotation. E.g. <tt>x42 -> Y42</tt> for a variable tagged as output.
        */
-      std::string modifyMathRep(std::string const& mathRep, Identifier const& lhsIdentifier,
-                                Identifier const* const rhsIdentifiers, size_t const& nActiveValues) {
-        std::string result = formatNodeLabel(lhsIdentifier) + " = " + mathRep;
+      std::string modifyMathRep(std::string const& mathRep, Identifier const* const rhsIdentifiers,
+                                size_t const& nActiveValues) {
+        std::string result = mathRep;
+
         // Iterate through the RHS and replace x1..xn with the identifier type and the identifier value.
         for (size_t curArg = 0; curArg < nActiveValues; curArg++) {
           std::string searchString = "x" + std::to_string(rhsIdentifiers[curArg]);
@@ -361,22 +419,34 @@ namespace codi {
         // node has not been placed. The type of the identifier is then checked to add the correct colour coding.
         for (size_t argCount = 0; argCount < nArguments; argCount++) {
           if (this->identifierExtensions[rhsIdentifiers[argCount]] == 0) {
-            createNode(rhsIdentifiers[argCount], formatNodeLabel(rhsIdentifiers[argCount]));
-            // Increment the extension of the newly placed identifier.
-            this->identifierExtensions[rhsIdentifiers[argCount]] += 1;
+            createNode(1, &rhsIdentifiers[argCount], "");
+            updateLhsIdentifiers(1, &rhsIdentifiers[argCount]);
           }
         }
       }
 
       /// Return a string that creates an edge between two nodes in the .dot language.
-      void createEdge(Identifier const& from, Identifier const& to, std::string const& label = "") {
-        std::string edge = formatNodeName(from) + " -> " + formatNodeName(to, 1);
+      void createEdge(Identifier const& from, std::string const& to, std::string const& label = "") {
+        std::string edge = formatNodeNameForLink(from) + " -> " + to;
 
         if (0 != label.size()) {
           edge += " [label=\"" + label + "\"];";
         }
         edge += "\n";
         fprintf(this->fileHandleGraph, "%s", edge.c_str());
+      }
+
+      /// Update the identifiers extension and the prefix.
+      void updateLhsIdentifiers(size_t nIdentifiers, Identifier const* identifiers) {
+        for (size_t i = 0; i < nIdentifiers; i += 1) {
+          this->identifierExtensions[identifiers[i]] += 1;
+
+          if (lastNodeWasAggregate) {
+            identifierPrefix[identifiers[i]] = aggregateCounter;
+          }
+        }
+
+        lastNodeWasAggregate = false;
       }
   };
 }

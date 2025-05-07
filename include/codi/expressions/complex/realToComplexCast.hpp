@@ -86,7 +86,6 @@ namespace codi {
         return adjoint.real();
       }
 
-
       /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "()";

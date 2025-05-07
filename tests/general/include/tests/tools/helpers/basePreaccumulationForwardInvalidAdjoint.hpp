@@ -42,7 +42,7 @@ struct BasePreaccumulationForwardInvalidAdjoint : public TestInterface {
   public:
     IN(2)
     OUT(4)
-    POINTS(1) = {{1.0, 0.5}};
+    POINTS(1) = { {1.0, 0.5} };
 
     template<typename Number>
     static void evalFunc(Number* x, Number* y) {

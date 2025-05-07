@@ -74,7 +74,7 @@ struct TestOneArgumentExpr2 : public TestInterface {
       } else {
         y[4] = 0.0;
       }
-      y[5] = log1p(x[0]);   // (0, inf)
-      y[6] = log2(x[0]);    // (0, inf)
+      y[5] = log1p(x[0]);  // (0, inf)
+      y[6] = log2(x[0]);   // (0, inf)
     }
 };

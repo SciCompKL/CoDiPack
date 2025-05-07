@@ -93,8 +93,25 @@ A33017_5 -> A33013_4
 A33011_4 [label = "Y33011 = Y33011 + T33018", color="red"];
 A33011_3 -> A33011_4
 A33018_5 -> A33011_4
-A33020_3 [label = "Y33020 = Y33020", color="red"];
+A33009_3 [label = "T33009 = X33021", color="black"];
+A33021_1 -> A33009_3
+A33008_1 [label = "T33008 = X33016", color="black"];
+A33016_1 -> A33008_1
+A33007_1 [label = "T33007 = X33014", color="black"];
+A33014_1 -> A33007_1
+A33006_1 [label = "T33006 = X33012", color="black"];
+A33012_1 -> A33006_1
+Aggregate1 [label = "{ complex(T33009, T33008) * complex(T33007, T33006) | {<A33005_1> T33005 | <A33004_1> T33004}}", color="black", shape="record"];
+A33009_3 -> Aggregate1
+A33008_1 -> Aggregate1
+A33007_1 -> Aggregate1
+A33006_1 -> Aggregate1
+A33020_3 [label = "Y33020 = Y33020 + norm(complex(T33005, T33004))", color="red"];
 A33020_2 -> A33020_3
+Aggregate1:A33005_1 -> A33020_3
+Aggregate1:A33004_1 -> A33020_3
+A33020_4 [label = "Y33020 = Y33020", color="red"];
+A33020_3 -> A33020_4
 A33019_5 [label = "Y33019 = Y33019", color="red"];
 A33019_4 -> A33019_5
 A33015_5 [label = "Y33015 = Y33015", color="red"];

@@ -642,11 +642,11 @@ namespace codi {
 
       /// Performs the AD \ref sec_reverseAD "reverse" equation for a statement.
       template<typename AdjointVector>
-      CODI_INLINE static void incrementAdjoints(AdjointVector& adjointVector,
-                                                AdjointVectorTraits::Gradient<AdjointVector> const& lhsAdjoint,
-                                                Config::ArgumentSize const& numberOfArguments, size_t& curJacobianPos,
-                                                Real const* const rhsJacobians,
-                                                Identifier const* const rhsIdentifiers) {
+      CODI_INLINE static void incrementAdjoints(
+          AdjointVector& CODI_RESTRICT adjointVector,
+          AdjointVectorTraits::Gradient<AdjointVector> const& CODI_RESTRICT lhsAdjoint,
+          Config::ArgumentSize const& CODI_RESTRICT numberOfArguments, size_t& CODI_RESTRICT curJacobianPos,
+          Real const* CODI_RESTRICT const rhsJacobians, Identifier const* CODI_RESTRICT const rhsIdentifiers) {
         size_t endJacobianPos = curJacobianPos - numberOfArguments;
 
         if (CODI_ENABLE_CHECK(Config::SkipZeroAdjointEvaluation, !RealTraits::isTotalZero(lhsAdjoint))) CODI_Likely {
@@ -665,11 +665,12 @@ namespace codi {
 
       /// Performs the AD \ref sec_forwardAD "forward" equation for a statement.
       template<typename AdjointVector>
-      CODI_INLINE static void incrementTangents(AdjointVector const& adjointVector,
-                                                AdjointVectorTraits::Gradient<AdjointVector>& lhsAdjoint,
-                                                Config::ArgumentSize const& numberOfArguments, size_t& curJacobianPos,
-                                                Real const* const rhsJacobians,
-                                                Identifier const* const rhsIdentifiers) {
+      CODI_INLINE static void incrementTangents(AdjointVector const& CODI_RESTRICT adjointVector,
+                                                AdjointVectorTraits::Gradient<AdjointVector>& CODI_RESTRICT lhsAdjoint,
+                                                Config::ArgumentSize const& numberOfArguments,
+                                                size_t& CODI_RESTRICT curJacobianPos,
+                                                Real const* CODI_RESTRICT const rhsJacobians,
+                                                Identifier const* CODI_RESTRICT const rhsIdentifiers) {
         size_t endJacobianPos = curJacobianPos + numberOfArguments;
 
         while (curJacobianPos < endJacobianPos) CODI_Likely {
@@ -943,7 +944,7 @@ namespace codi {
                                     Position const& end) {
         Impl& impl = cast();
         writer->start(impl);
-        Base::llfByteData.evaluateForward(start, end, Impl::template internalWriteTape<Type>,  writer);
+        Base::llfByteData.evaluateForward(start, end, Impl::template internalWriteTape<Type>, writer);
         writer->finish();
       }
 

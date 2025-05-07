@@ -43,15 +43,18 @@ namespace codi {
 
   /// Defines all the operations which can be evaluated on a statement by a tape.
   enum class StatementCall {
-    Forward,          ///< Evaluate expression in a forward mode.
-    Primal,           ///< Evaluate primal expression.
-    Reverse,          ///< Evaluate expression in a reverse mode.
-    WriteInformation, ///< Get write information.
-    N_Elements        ///< Number of elements.
+    ClearAdjoints,     ///< Clear the adjoint values.
+    Forward,           ///< Evaluate expression in a forward mode.
+    Primal,            ///< Evaluate primal expression.
+    ResetPrimals,      ///< Restore the primal values.
+    Reverse,           ///< Evaluate expression in a reverse mode.
+    WriteInformation,  ///< Get write information.
+    N_Elements         ///< Number of elements.
   };
 
-#define CODI_STMT_CALL_GEN_ARGS                                                                           \
-  StatementCall::Forward, StatementCall::Primal, StatementCall::Reverse, StatementCall::WriteInformation
+#define CODI_STMT_CALL_GEN_ARGS                                                                             \
+  StatementCall::ClearAdjoints, StatementCall::Forward, StatementCall::Primal, StatementCall::ResetPrimals, \
+      StatementCall::Reverse, StatementCall::WriteInformation
 
   /**
    * @brief Tape side interface for StatementEvaluatorInterface.

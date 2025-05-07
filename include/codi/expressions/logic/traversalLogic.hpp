@@ -146,7 +146,7 @@ namespace codi {
 
       /// Helper method which calls link for each child.
       template<typename Node, typename... Args>
-      CODI_INLINE void toLinks(CODI_DD(Node, CODI_T(NodeInterface<void>)) const& node, Args&&... args){
+      CODI_INLINE void toLinks(CODI_DD(Node, CODI_T(NodeInterface<void>)) const& node, Args&&... args) {
         static_for<Node::LinkCount>([&](auto i) {
           cast().template link<i.value>(node.template getLink<i.value>(), node, std::forward<Args>(args)...);
         });

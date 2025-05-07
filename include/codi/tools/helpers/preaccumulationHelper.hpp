@@ -465,13 +465,14 @@ namespace codi {
 
         // If needed, inserts the old identifier into the map and associates it with the next identifier. Either way,
         // returns the associated new identifier.
-        auto accessOldToNewIdentifierMap = [&](typename Tape::Identifier const& oldIdentifier) -> typename Tape::Identifier const& {
-          auto result = oldToNewIdentifierMap.insert({oldIdentifier, nextIdentifier});
-          if (result.second) {  // insertion took place
-            ++nextIdentifier;
-          }
-          return result.first->second;
-        };
+        auto accessOldToNewIdentifierMap = [&](typename Tape::Identifier const& oldIdentifier) ->
+            typename Tape::Identifier const& {
+              auto result = oldToNewIdentifierMap.insert({oldIdentifier, nextIdentifier});
+              if (result.second) {  // insertion took place
+                ++nextIdentifier;
+              }
+              return result.first->second;
+            };
 
         // Remap input identifiers explicitly to account for inputs that are actually not used in the recording.
         for (auto const& oldIdentifier : inputData) {

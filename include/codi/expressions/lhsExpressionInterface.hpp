@@ -281,11 +281,12 @@ namespace codi {
   template<typename T_Type>
   struct RealTraits::AggregatedTypeTraits<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>>
       : RealTraits::ArrayAggregatedTypeTraitsBase<T_Type, T_Type, typename T_Type::Real, 1> {
+    public:
 
-    /// \copydoc codi::ComputeOperation::getMathRep
-    static CODI_INLINE std::string getMathRep() {
-      return "()";
-    }
+      /// \copydoc codi::ComputeOperation::getMathRep
+      static CODI_INLINE std::string getMathRep() {
+        return "()";
+      }
   };
 #endif
 }

@@ -42,6 +42,7 @@
 #include "../../misc/exceptions.hpp"
 #include "../../misc/macros.hpp"
 #include "../../misc/memberStore.hpp"
+#include "../misc/assignStatement.hpp"
 #include "statementEvaluatorInterface.hpp"
 #include "statementEvaluatorTapeInterface.hpp"
 
@@ -65,7 +66,7 @@ namespace codi {
       /// \copydoc StatementEvaluatorInterface::call
       template<StatementCall type, typename Tape, typename... Args>
       static void call(Handle const& h, Args&&... args) {
-        using Stmt = ActiveType<Tape>;
+        using Stmt = AssignStatement<ActiveType<Tape>, ActiveType<Tape>>;
         using CallGen = typename Tape::template StatementCallGenerator<type, Stmt>;
 
         using Function = decltype(&CallGen::evaluate);

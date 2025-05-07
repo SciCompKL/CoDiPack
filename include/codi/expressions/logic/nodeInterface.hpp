@@ -71,6 +71,6 @@ namespace codi {
 
       template<size_t argNumber>
       CODI_INLINE CODI_UNDEFINED const& getLink() const;  ///< Get the argument for the specific link. Usually
-                                                                  ///< an expression.
+                                                          ///< an expression.
   };
 }

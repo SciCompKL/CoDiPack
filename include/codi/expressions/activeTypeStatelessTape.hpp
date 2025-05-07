@@ -59,7 +59,7 @@ namespace codi {
   struct ActiveTypeStatelessTape : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient,
                                                                  T_Tape, ActiveTypeStatelessTape<T_Tape>>,
                                    public AssignmentOperators<typename T_Tape::Real, T_Tape::AllowJacobianOptimization,
-                                                                 ActiveTypeStatelessTape<T_Tape>>,
+                                                              ActiveTypeStatelessTape<T_Tape>>,
                                    public IncrementOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>> {
     public:
 
