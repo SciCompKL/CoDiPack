@@ -1,6 +1,10 @@
 Changelog {#Changelog}
 ===========================
 
+### v 2.3.? - ????-??-??
+ - Features:
+   * Added support for the spaceship operator (<=>).
+
 ### v 2.3.2 - 2025-04-08
  - Bugfix: Correct dyadic update for adjoint matrix in linear system solvers.
 
