@@ -43,6 +43,14 @@
 #include "../include/drivers/driverInterface.hpp"
 #include "../include/testInterface.hpp"
 
+#ifndef REGISTER_EVENTS
+#define REGISTER_EVENTS 0
+#endif
+
+#if REGISTER_EVENTS
+#include "../../events/include/reverseCallbacks.hpp"
+#endif
+
 #ifndef DRIVER
   #error A driver include needs to be specified
 #endif
@@ -65,6 +73,10 @@ struct Runner {
 
     void run() {
       TestVector<Number> testInfos = driver.getTestInfos();
+
+#if REGISTER_EVENTS
+      ReverseCallbacks::registerAll<typename Number::Tape>();
+#endif
 
       for (auto& curInfo : testInfos) {
         std::string outFile = generateOutputFile(curInfo.test);

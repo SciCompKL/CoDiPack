@@ -67,6 +67,10 @@ else
   FLAGS := $(FLAGS) -Werror
 endif
 
+ifeq ($(SHOW_EVENTS), yes)
+  FLAGS := $(FLAGS) -DREGISTER_EVENTS=1
+endif
+
 ifeq ($(OPT), yes)
   CXX_FLAGS := -O3 $(FLAGS)
 else
