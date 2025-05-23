@@ -151,11 +151,9 @@ namespace codi {
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsExpression
     template<typename Expr>
     bool constexpr isExpression = IsExpression<Expr>::value;
-#endif
 
     /// Enable if wrapper for IsExpression
     template<typename Expr, typename T = void>
@@ -176,11 +174,9 @@ namespace codi {
     struct IsLhsExpression<StaticContextActiveType<Tape>> : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsLhsExpression
     template<typename Expr>
     bool constexpr isLhsExpression = IsLhsExpression<Expr>::value;
-#endif
 
     /// Enable if wrapper for IsLhsExpression
     template<typename Expr, typename T = void>
@@ -195,11 +191,9 @@ namespace codi {
     struct IsConstantExpression<ConstantExpression<Real, ConversionOperator>> : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     template<typename Expr>
     /// Value entry of IsConstantExpression
     bool constexpr isConstantExpression = IsConstantExpression<Expr>::value;
-#endif
 
     /// Enable if wrapper for IsConstantExpression
     template<typename Expr, typename T = void>
@@ -214,11 +208,9 @@ namespace codi {
     struct IsStaticContextActiveType<StaticContextActiveType<Tape>> : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsStaticContextActiveType
     template<typename Expr>
     bool constexpr isStaticContextActiveType = IsStaticContextActiveType<Expr>::value;
-#endif
 
     /// Enable if wrapper for IsStaticContextActiveType
     template<typename Expr, typename T = void>
@@ -248,11 +240,9 @@ namespace codi {
         static size_t constexpr value = Base::template eval<Expr>();
     };
 
-#if CODI_IS_CPP14
     /// Value entry of NumberOfActiveTypeArguments
     template<typename Expr>
     bool constexpr numberOfActiveTypeArguments = NumberOfActiveTypeArguments<Expr>::value;
-#endif
 
     /// Counts the number of types that inherit from ConstantExpression in the expression.
     template<typename Expr>
@@ -274,11 +264,9 @@ namespace codi {
         static size_t constexpr value = Base::template eval<Expr>();
     };
 
-#if CODI_IS_CPP14
     /// Value entry of NumberOfConstantTypeArguments
     template<typename Expr>
     bool constexpr numberOfConstantTypeArguments = NumberOfConstantTypeArguments<Expr>::value;
-#endif
 
     /// Counts the number of nodes in the expression.
     template<typename Expr>
@@ -295,11 +283,9 @@ namespace codi {
         static size_t constexpr value = NumberOfOperations::template eval<Expr>();
     };
 
-#if CODI_IS_CPP14
     /// Value entry of NumberOfOperations
     template<typename Expr>
     bool constexpr numberOfOperations = NumberOfOperations<Expr>::value;
-#endif
 
     /// @}
   }

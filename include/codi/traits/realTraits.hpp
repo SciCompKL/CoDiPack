@@ -427,11 +427,9 @@ namespace codi {
     template<typename Type>
     using IsPassiveReal = std::is_same<Type, PassiveReal<Type>>;
 
-#if CODI_IS_CPP14
     /// Value entry of IsPassiveReal
     template<typename Expr>
     bool constexpr isPassiveReal = IsPassiveReal<Expr>::value;
-#endif
 
     /// Negated enable if wrapper for IsPassiveReal
     template<typename Type>

@@ -133,11 +133,9 @@ namespace codi {
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsDirection
     template<typename Gradient>
     bool constexpr isDirection = IsDirection<Gradient>::value;
-#endif
 
     /// Enable if wrapper for EnableIfDirection
     template<typename Gradient>
