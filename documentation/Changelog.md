@@ -1,9 +1,13 @@
 Changelog {#Changelog}
 ===========================
 
-### v??? - ???
+### v3.0.0 - ???
+ - General:
+   * Raised default cpp version of CoDiPack to 17. If you require a lower cpp version please use CoDiPack 2.*.
+
  - Features:
    * Preaccumulation with vector-based local adjoints.
+   * Support for complex types.
 
  - Bugfix:
    * Allow a tape change in the custom adjoint vector helper.
