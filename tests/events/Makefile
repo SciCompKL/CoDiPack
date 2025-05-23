@@ -42,7 +42,7 @@ CXX ?= g++
 OPT ?= no
 
 # regards CXXFLAGS already set
-FLAGS = $(CXXFLAGS)
+FLAGS = $(CXXFLAGS) -std=c++17
 
 ifeq ($(OPT),no)
 	FLAGS += -O0 -ggdb

@@ -53,7 +53,7 @@ endif
 # disable the deletion of secondary targets
 .SECONDARY:
 
-FLAGS = -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE) -DCODI_StatementEvents
+FLAGS = -std=c++17 -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE) -DCODI_StatementEvents
 
 ifeq ($(OPT), no)
   FLAGS += -O0 -g
