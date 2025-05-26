@@ -111,9 +111,7 @@ namespace codi {
 
       /// Constructor
       CODI_INLINE AggregatedTypeVectorAccessWrapper(InnerInterface* innerInterface)
-          : innerInterface(*innerInterface), lhsOffset(0), buffer(innerInterface->getVectorSize()) {
-        innerInterface->setSizeForIndirectAccess(Elements);
-      }
+          : innerInterface(*innerInterface), lhsOffset(0), buffer(innerInterface->getVectorSize()) {}
 
       /*******************************************************************************/
       /// @name Misc
@@ -175,11 +173,6 @@ namespace codi {
 
       /*******************************************************************************/
       /// @name Indirect adjoint/tangent access for functions with multiple outputs
-
-      /// \copydoc VectorAccessInterface::setSizeForIndirectAccess()
-      CODI_INLINE void setSizeForIndirectAccess(size_t size) {
-        innerInterface.setSizeForIndirectAccess(size * Elements);
-      }
 
       /// \copydoc VectorAccessInterface::setActiveVariableForIndirectAccess()
       CODI_INLINE void setActiveVariableForIndirectAccess(size_t pos) {

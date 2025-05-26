@@ -1521,10 +1521,6 @@ namespace codi {
               primalVector[curPos] = pointers.passiveValues[curPos];
             }
 
-#if CODI_VariableAdjointInterfaceInPrimalTapes
-            adjointVector->setSizeForIndirectAccess(maxOutputArgs);
-#endif
-
             evalInner(primalVector, adjointVector, lhsPrimals, lhsTangents, pointers.constantValues,
                       pointers.rhsIdentifiers);
 
@@ -1683,9 +1679,6 @@ namespace codi {
               linearAdjointPos -= maxOutputArgs;
             }
 
-#if CODI_VariableAdjointInterfaceInPrimalTapes
-            adjointVector->setSizeForIndirectAccess(maxOutputArgs);
-#endif
             bool allZero = true;
             for (size_t iLhs = 0; iLhs < maxOutputArgs; iLhs += 1) {
               Identifier lhsIdentifier;

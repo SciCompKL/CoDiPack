@@ -36,7 +36,6 @@
 
 #include <array>
 #include <cstddef>
-#include <vector>
 
 #include "../../config.h"
 #include "../../misc/macros.hpp"
@@ -72,7 +71,7 @@ namespace codi {
 
     private:
 
-      std::vector<Gradient> lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
+      std::array<Gradient, Config::MaxArgumentSize> lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
       size_t lhsPos;              ///< Defines which lhs is currently used. Index into the lhs vector.
 
       std::array<Real, GradientTraits::dim<Gradient>()> buffer;  ///< Temporary storage for getAdjointVec.
@@ -80,7 +79,7 @@ namespace codi {
     public:
 
       /// Constructor. See interface documentation for details about the adjoint vector.
-      AdjointVectorAccess(AdjointVector adjointVector) : adjointVector(adjointVector), lhs(1), lhsPos(0) {}
+      AdjointVectorAccess(AdjointVector adjointVector) : adjointVector(adjointVector), lhs(), lhsPos(0) {}
 
       /*******************************************************************************/
       /// @name Misc
@@ -130,13 +129,6 @@ namespace codi {
 
       /*******************************************************************************/
       /// @name Indirect adjoint/tangent access for functions with multiple outputs
-
-      /// \copydoc codi::VectorAccessInterface::setSizeForIndirectAccess
-      void setSizeForIndirectAccess(size_t size) {
-        if (lhs.size() < size) {
-          lhs.resize(size);
-        }
-      }
 
       /// \copydoc codi::VectorAccessInterface::setActiveVariableForIndirectAccess
       void setActiveVariableForIndirectAccess(size_t pos) {
