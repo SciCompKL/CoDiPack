@@ -141,7 +141,7 @@ namespace codi {
           Config::LowLevelFunctionDataSize* const stmtByteSize,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endStatementPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endAdjointPos);
 
         size_t curAdjointPos = startAdjointPos;
         StackArray<Real> lhsPrimals = {};
@@ -151,7 +151,7 @@ namespace codi {
         typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
-        while (curAdjointPos < endAdjointPos) CODI_Likely {
+        while (curStatementPos < endStatementPos) CODI_Likely {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
@@ -194,14 +194,14 @@ namespace codi {
           Config::LowLevelFunctionDataSize* const stmtByteSize,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endStatementPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endAdjointPos);
 
         size_t curAdjointPos = startAdjointPos;
         StackArray<Real> lhsPrimals = {};
 
         typename Base::template VectorAccess<Gradient*> vectorAccess(nullptr, primalVector);
 
-        while (curAdjointPos < endAdjointPos) CODI_Likely {
+        while (curStatementPos < endStatementPos) CODI_Likely {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
@@ -238,7 +238,7 @@ namespace codi {
           Config::LowLevelFunctionDataSize* const stmtByteSize,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endStatementPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endAdjointPos);
 
         size_t curAdjointPos = startAdjointPos;
         StackArray<Gradient> lhsAdjoints = {};
@@ -247,7 +247,7 @@ namespace codi {
         typename Base::template VectorAccess<Gradient*> vectorAccess(adjointVector, primalVector);
 #endif
 
-        while (curAdjointPos > endAdjointPos) CODI_Likely {
+        while (curStatementPos > endStatementPos) CODI_Likely {
           curStatementPos -= 1;
 
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
@@ -293,12 +293,12 @@ namespace codi {
           Config::LowLevelFunctionDataSize* const stmtByteSize,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
-        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endStatementPos);
+        CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endAdjointPos);
 
         size_t curAdjointPos = startAdjointPos;
         StackArray<Identifier> lhsIdentifiers;
 
-        while (curAdjointPos < endAdjointPos) {
+        while (curStatementPos < endStatementPos) {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
