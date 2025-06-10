@@ -276,7 +276,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
           double argValue;
           int argIdentifier;
 
-          tape.storeOperator(std::get<0>(exp.args), argValue, argIdentifier, false);
+          tape.storeOperator(exp.template getLink<0>(), argValue, argIdentifier, false);
 
           if (argIdentifier != 0) {
             // Active argument or branch => store the operator.
@@ -314,8 +314,8 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
           int argAIdentifier;
           int argBIdentifier;
 
-          tape.storeOperator(std::get<0>(exp.args), argAValue, argAIdentifier, false);
-          tape.storeOperator(std::get<1>(exp.args), argBValue, argBIdentifier, false);
+          tape.storeOperator(exp.template getLink<0>(), argAValue, argAIdentifier, false);
+          tape.storeOperator(exp.template getLink<1>(), argBValue, argBIdentifier, false);
 
           if (argAIdentifier != 0 || argBIdentifier != 0) {
             // Active argument or branch => store the operator.

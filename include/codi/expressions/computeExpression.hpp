@@ -38,6 +38,7 @@
 
 #include "../config.h"
 #include "../misc/macros.hpp"
+#include "../misc/tupleMemory.hpp"
 #include "../traits/computationTraits.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "expressionInterface.hpp"
@@ -374,16 +375,21 @@ namespace codi {
       using Operation = CODI_DD(CODI_T(T_Operation<T>), CODI_T(ComputeOperation<T>));  ///< See ComputeExpression.
       using ArgExprs = std::tuple<T_ArgExprs...>;                                      ///< See ComputeExpression.
 
-      using ArgReals = std::tuple<typename T_ArgExprs::Real...>;      ///< Real type of all arguments.
-      using ArgStores = std::tuple<typename T_ArgExprs::StoreAs...>;  ///< Store type of all arguments.
+      using ArgReals = std::tuple<typename T_ArgExprs::Real...>;  ///< Real type of all arguments.
+      using ArgStoresTypes =
+          std::tuple<typename T_ArgExprs::StoreAs...>;  ///< Store types of all arguments as regular tuple.
+      using ArgStores = TupleMemory<typename T_ArgExprs::StoreAs...>;  ///< Store type of all arguments.
 
       ArgStores args;  ///< Tuple of all expression arguments.
 
       Real result;  ///< Precomputed result.
 
-      /// Constructor
-      explicit ComputeExpression(ExpressionInterface<typename T_ArgExprs::Real, T_ArgExprs> const&... args)
+      /// Constructor.
+      CODI_INLINE explicit ComputeExpression(ExpressionInterface<typename T_ArgExprs::Real, T_ArgExprs> const&... args)
           : args(args.cast()...), result(Operation<Real>::primal(args.cast().getValue()...)) {}
+
+      /// Constructor.
+      CODI_INLINE ComputeExpression(ComputeExpression const& v) = default;
 
       /*******************************************************************************/
       /// @name Implementation of ExpressionInterface
@@ -433,8 +439,8 @@ namespace codi {
 
       /// \copydoc NodeInterface::getLink
       template<size_t argNumber>
-      CODI_INLINE std::tuple_element_t<argNumber, ArgStores> const& getLink() const {
-        return std::get<argNumber>(args);
+      CODI_INLINE std::tuple_element_t<argNumber, ArgStoresTypes> const& getLink() const {
+        return args.template get<argNumber>();
       }
       /// @}
 
@@ -445,24 +451,24 @@ namespace codi {
       template<size_t argNumber, typename EvalArg, typename Tuple, size_t... I>
       static CODI_INLINE auto callAdjoint(EvalArg const& evalArg, Real const& result, Tuple t,
                                           std::index_sequence<I...>) {
-        return Operation<Real>::template applyAdjoint<argNumber>(evalArg, result, std::get<I>(t).getValue()...);
+        return Operation<Real>::template applyAdjoint<argNumber>(evalArg, result, t.template get<I>().getValue()...);
       }
 
       template<size_t argNumber, typename EvalArg, typename Tuple>
       static CODI_INLINE auto callAdjoint(EvalArg const& evalArg, Real const& result, Tuple const& t) {
-        static constexpr auto size = std::tuple_size<Tuple>::value;
+        static constexpr auto size = std::tuple_size<ArgStoresTypes>::value;
         return callAdjoint<argNumber>(evalArg, result, t, std::make_index_sequence<size>{});
       }
 
       template<size_t argNumber, typename EvalArg, typename Tuple, size_t... I>
       static CODI_INLINE auto callTangent(EvalArg const& evalArg, Real const& result, Tuple t,
                                           std::index_sequence<I...>) {
-        return Operation<Real>::template applyTangent<argNumber>(evalArg, result, std::get<I>(t).getValue()...);
+        return Operation<Real>::template applyTangent<argNumber>(evalArg, result, t.template get<I>().getValue()...);
       }
 
       template<size_t argNumber, typename EvalArg, typename Tuple>
       static CODI_INLINE auto callTangent(EvalArg const& evalArg, Real const& result, Tuple const& t) {
-        static constexpr auto size = std::tuple_size<Tuple>::value;
+        static constexpr auto size = std::tuple_size<ArgStoresTypes>::value;
         return callTangent<argNumber>(evalArg, result, t, std::make_index_sequence<size>{});
       }
   };
