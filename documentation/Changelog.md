@@ -6,11 +6,18 @@ Changelog {#Changelog}
    * Raised default cpp version of CoDiPack to 17. If you require a lower cpp version please use CoDiPack 2.*.
 
  - Features:
+   * Added support for the spaceship operator (<=>).
    * Preaccumulation with vector-based local adjoints.
    * Support for complex types.
 
  - Bugfix:
    * Allow a tape change in the custom adjoint vector helper.
+
+### v 2.3.2 - 2025-04-08
+ - Bugfix: Correct dyadic update for adjoint matrix in linear system solvers.
+
+### v 2.3.1 - 2025-02-19
+ - Bugfix: Only include cxxabi.h for gnu compiler.
 
 ### v 2.3.0 - 2024-12-27
  - Features:
