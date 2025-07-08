@@ -45,6 +45,7 @@
       <tab type="user" title="Example 25 - Tape writers" url="@ref Example_25_Tape_Writers"/>
       <tab type="user" title="Example 26 - Jacobian tape readers" url="@ref Example_26_Jacobian_Tape_Readers"/>
       <tab type="user" title="Example 27 - Primal tape readers" url="@ref Example_27_Primal_Tape_Readers"/>
+      <tab type="user" title="Example 28 - Complex numbers" url="@ref Example_28_Complex_numbers"/>
     </tab>
     <tab type="user" title="Papers" url="@ref Papers"/>
     <tab type="user" title="Taping strategies" url="@ref TapingStrategy"/>

@@ -21,8 +21,8 @@ There is a newsletter available at [codi-info@uni-kl.de](https://lists.uni-kl.de
 
 CoDiPack is a header only library.
 The only file the user needs to include is `codi.hpp`.
-The only other requirement is a C++11 compliant compiler
-where one usually needs to specify '-std=c++11' in compiler arguments.
+The only other requirement is a C++17 compliant compiler
+where one usually needs to specify '-std=c++17' in compiler arguments. For a C++11 compilant version of CoDiPack use th 2.* release.
 CoDiPack is tested with gcc, clang, and the Intel compiler.
 
 The file `codi.hpp` defines several datatypes. The most important ones are:
@@ -83,6 +83,12 @@ Therefore we recomend to force inlining of CoDiPack with the option
 -DCODI_UseForcedInlines 
 ~~~~
 
+### Complex numbers
+
+If your compiler has problems with the specialization of `std::complex` for CoDiPack types, try `-DCODI_SpecializeStdComplex=0` to disable this behaviour.
+Without the specialization, complex types can be defined by using `codi::ActiveComplex<CoDiType>`, e.g. `codi::ActiveComplex<codi::RealReverse>`.
+
+
 ## Hello World Example
 
 A very small and simple example for the usage of the RealForward type is the following code:
@@ -106,11 +112,11 @@ A very small and simple example for the usage of the RealForward type is the fol
 
 It is compiled with
 ~~~~{.txt}
-  g++  -I<path to codi>/include -std=c++11 -g -o forward forward.cpp
+  g++  -I<path to codi>/include -std=c++17 -g -o forward forward.cpp
 ~~~~
 for the gcc compiler or with
 ~~~~{.txt}
-  icpc  -I<path to codi>/include -std=c++11 -g -o forward forward.cpp
+  icpc  -I<path to codi>/include -std=c++17 -g -o forward forward.cpp
 ~~~~
 for the Intel compiler.
 
