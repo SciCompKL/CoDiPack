@@ -58,10 +58,10 @@
   #include "../../config.h"
   #include "../../misc/macros.hpp"
   #include "../../traits/realTraits.hpp"
-  #include "../binaryExpression.hpp"
+  #include "../computeExpression.hpp"
   #include "../constantExpression.hpp"
   #include "../expressionInterface.hpp"
-  #define OPERATION_LOGIC BinaryOperation
+  #define OPERATION_LOGIC BinaryJacobianOperation
   #define FUNCTION func
 
 namespace codi {
@@ -69,24 +69,21 @@ namespace codi {
 
   /// Function overload for FUNCTION.
   template<typename Real, typename ArgA, typename ArgB>
-  CODI_INLINE BinaryExpression<Real, ArgA, ArgB, OPERATION_LOGIC> FUNCTION(
-      ExpressionInterface<Real, ArgA> const& argA, ExpressionInterface<Real, ArgB> const& argB) {
-    return BinaryExpression<Real, ArgA, ArgB, OPERATION_LOGIC>(argA, argB);
+  CODI_INLINE auto FUNCTION(ExpressionInterface<Real, ArgA> const& argA, ExpressionInterface<Real, ArgB> const& argB) {
+    return ComputeExpression<Real, OPERATION_LOGIC, ArgA, ArgB>(argA, argB);
   }
 
   /// Function overload for FUNCTION.
   template<typename Real, typename ArgA>
-  CODI_INLINE BinaryExpression<Real, ArgA, ConstantExpression<RealTraits::PassiveReal<Real>>, OPERATION_LOGIC> FUNCTION(
-      ExpressionInterface<Real, ArgA> const& argA, RealTraits::PassiveReal<Real> const& argB) {
-    return BinaryExpression<Real, ArgA, ConstantExpression<RealTraits::PassiveReal<Real>>, OPERATION_LOGIC>(
+  CODI_INLINE auto FUNCTION(ExpressionInterface<Real, ArgA> const& argA, RealTraits::PassiveReal<Real> const& argB) {
+    return ComputeExpression<Real, OPERATION_LOGIC, ArgA, ConstantExpression<RealTraits::PassiveReal<Real>>>(
         argA, ConstantExpression<RealTraits::PassiveReal<Real>>(argB));
   }
 
   /// Function overload for FUNCTION.
   template<typename Real, typename ArgB>
-  CODI_INLINE BinaryExpression<Real, ConstantExpression<RealTraits::PassiveReal<Real>>, ArgB, OPERATION_LOGIC> FUNCTION(
-      RealTraits::PassiveReal<Real> const& argA, ExpressionInterface<Real, ArgB> const& argB) {
-    return BinaryExpression<Real, ConstantExpression<RealTraits::PassiveReal<Real>>, ArgB, OPERATION_LOGIC>(
+  CODI_INLINE auto FUNCTION(RealTraits::PassiveReal<Real> const& argA, ExpressionInterface<Real, ArgB> const& argB) {
+    return ComputeExpression<Real, OPERATION_LOGIC, ConstantExpression<RealTraits::PassiveReal<Real>>, ArgB>(
         ConstantExpression<RealTraits::PassiveReal<Real>>(argA), argB);
   }
 

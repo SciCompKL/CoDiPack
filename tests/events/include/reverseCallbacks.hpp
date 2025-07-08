@@ -90,7 +90,7 @@ namespace ReverseCallbacks {
   }
 
   template<typename Tape>
-  void onPreaccFinish(Tape&, void* customData) {
+  void onPreaccFinish(Tape&, void*) {
     std::cout << "PreaccFinish" << std::endl;
   }
 

@@ -40,6 +40,7 @@
 
 #include "../../expressions/activeType.hpp"
 #include "../../misc/macros.hpp"
+#include "../misc/assignStatement.hpp"
 #include "statementEvaluatorInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -53,32 +54,37 @@ namespace codi {
 
       using Handle = void*;  ///< Function pointer.
 
-      Handle forward;           ///< Forward function handle.
-      Handle primal;            ///< Primal function handle.
-      Handle reverse;           ///< Reverse function handle.
-      Handle writeInformation;  ///< Write information handle.
+      std::array<Handle, (size_t)StatementCall::N_Elements> funcs;  ///< Array for the function handles.
+
       /// Constructor
-      PrimalTapeStatementFunctions(Handle forward, Handle primal, Handle reverse, Handle writeInformation)
-          : forward(forward), primal(primal), reverse(reverse), writeInformation(writeInformation) {}
+      template<typename... Args>
+      PrimalTapeStatementFunctions(Args... args) : funcs{args...} {}
   };
 
   /// Store PrimalTapeStatementFunctions as static variables for each combination of generator (tape) and expression
   /// used in the program.
-  template<typename Generator, typename Expr>
+  template<typename Generator, typename Stmt>
   struct DirectStatementEvaluatorStaticStore {
     public:
 
       /// Static storage. Static construction is done by instantiating the statementEvaluate* functions of the generator
-      /// with Expr.
+      /// with Stmt.
       static PrimalTapeStatementFunctions const staticStore;
+
+      /// Generates the data for the static store.
+      template<StatementCall... types>
+      static PrimalTapeStatementFunctions gen() {
+        using Handle = typename PrimalTapeStatementFunctions::Handle;
+
+        return PrimalTapeStatementFunctions(
+            reinterpret_cast<Handle>(Generator::template StatementCallGenerator<types, Stmt>::evaluate)...);
+      }
   };
 
-  template<typename Generator, typename Expr>
-  PrimalTapeStatementFunctions const DirectStatementEvaluatorStaticStore<Generator, Expr>::staticStore(
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateForward<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluatePrimal<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverse<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementGetWriteInformation<Expr>);
+  template<typename Generator, typename Stmt>
+  PrimalTapeStatementFunctions const DirectStatementEvaluatorStaticStore<Generator, Stmt>::staticStore =
+      DirectStatementEvaluatorStaticStore<Generator, Stmt>::gen<CODI_STMT_CALL_GEN_ARGS>();
+
   /**
    * @brief Full evaluation of the expression in the function handle. Storing in static context.
    *
@@ -86,14 +92,9 @@ namespace codi {
    * full handle for the expression.
    *
    * See StatementEvaluatorInterface for details.
-   *
-   * @tparam T_Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
-  template<typename T_Real>
-  struct DirectStatementEvaluator : public StatementEvaluatorInterface<T_Real> {
+  struct DirectStatementEvaluator : public StatementEvaluatorInterface {
     public:
-
-      using Real = CODI_DD(T_Real, double);  ///< See DirectStatementEvaluator.
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation
@@ -101,54 +102,23 @@ namespace codi {
 
       using Handle = PrimalTapeStatementFunctions const*;  ///< Pointer to static storage location.
 
-      /// \copydoc StatementEvaluatorInterface::callForward
-      template<typename Tape, typename... Args>
-      static Real callForward(Handle const& h, Args&&... args) {
-        return ((FunctionForward<Tape>)h->forward)(std::forward<Args>(args)...);
-      }
+      /// \copydoc StatementEvaluatorInterface::call
+      template<StatementCall type, typename Tape, typename... Args>
+      static void call(Handle const& h, Args&&... args) {
+        using Stmt = AssignStatement<ActiveType<Tape>, ActiveType<Tape>>;
+        using CallGen = typename Tape::template StatementCallGenerator<type, Stmt>;
 
-      /// \copydoc StatementEvaluatorInterface::callPrimal
-      template<typename Tape, typename... Args>
-      static Real callPrimal(Handle const& h, Args&&... args) {
-        return ((FunctionPrimal<Tape>)h->primal)(std::forward<Args>(args)...);
-      }
+        using Function = decltype(&CallGen::evaluate);
 
-      /// \copydoc StatementEvaluatorInterface::callReverse
-      template<typename Tape, typename... Args>
-      static void callReverse(Handle const& h, Args&&... args) {
-        ((FunctionReverse<Tape>)h->reverse)(std::forward<Args>(args)...);
-      }
-
-      /// \copydoc StatementEvaluatorInterface::getWriteInformation
-      template<typename Tape, typename... Args>
-      static WriteInfo getWriteInformation(Handle const& h, Args&&... args) {
-        return ((FunctionWriteInformation<Tape>)h->writeInformation)(std::forward<Args>(args)...);
+        ((Function)h->funcs[(size_t)type])(std::forward<Args>(args)...);
       }
 
       /// \copydoc StatementEvaluatorInterface::createHandle
-      template<typename Tape, typename Generator, typename Expr>
+      template<typename Tape, typename Generator, typename Stmt>
       static Handle createHandle() {
-        return &DirectStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
+        return &DirectStatementEvaluatorStaticStore<Generator, Stmt>::staticStore;
       }
 
       /// @}
-
-    protected:
-
-      /// Full forward function type.
-      template<typename Tape>
-      using FunctionForward = decltype(&Tape::template statementEvaluateForward<ActiveType<Tape>>);
-
-      /// Full primal function type.
-      template<typename Tape>
-      using FunctionPrimal = decltype(&Tape::template statementEvaluatePrimal<ActiveType<Tape>>);
-
-      /// Full reverse function type.
-      template<typename Tape>
-      using FunctionReverse = decltype(&Tape::template statementEvaluateReverse<ActiveType<Tape>>);
-
-      /// Function for WriteInfo
-      template<typename Tape>
-      using FunctionWriteInformation = decltype(&Tape::template statementGetWriteInformation<ActiveType<Tape>>);
   };
 }

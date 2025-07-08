@@ -41,7 +41,7 @@
 #include "../../misc/exceptions.hpp"
 #include "../../misc/macros.hpp"
 #include "../../traits/realTraits.hpp"
-#include "../binaryExpression.hpp"
+#include "../computeExpression.hpp"
 #include "../constantExpression.hpp"
 #include "../lhsExpressionInterface.hpp"
 
@@ -52,20 +52,20 @@ namespace codi {
   /// @name Builtin binary operators
   /// @{
 
-  /// BinaryOperation implementation for operator +
+  /// BinaryJacobianOperation implementation for operator +
   template<typename T_Real>
-  struct OperationAdd : public BinaryOperation<T_Real> {
+  struct OperationAdd : public BinaryJacobianOperation<T_Real, OperationAdd<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return argA + argB;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -73,7 +73,7 @@ namespace codi {
         return 1.0;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -81,7 +81,7 @@ namespace codi {
         return 1.0;
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "+";
       }
@@ -90,20 +90,20 @@ namespace codi {
 #define FUNCTION operator+
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for operator -
+  /// BinaryJacobianOperation implementation for operator -
   template<typename T_Real>
-  struct OperationSubstract : public BinaryOperation<T_Real> {
+  struct OperationSubstract : public BinaryJacobianOperation<T_Real, OperationSubstract<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return argA - argB;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -111,7 +111,7 @@ namespace codi {
         return 1.0;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -119,7 +119,7 @@ namespace codi {
         return -1.0;
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "-";
       }
@@ -128,34 +128,34 @@ namespace codi {
 #define FUNCTION operator-
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for operator *
+  /// BinaryJacobianOperation implementation for operator *
   template<typename T_Real>
-  struct OperationMultiply : public BinaryOperation<T_Real> {
+  struct OperationMultiply : public BinaryJacobianOperation<T_Real, OperationMultiply<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return argA * argB;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE ArgB const& gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return argB;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE ArgA const& gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, argB, result);
         return argA;
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "*";
       }
@@ -164,20 +164,20 @@ namespace codi {
 #define FUNCTION operator*
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for operator /
+  /// BinaryJacobianOperation implementation for operator /
   template<typename T_Real>
-  struct OperationDivide : public BinaryOperation<T_Real> {
+  struct OperationDivide : public BinaryJacobianOperation<T_Real, OperationDivide<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return argA / argB;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, result);
@@ -186,7 +186,7 @@ namespace codi {
         return 1.0 / argB;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, result);
@@ -195,7 +195,7 @@ namespace codi {
         return -result / argB;
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "/";
       }
@@ -233,20 +233,20 @@ namespace codi {
   using std::remainder;
   using std::trunc;
 
-  /// BinaryOperation implementation for atan2
+  /// BinaryJacobianOperation implementation for atan2
   template<typename T_Real>
-  struct OperationAtan2 : public BinaryOperation<T_Real> {
+  struct OperationAtan2 : public BinaryJacobianOperation<T_Real, OperationAtan2<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return atan2(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -257,7 +257,7 @@ namespace codi {
         return argB * divisor;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -268,7 +268,7 @@ namespace codi {
         return -argA * divisor;
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "atan2()";
       }
@@ -295,20 +295,20 @@ namespace codi {
 #define FUNCTION atan2l
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for copysign
+  /// BinaryJacobianOperation implementation for copysign
   template<typename T_Real>
-  struct OperationCopysign : public BinaryOperation<T_Real> {
+  struct OperationCopysign : public BinaryJacobianOperation<T_Real, OperationCopysign<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return copysign(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -330,12 +330,12 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "copysign()";
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -357,20 +357,20 @@ namespace codi {
 #define FUNCTION copysignl
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for fmod
+  /// BinaryJacobianOperation implementation for fmod
   template<typename T_Real>
-  struct OperationFmod : public BinaryOperation<T_Real> {
+  struct OperationFmod : public BinaryJacobianOperation<T_Real, OperationFmod<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return fmod(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -379,7 +379,7 @@ namespace codi {
         return RealTraits::PassiveReal<Real>(1.0);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -392,7 +392,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "fmod()";
       }
@@ -410,20 +410,20 @@ namespace codi {
 #define FUNCTION fmodl
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for frexp
+  /// BinaryJacobianOperation implementation for frexp
   template<typename T_Real>
-  struct OperationFrexp : public BinaryOperation<T_Real> {
+  struct OperationFrexp : public BinaryJacobianOperation<T_Real, OperationFrexp<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return frexp(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, result);
@@ -431,7 +431,7 @@ namespace codi {
         return ldexp(1.0, -(*argB));
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -439,7 +439,7 @@ namespace codi {
 
         return 0.0;
       }
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "frexp()";
       }
@@ -481,20 +481,20 @@ namespace codi {
 #define SECOND_ARG_CONVERSION IntPointerConversion
 #include "binaryFirstArgumentOverloads.tpp"
 
-  /// BinaryOperation implementation for hypot
+  /// BinaryJacobianOperation implementation for hypot
   template<typename T_Real>
-  struct OperationHypot : public BinaryOperation<T_Real> {
+  struct OperationHypot : public BinaryJacobianOperation<T_Real, OperationHypot<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return hypot(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argB);
@@ -507,7 +507,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA);
@@ -520,7 +520,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "hypot()";
       }
@@ -547,20 +547,20 @@ namespace codi {
 #define FUNCTION hypotl
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for ldexp
+  /// BinaryJacobianOperation implementation for ldexp
   template<typename T_Real>
-  struct OperationLdexp : public BinaryOperation<T_Real> {
+  struct OperationLdexp : public BinaryJacobianOperation<T_Real, OperationLdexp<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return ldexp(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argA, result);
@@ -568,7 +568,7 @@ namespace codi {
         return ldexp(1.0, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -577,7 +577,7 @@ namespace codi {
         return 0.0;
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "ldexp()";
       }
@@ -600,20 +600,20 @@ namespace codi {
 #define SECOND_ARG_CONVERSION ConstantDataConversion
 #include "binaryFirstArgumentOverloads.tpp"
 
-  /// BinaryOperation implementation for max
+  /// BinaryJacobianOperation implementation for max
   template<typename T_Real>
-  struct OperationMax : public BinaryOperation<T_Real> {
+  struct OperationMax : public BinaryJacobianOperation<T_Real, OperationMax<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return max(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -626,12 +626,12 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "max()";
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -661,20 +661,20 @@ namespace codi {
 #define FUNCTION fmaxl
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for min
+  /// BinaryJacobianOperation implementation for min
   template<typename T_Real>
-  struct OperationMin : public BinaryOperation<T_Real> {
+  struct OperationMin : public BinaryJacobianOperation<T_Real, OperationMin<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return min(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -687,12 +687,12 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "min()";
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientB(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -721,20 +721,20 @@ namespace codi {
 #define FUNCTION fminl
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for pow
+  /// BinaryJacobianOperation implementation for pow
   template<typename T_Real>
-  struct OperationPow : public BinaryOperation<T_Real> {
+  struct OperationPow : public BinaryJacobianOperation<T_Real, OperationPow<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return pow(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientA(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -748,7 +748,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(argB);
@@ -761,7 +761,7 @@ namespace codi {
         }
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "pow()";
       }
@@ -792,22 +792,22 @@ namespace codi {
 #define FUNCTION powl
 #include "binaryOverloads.tpp"
 
-  /// BinaryOperation implementation for remainder
+  /// BinaryJacobianOperation implementation for remainder
   ///
   /// Derivative implementation based on IEC 60559: remainder = numer - rquot * denom
   template<typename T_Real>
-  struct OperationRemainder : public BinaryOperation<T_Real> {
+  struct OperationRemainder : public BinaryJacobianOperation<T_Real, OperationRemainder<T_Real>> {
     public:
 
-      using Real = CODI_DD(T_Real, double);  ///< See BinaryOperation.
+      using Real = CODI_DD(T_Real, double);  ///< See BinaryJacobianOperation.
 
-      /// \copydoc codi::BinaryOperation::primal()
+      /// \copydoc codi::BinaryJacobianOperation::primal()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real primal(ArgA const& argA, ArgB const& argB) {
         return remainder(argA, argB);
       }
 
-      /// \copydoc codi::BinaryOperation::gradientA()
+      /// \copydoc codi::BinaryJacobianOperation::gradientA()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE RealTraits::PassiveReal<Real> gradientA(ArgA const& argA, ArgB const& argB,
                                                                  Real const& result) {
@@ -816,7 +816,7 @@ namespace codi {
         return 1.0;
       }
 
-      /// \copydoc codi::BinaryOperation::gradientB()
+      /// \copydoc codi::BinaryJacobianOperation::gradientB()
       template<typename ArgA, typename ArgB>
       static CODI_INLINE Real gradientB(ArgA const& argA, ArgB const& argB, Real const& result) {
         CODI_UNUSED(result);
@@ -827,7 +827,7 @@ namespace codi {
         return -round(argA / argB);
       }
 
-      /// \copydoc codi::BinaryOperation::getMathRep()
+      /// \copydoc codi::BinaryJacobianOperation::getMathRep()
       static CODI_INLINE std::string getMathRep() {
         return "%";
       }

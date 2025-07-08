@@ -188,19 +188,7 @@ namespace codi {
       /// @name Implementation of NodeInterface
       /// @{
 
-      static bool constexpr EndPoint = true;  ///< \copydoc codi::NodeInterface::EndPoint
-
-      /// \copydoc codi::NodeInterface::forEachLink
-      template<typename Logic, typename... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
-        CODI_UNUSED(logic, args...);
-      }
-
-      /// \copydoc codi::NodeInterface::forEachLinkConstExpr
-      template<typename Logic, typename... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... CODI_UNUSED_ARG(args)) {
-        return Logic::NeutralElement;
-      }
+      static size_t constexpr LinkCount = 0;  ///< \copydoc codi::NodeInterface::LinkCount
 
     protected:
 
@@ -259,6 +247,11 @@ namespace codi {
       CODI_INLINE static void setValue(Type& v, Real const& value) {
         v.setValue(value);
       }
+
+      /// \copydoc DataExtraction::setIdentifier()
+      CODI_INLINE static void setIdentifier(Type& v, Identifier const& identifier) {
+        v.getIdentifier() = identifier;
+      }
   };
 
   /// Specialization of RealTraits::DataRegistration for CoDiPack types.
@@ -281,6 +274,18 @@ namespace codi {
       /// \copydoc DataRegistration::registerExternalFunctionOutput()
       CODI_INLINE static Real registerExternalFunctionOutput(Type& v) {
         return Type::getTape().registerExternalFunctionOutput(v);
+      }
+  };
+
+  /// Specialize real traits for lhs expressions.
+  template<typename T_Type>
+  struct RealTraits::AggregatedTypeTraits<T_Type, ExpressionTraits::EnableIfLhsExpression<T_Type>>
+      : RealTraits::ArrayAggregatedTypeTraitsBase<T_Type, T_Type, typename T_Type::Real, 1> {
+    public:
+
+      /// \copydoc codi::ComputeOperation::getMathRep
+      static CODI_INLINE std::string getMathRep() {
+        return "()";
       }
   };
 #endif

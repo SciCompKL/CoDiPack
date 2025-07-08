@@ -39,10 +39,9 @@ the expression. For all other operations the traversal logic classes have to be 
 
 The current most used expression implementation are:
  - [ActiveType](@ref codi::ActiveType): LhsExpression implementation for a concrete value.
- - [BinaryExpression](@ref codi::BinaryExpression): Expression with two arguments.
+ - [ComputeExpression](@ref codi::ComputeExpression): Expression with one, two or more arguments.
  - [ConstantExpression](@ref codi::ConstantExpression): Represents a constant value in the expression tree like 4.0 or
                                                         other non CoDiPack types.
- - [UnaryExpression](@ref codi::UnaryExpression): Expression with one argument.
  - [LhsExpressionInterface](@ref codi::LhsExpressionInterface): General interface for expressions that are lvalues.
 
 Expression traversal (custom operations on expressions) {#customExpressionLogic}

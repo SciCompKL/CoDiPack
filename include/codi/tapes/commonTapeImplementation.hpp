@@ -548,6 +548,25 @@ namespace codi {
         }
       }
 
+      /// \copydoc LowLevelFunctionTapeInterface::skipLowLevelFunction
+      CODI_INLINE static void skipLowLevelFunction(bool forward,
+                                                   /* data from low level function byte data vector */
+                                                   size_t& curLLFByteDataPos, char* dataPtr,
+                                                   /* data from low level function info data vector */
+                                                   size_t& curLLFTInfoDataPos,
+                                                   Config::LowLevelFunctionToken* const tokenPtr,
+                                                   Config::LowLevelFunctionDataSize* const dataSizePtr) {
+        CODI_UNUSED(dataPtr, tokenPtr);
+
+        if (forward) {
+          curLLFByteDataPos += dataSizePtr[curLLFTInfoDataPos];
+          curLLFTInfoDataPos += 1;
+        } else {
+          curLLFTInfoDataPos -= 1;
+          curLLFByteDataPos -= dataSizePtr[curLLFTInfoDataPos];
+        }
+      }
+
     public:
 
       /// @copydoc LowLevelFunctionTapeInterface::getTemporaryMemory()

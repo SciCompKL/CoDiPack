@@ -36,45 +36,50 @@
 
 #include "../../misc/macros.hpp"
 #include "../../misc/memberStore.hpp"
+#include "../misc/statementSizes.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
+
+  /// Defines all the operations which can be evaluated on a statement by a tape.
+  enum class StatementCall {
+    ClearAdjoints,     ///< Clear the adjoint values.
+    Forward,           ///< Evaluate expression in a forward mode.
+    Primal,            ///< Evaluate primal expression.
+    ResetPrimals,      ///< Restore the primal values.
+    Reverse,           ///< Evaluate expression in a reverse mode.
+    WriteInformation,  ///< Get write information.
+    N_Elements         ///< Number of elements.
+  };
+
+#define CODI_STMT_CALL_GEN_ARGS                                                                             \
+  StatementCall::ClearAdjoints, StatementCall::Forward, StatementCall::Primal, StatementCall::ResetPrimals, \
+      StatementCall::Reverse, StatementCall::WriteInformation
 
   /**
    * @brief Tape side interface for StatementEvaluatorInterface.
    *
    * See StatementEvaluatorInterface for a full description.
    *
-   * In every method the full evaluation of the statement needs to be done.
+   * In the evaluation method of StatementCallGenerator the full evaluation of the statement needs to be done.
    * - 1. Load expression specific data
    * - 2. Call expression specific function
    *
-   * @tparam T_Real  The computation type of a tape usually defined by ActiveType::Real.
+   * The structure StatementCallGenerator needs to be specialized for all enums in StatementCall.
    */
-  template<typename T_Real>
   struct StatementEvaluatorTapeInterface {
     public:
-
-      using Real = CODI_DD(T_Real, double);  ///< See StatementEvaluatorTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// Evaluate expression in a forward mode.
-      template<typename Expr, typename... Args>
-      static Real statementEvaluateForward(Args&&... args);
-
-      /// Evaluate primal expression.
-      template<typename Expr, typename... Args>
-      static Real statementEvaluatePrimal(Args&&... args);
-
-      /// Evaluate expression in a reverse mode.
-      template<typename Expr, typename... Args>
-      static void statementEvaluateReverse(Args&&... args);
-
-      /// Get write information.
-      template<typename Expr, typename... Args>
-      static WriteInfo statementGetWriteInformation(Args&&... args);
+      /// This structure is accessed by the StatementEvaluatorInterface.
+      template<StatementCall type, typename Expr>
+      struct StatementCallGenerator {
+          /// Evaluate the full expression.
+          template<typename... Args>
+          CODI_INLINE static void evaluate(Args&&... args);
+      };
   };
 
   /**
@@ -82,53 +87,29 @@ namespace codi {
    *
    * See StatementEvaluatorInterface for a full description.
    *
-   * The `statementEvaluate*Inner` methods needs to be stored by the StatementEvaluatorInterface. These methods
+   * The `evaluateInner` methods need to be stored by the StatementEvaluatorInterface. These methods
    * perform the `Call expression specific function` logic.
    *
-   * The `statementEvaluate*Full` functions are called by the StatementEvaluatorInterface on a `call*` function call.
+   * The `evaluateFull` functions are called by the StatementEvaluatorInterface on a `call` function call.
    * This performs the step `Load expression specific data` in an inline context. `inner` is the stored function pointer
    * in the handle.
-   *
-   * @tparam T_Real  The computation type of a tape usually defined by ActiveType::Real.
    */
-  template<typename T_Real>
   struct StatementEvaluatorInnerTapeInterface {
     public:
-
-      using Real = CODI_DD(T_Real, double);  ///< See StatementEvaluatorInnerTapeInterface
 
       /*******************************************************************************/
       /// @name Interface definition
 
-      /// Load the expression data and evaluate the expression in a forward mode.
-      template<typename Func, typename... Args>
-      static Real statementEvaluateForwardFull(Func const& inner, size_t const& maxActiveArgs,
-                                               size_t const& maxConstantArgs, Args&&... args);
+      /// This structure is accessed by the StatementEvaluatorInterface.
+      template<StatementCall type, typename Expr>
+      struct StatementCallGenerator {
+          /// Evaluate expression in a forward mode.
+          template<typename... Args>
+          CODI_INLINE static void evaluateInner(Args&&... args);
 
-      /// Load the expression data and evaluate the expression in a primal setting.
-      template<typename Func, typename... Args>
-      static Real statementEvaluatePrimalFull(Func const& inner, size_t const& maxActiveArgs,
-                                              size_t const& maxConstantArgs, Args&&... args);
-
-      /// Load the expression data and evaluate the expression in a reverse mode.
-      template<typename Func, typename... Args>
-      static void statementEvaluateReverseFull(Func const& inner, size_t const& maxActiveArgs,
-                                               size_t const& maxConstantArgs, Args&&... args);
-
-      /// Evaluate expression in a forward mode.
-      template<typename Expr, typename... Args>
-      static Real statementEvaluateForwardInner(Args&&... args);
-
-      /// Evaluate expression in a primal setting.
-      template<typename Expr, typename... Args>
-      static Real statementEvaluatePrimalInner(Args&&... args);
-
-      /// Evaluate expression in a reverse mode.
-      template<typename Expr, typename... Args>
-      static void statementEvaluateReverseInner(Args&&... args);
-
-      /// Get write information.
-      template<typename Expr, typename... Args>
-      static WriteInfo statementGetWriteInformation(Args&&... args);
+          /// Load the expression data and evaluate the expression.
+          template<typename InnerFunc, typename... Args>
+          CODI_INLINE static void evaluateFull(InnerFunc func, Args&&... args);
+      };
   };
 }

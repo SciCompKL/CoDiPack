@@ -61,7 +61,9 @@ struct CoDiEvalHelper2ndOrder : public Driver2ndOrderBase<CODI_TYPE> {
         xVec[i] = codi::RealTraits::getPassiveValue(x[i]);
       }
 
-      auto evalFunc = [&](std::vector<Number>& x, std::vector<Number>& y) { info.func(x.data(), y.data()); };
+      auto evalFunc = [&](std::vector<Number>& x, std::vector<Number>& y) {
+        info.func(x.data(), y.data());
+      };
 
       auto handle = codi::EvaluationHelper::template createHandle<Number>(evalFunc, outputs, inputs);
 

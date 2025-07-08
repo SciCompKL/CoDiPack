@@ -82,7 +82,7 @@ struct MultiplyExternalFunctionHelper<T_Number, codi::TapeTraits::EnableIfRevers
     }
 
     static Number create(Number const& x1, Number const& x2, bool primalFuncUsesADType) {
-      static codi::ExternalFunctionHelper<Number> eh(primalFuncUsesADType);
+      codi::ExternalFunctionHelper<Number> eh(primalFuncUsesADType);
 
       Number w;
 

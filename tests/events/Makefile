@@ -42,7 +42,7 @@ CXX ?= g++
 OPT ?= no
 
 # regards CXXFLAGS already set
-FLAGS = $(CXXFLAGS)
+FLAGS = $(CXXFLAGS) -std=c++17
 
 ifeq ($(OPT),no)
 	FLAGS += -O0 -ggdb
@@ -55,6 +55,9 @@ VECTOR_DIM ?= 2
 
 # whether there should be events for the inner tape in second order tests
 USE_INNER_CALLBACKS = no
+
+# general flags for OpenMP tests
+OPEN_MP_FLAGS=-DREVERSE_TAPE -DCODI_EnableOpenMP -fopenmp -DCODI_SpecializeStdComplex=0
 
 # default target
 all:
@@ -85,7 +88,7 @@ endef
 $(eval $(call setType,RealForward,codi::RealForward,Forward,-DFORWARD_TAPE))
 $(eval $(call setType,RealReverse,codi::RealReverse,Reverse,-DREVERSE_TAPE))
 $(eval $(call setType,RealReverseIndex,codi::RealReverseIndex,Reverse,-DREVERSE_TAPE))
-$(eval $(call setType,RealReverseIndexOpenMP,codi::RealReverseIndexOpenMP,Reverse,-DREVERSE_TAPE -fopenmp -DCODI_EnableOpenMP))
+$(eval $(call setType,RealReverseIndexOpenMP,codi::RealReverseIndexOpenMP,Reverse,$(OPEN_MP_FLAGS)))
 $(eval $(call setType,RealReversePrimal,codi::RealReversePrimal,ReversePrimal,-DREVERSE_TAPE))
 $(eval $(call setType,RealReversePrimalIndex,codi::RealReversePrimalIndex,ReversePrimal,-DREVERSE_TAPE))
 
@@ -97,7 +100,7 @@ $(eval $(call setType,RealReversePrimalIndexVariableAdjointInterface,codi::RealR
 $(eval $(call setType,RealForwardVec,codi::RealForwardVec<$(VECTOR_DIM)>,Forward,-DFORWARD_TAPE))
 $(eval $(call setType,RealReverseVec,codi::RealReverseVec<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE))
 $(eval $(call setType,RealReverseIndexVec,codi::RealReverseIndexVec<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE))
-$(eval $(call setType,RealReverseIndexVecOpenMP,codi::RealReverseIndexVecOpenMP<$(VECTOR_DIM)>,Reverse,-DREVERSE_TAPE -fopenmp -DCODI_EnableOpenMP))
+$(eval $(call setType,RealReverseIndexVecOpenMP,codi::RealReverseIndexVecOpenMP<$(VECTOR_DIM)>,Reverse,$(OPEN_MP_FLAGS)))
 $(eval $(call setType,RealReversePrimalVec,codi::RealReversePrimalVec<$(VECTOR_DIM)>,ReversePrimal,-DREVERSE_TAPE))
 $(eval $(call setType,RealReversePrimalIndexVec,codi::RealReversePrimalIndexVec<$(VECTOR_DIM)>,ReversePrimal,-DREVERSE_TAPE))
 
@@ -116,7 +119,7 @@ endif
 $(eval $(call setType,RealForwardSec,codi::RealForwardGen<codi::RealForward>,Forward,-DFORWARD_TAPE $(innerCallbacksFlag)))
 $(eval $(call setType,RealReverseSec,codi::RealReverseGen<codi::RealForward>,Reverse,-DREVERSE_TAPE $(innerCallbacksFlag)))
 $(eval $(call setType,RealReverseIndexSec,codi::RealReverseIndexGen<codi::RealForward>,Reverse,-DREVERSE_TAPE $(innerCallbacksFlag)))
-$(eval $(call setType,RealReverseIndexSecOpenMP,codi::RealReverseIndexOpenMPGen<codi::RealForward>,Reverse,-DREVERSE_TAPE -fopenmp -DCODI_EnableOpenMP $(innerCallbacksFlag)))
+$(eval $(call setType,RealReverseIndexSecOpenMP,codi::RealReverseIndexOpenMPGen<codi::RealForward>,Reverse,$(OPEN_MP_FLAGS) $(innerCallbacksFlag)))
 $(eval $(call setType,RealReversePrimalSec,codi::RealReversePrimalGen<codi::RealForward>,ReversePrimal,-DREVERSE_TAPE $(innerCallbacksFlag)))
 $(eval $(call setType,RealReversePrimalIndexSec,codi::RealReversePrimalIndexGen<codi::RealForward>,ReversePrimal,-DREVERSE_TAPE $(innerCallbacksFlag)))
 
@@ -134,6 +137,7 @@ endef
 $(eval $(call setTest,Tape,))
 $(eval $(call setTest,Statement,))
 $(eval $(call setTest,Preacc,))
+$(eval $(call setTest,Aggregates,))
 
 $(info [info] all types: $(allTypes))
 $(info [info] all tests: $(allTests))

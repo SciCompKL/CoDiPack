@@ -41,6 +41,14 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  struct EmptyPosition;
+
+  template<typename T_Real, typename T_Gradient, typename T_Identifier, typename T_Position>
+  struct FullTapeInterface;
+
+  template<typename T_Tape>
+  struct ActiveType;
+
   /// Disable unused warnings for an arbitrary number of arguments.
   template<typename... Args>
   CODI_INLINE void CODI_UNUSED(Args const&...) {}
@@ -57,12 +65,6 @@ namespace codi {
 
 /// Conversion macro.
 #define CODI_TO_STRING(expression) CODI_TO_STRING2(expression)
-
-/// Check for CPP 14 standard.
-#define CODI_IS_CPP14 (201402L <= __cplusplus)
-
-/// Check for CPP 17 standard.
-#define CODI_IS_CPP17 (201703L <= __cplusplus)
 
 /*******************************************************************************/
 /** @name Default template type declarations
@@ -97,6 +99,9 @@ namespace codi {
 /// Used in default declarations of expression templates.
 #define CODI_ANY int
 
+/// Like CODI_ANY but with a specific type.
+#define CODI_ANY_T(Type) Type
+
 #ifndef DOXYGEN_DISABLE
   /// Placeholer for the implementation of an interface.
   struct ImplProxy {};
@@ -111,11 +116,12 @@ namespace codi {
 #define CODI_T(...) CODI_TEMPLATE(__VA_ARGS__)
 
 /// Used in interface declarations for types that have to be defined in the specializations.
-#define CODI_UNDEFINED void
+#define CODI_UNDEFINED char
 
 /// Used in interface declarations for variables that have to be defined in the specializations.
 #define CODI_UNDEFINED_VALUE false
 
+/// Static assert definition for CoDiPack. Not evaluated in IDE mode.
 #if CODI_IDE
   #define CODI_STATIC_ASSERT(cond, message) /* Do not check in IDE mode */
 #else
@@ -138,6 +144,9 @@ namespace codi {
 
   /// Declaration of the default lhs expression interface.
   #define CODI_DEFAULT_LHS_EXPRESSION LhsExpressionInterface<double, double, CODI_DEFAULT_TAPE, CODI_ANY>
+
+  /// Declaration of the default lhs expression interface.
+  #define CODI_DEFAULT_ACTIVE_TYPE ActiveType<CODI_DEFAULT_TAPE>
 #endif
 
 #ifndef DOXYGEN_DISABLE

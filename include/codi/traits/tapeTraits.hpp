@@ -82,11 +82,9 @@ namespace codi {
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsForwardTape
     template<typename Tape>
     bool constexpr isForwardTape = IsForwardTape<Tape>::value;
-#endif
 
     /// Enable if wrapper for IsForwardTape
     template<typename Tape>
@@ -103,11 +101,9 @@ namespace codi {
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsPrimalValueTape
     template<typename Tape>
     bool constexpr isPrimalValueTape = IsPrimalValueTape<Tape>::value;
-#endif
 
     /// Enable if wrapper for IsPrimalValueTape
     template<typename Tape>
@@ -124,11 +120,9 @@ namespace codi {
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsJacobianTape
     template<typename Tape>
     bool constexpr isJacobianTape = IsJacobianTape<Tape>::value;
-#endif
 
     /// Enable if wrapper for IsJacobianTape
     template<typename Tape>
@@ -150,11 +144,9 @@ namespace codi {
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsReverseTape
     template<typename Tape>
     bool constexpr isReverseTape = IsReverseTape<Tape>::value;
-#endif
 
     /// Enable if wrapper for IsReverseTape
     template<typename Tape>
@@ -169,11 +161,9 @@ namespace codi {
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of SupportsEditing
     template<typename Tape>
     bool constexpr supportsEditing = SupportsEditing<Tape>::value;
-#endif
 
     /// Enable if wrapper for SupportsEditing
     template<typename Tape>
@@ -183,26 +173,25 @@ namespace codi {
     template<typename Tape>
     using EnableIfNoEditing = typename std::enable_if<!SupportsEditing<Tape>::value>::type;
 
-
     /// If the tape inherits from TagTapeBase.
     template<typename Tape, typename = void>
     struct IsTagTape : std::false_type {};
 
 #ifndef DOXYGEN_DISABLE
     template<typename Tape>
-    struct IsTagTape<Tape, typename enable_if_base_of<TagTapeReverse<typename Tape::Real, typename Tape::Tag>, Tape>::type>
+    struct IsTagTape<Tape,
+                     typename enable_if_base_of<TagTapeReverse<typename Tape::Real, typename Tape::Tag>, Tape>::type>
         : std::true_type {};
 
     template<typename Tape>
-    struct IsTagTape<Tape, typename enable_if_base_of<TagTapeForward<typename Tape::Real, typename Tape::Tag>, Tape>::type>
+    struct IsTagTape<Tape,
+                     typename enable_if_base_of<TagTapeForward<typename Tape::Real, typename Tape::Tag>, Tape>::type>
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsTagTape
     template<typename Tape>
     bool constexpr isTagTape = IsTagTape<Tape>::value;
-#endif
 
     /// Enable if wrapper for IsTagTape
     template<typename Tape>
@@ -214,15 +203,14 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
     template<typename Tape>
-    struct IsTagTapeReverse<Tape, typename enable_if_base_of<TagTapeReverse<typename Tape::Real, typename Tape::Tag>, Tape>::type>
+    struct IsTagTapeReverse<
+        Tape, typename enable_if_base_of<TagTapeReverse<typename Tape::Real, typename Tape::Tag>, Tape>::type>
         : std::true_type {};
 #endif
 
-#if CODI_IS_CPP14
     /// Value entry of IsTagTape
     template<typename Tape>
     bool constexpr isTagTapeReverse = IsTagTapeReverse<Tape>::value;
-#endif
 
     /// Enable if wrapper for IsTagTape
     template<typename Tape>

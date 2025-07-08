@@ -256,6 +256,15 @@ namespace codi {
     bool constexpr SkipZeroAdjointEvaluation = CODI_SkipZeroAdjointEvaluation;
 #undef CODI_SkipZeroAdjointEvaluation
 
+#ifndef CODI_SpecializeStdComplex
+  /// See codi::Config::SpecializeStdComplex.
+  #define CODI_SpecializeStdComplex 1
+#endif
+    /// If std::complex<> is specialized for CoDiPack types so that they are integrated into the expression trees of
+    /// CoDiPack.
+    bool constexpr SpecializeStdComplex = CODI_SpecializeStdComplex;
+    // Do not undefine.
+
 #ifndef CODI_SortIndicesOnReset
   /// See codi::Config::SortIndicesOnReset.
   #define CODI_SortIndicesOnReset true
@@ -444,23 +453,50 @@ namespace codi {
   #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
     #define CODI_INLINE CODI_FunctionAttributes __forceinline
     #define CODI_INLINE_NO_FA __forceinline
+    #define CODI_LAMBDA_INLINE CODI_FunctionAttributes /*__forceinline*/
   #elif defined(__GNUC__)
     #define CODI_INLINE CODI_FunctionAttributes inline __attribute__((always_inline))
     #define CODI_INLINE_NO_FA inline __attribute__((always_inline))
+    #define CODI_LAMBDA_INLINE CODI_FunctionAttributes __attribute__((always_inline))
   #else
     #warning Could not determine compiler for forced inline definitions. Using inline.
     #define CODI_INLINE CODI_FunctionAttributes inline
     #define CODI_INLINE_NO_FA inline
+    #define CODI_LAMBDA_INLINE CODI_FunctionAttributes /*inline*/
   #endif
 #else
   /// See codi::Config::ForcedInlines.
   #define CODI_INLINE CODI_FunctionAttributes inline
   /// See codi::Config::ForcedInlines.
   #define CODI_INLINE_NO_FA inline
+  /// See codi::Config::ForcedInlines.
+  #define CODI_LAMBDA_INLINE /* inline */
 #endif
     /// Force inlining instead of using the heuristics from the compiler.
     bool constexpr ForcedInlines = CODI_ForcedInlines;
 #undef CODI_ForcedInlines
+
+#ifndef CODI_Restrict
+  /// See codi::Config::Restrict.
+  #define CODI_Restrict 1
+#endif
+#if CODI_Restrict
+  #if defined(__INTEL_COMPILER) | defined(_MSC_VER)
+    #define CODI_RESTRICT __restrict
+  #elif defined(__GNUC__)
+    #define CODI_RESTRICT __restrict__
+  #else
+    #warning Could not determine compiler for restrict definitions. Using nothing.
+    /// See codi::Config::Restrict.
+    #define CODI_RESTRICT /* no restrict */
+  #endif
+#else
+  /// See codi::Config::Restrict.
+  #define CODI_RESTRICT /* no restrict */
+#endif
+    /// Annotate pointers with the restrict keyword in order to improve the performance of CoDiPack.
+    bool constexpr Restrict = CODI_Restrict;
+#undef CODI_Restrict
 
     /// @}
   }

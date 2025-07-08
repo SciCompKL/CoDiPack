@@ -41,6 +41,8 @@
 #include "../../expressions/activeType.hpp"
 #include "../../misc/macros.hpp"
 #include "../../traits/expressionTraits.hpp"
+#include "../misc/assignStatement.hpp"
+#include "../misc/statementSizes.hpp"
 #include "directStatementEvaluator.hpp"
 #include "statementEvaluatorInterface.hpp"
 
@@ -50,42 +52,44 @@ namespace codi {
   /**
    * @brief Additional data required by an InnerStatementEvaluator.
    */
-  struct InnerPrimalTapeStatementData : public PrimalTapeStatementFunctions {
+  struct InnerPrimalTapeStatementData {
     public:
 
       using Base = PrimalTapeStatementFunctions;  ///< Base class abbreviation.
 
-      size_t maxActiveArguments;    ///< Maximum number of active arguments.
-      size_t maxConstantArguments;  ///< Maximum number of constant arguments.
+      PrimalTapeStatementFunctions functions;  ///< Functions stored for the handle.
+      StatementSizes stmtSizes;                ///< Statement sizes stored for the handle.
 
       /// Constructor
-      InnerPrimalTapeStatementData(size_t maxActiveArguments, size_t maxConstantArguments,
-                                   typename Base::Handle forward, typename Base::Handle primal,
-                                   typename Base::Handle reverse, typename Base::Handle writeInformation)
-          : Base(forward, primal, reverse, writeInformation),
-            maxActiveArguments(maxActiveArguments),
-            maxConstantArguments(maxConstantArguments) {}
+      InnerPrimalTapeStatementData(PrimalTapeStatementFunctions functions, StatementSizes stmtSizes)
+          : functions(functions), stmtSizes(stmtSizes) {}
   };
 
   /// Store InnerPrimalTapeStatementData as static variables for each combination of generator (tape) and expression
   /// used in the program.
-  template<typename Tape, typename Expr>
+  template<typename Generator, typename Stmt>
   struct InnerStatementEvaluatorStaticStore {
     public:
 
       /// Static storage. Static construction is done by instantiating the statementEvaluate*Inner functions of the
-      /// generator with Expr. Also evaluates the number of active type arguments and constant type arguments.
+      /// generator with Stmt. Also evaluates the number of active type arguments and constant type arguments.
       static InnerPrimalTapeStatementData const staticStore;  ///< Static storage.
+
+      /// Generates the data for the static store.
+      template<StatementCall... types>
+      static InnerPrimalTapeStatementData gen() {
+        using Handle = typename PrimalTapeStatementFunctions::Handle;
+
+        return InnerPrimalTapeStatementData(
+            PrimalTapeStatementFunctions(
+                ((Handle)Generator::template StatementCallGenerator<types, Stmt>::evaluateInner)...),
+            StatementSizes::create<Stmt>());
+      }
   };
 
-  template<typename Generator, typename Expr>
-  InnerPrimalTapeStatementData const InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore(
-      ExpressionTraits::NumberOfActiveTypeArguments<Expr>::value,
-      ExpressionTraits::NumberOfConstantTypeArguments<Expr>::value,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateForwardInner<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluatePrimalInner<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementEvaluateReverseInner<Expr>,
-      (typename PrimalTapeStatementFunctions::Handle)Generator::template statementGetWriteInformation<Expr>);
+  template<typename Generator, typename Stmt>
+  InnerPrimalTapeStatementData const InnerStatementEvaluatorStaticStore<Generator, Stmt>::staticStore =
+      InnerStatementEvaluatorStaticStore<Generator, Stmt>::gen<CODI_STMT_CALL_GEN_ARGS>();
 
   /**
    * @brief Expression evaluation in the inner function. Data loading in the compilation context of the tape.
@@ -96,14 +100,9 @@ namespace codi {
    * inner function handles.
    *
    * See StatementEvaluatorInterface for details.
-   *
-   * @tparam T_Real  The computation type of a tape, usually chosen as ActiveType::Real.
    */
-  template<typename T_Real>
-  struct InnerStatementEvaluator : public StatementEvaluatorInterface<T_Real> {
+  struct InnerStatementEvaluator : public StatementEvaluatorInterface {
     public:
-
-      using Real = CODI_DD(T_Real, double);  ///< See InnerStatementEvaluator.
 
       /*******************************************************************************/
       /// @name StatementEvaluatorInterface implementation
@@ -111,57 +110,24 @@ namespace codi {
 
       using Handle = InnerPrimalTapeStatementData const*;  ///< Pointer to static storage location.
 
-      /// \copydoc StatementEvaluatorInterface::callForward
-      template<typename Tape, typename... Args>
-      static Real callForward(Handle const& h, Args&&... args) {
-        return Tape::statementEvaluateForwardFull((FunctionForward<Tape>)h->forward, h->maxActiveArguments,
-                                                  h->maxConstantArguments, std::forward<Args>(args)...);
-      }
+      /// \copydoc StatementEvaluatorInterface::call
+      template<StatementCall type, typename Tape, typename... Args>
+      static void call(Handle const& h, Args&&... args) {
+        using Stmt = AssignStatement<ActiveType<Tape>, ActiveType<Tape>>;
+        using CallGen = typename Tape::template StatementCallGenerator<type, Stmt>;
 
-      /// \copydoc StatementEvaluatorInterface::callPrimal
-      template<typename Tape, typename... Args>
-      static Real callPrimal(Handle const& h, Args&&... args) {
-        return Tape::statementEvaluatePrimalFull((FunctionPrimal<Tape>)h->primal, h->maxActiveArguments,
-                                                 h->maxConstantArguments, std::forward<Args>(args)...);
-      }
+        using Function = decltype(&CallGen::evaluateInner);
 
-      /// \copydoc StatementEvaluatorInterface::callReverse
-      template<typename Tape, typename... Args>
-      static void callReverse(Handle const& h, Args&&... args) {
-        Tape::statementEvaluateReverseFull((FunctionReverse<Tape>)h->reverse, h->maxActiveArguments,
-                                           h->maxConstantArguments, std::forward<Args>(args)...);
+        CallGen::evaluateFull(((Function)h->functions.funcs[(size_t)type]), h->stmtSizes.outputArgs,
+                              h->stmtSizes.inputArgs, h->stmtSizes.constantArgs, std::forward<Args>(args)...);
       }
 
       /// \copydoc StatementEvaluatorInterface::createHandle
-      template<typename Tape, typename Generator, typename Expr>
+      template<typename Tape, typename Generator, typename Stmt>
       static Handle createHandle() {
-        return &InnerStatementEvaluatorStaticStore<Generator, Expr>::staticStore;
-      }
-
-      /// \copydoc StatementEvaluatorInterface::getWriteInformation
-      template<typename Tape, typename... Args>
-      static WriteInfo getWriteInformation(Handle const& h, Args&&... args) {
-        return ((FunctionWriteInformation<Tape>)h->writeInformation)(std::forward<Args>(args)...);
+        return &InnerStatementEvaluatorStaticStore<Generator, Stmt>::staticStore;
       }
 
       /// @}
-
-    protected:
-
-      /// Full forward function type.
-      template<typename Tape>
-      using FunctionForward = decltype(&Tape::template statementEvaluateForwardInner<ActiveType<Tape>>);
-
-      /// Full primal function type.
-      template<typename Tape>
-      using FunctionPrimal = decltype(&Tape::template statementEvaluatePrimalInner<ActiveType<Tape>>);
-
-      /// Full reverse function type.
-      template<typename Tape>
-      using FunctionReverse = decltype(&Tape::template statementEvaluateReverseInner<ActiveType<Tape>>);
-
-      /// Write information function type.
-      template<typename Tape>
-      using FunctionWriteInformation = decltype(&Tape::template statementGetWriteInformation<ActiveType<Tape>>);
   };
 }

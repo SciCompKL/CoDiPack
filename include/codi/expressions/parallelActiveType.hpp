@@ -66,8 +66,8 @@ namespace codi {
       using typename Base::PassiveReal;  ///< See ActiveTypeBase.
       using typename Base::Real;         ///< See ActiveTypeBase.
 
-      using typename Base::ActiveResult;  ///< See ActiveTypeBase.
-      using typename Base::StoreAs;       ///< See ActiveTypeBase.
+      using typename Base::ADLogic;  ///< See ActiveTypeBase.
+      using typename Base::StoreAs;  ///< See ActiveTypeBase.
 
       /// See ParallelToolbox.
       using ThreadLocalTapePointer =

@@ -5,8 +5,9 @@ AllowShortBlocksOnASingleLine: Empty
 AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty
 AllowShortLoopsOnASingleLine: false
-AttributeMacros: ['CODI_Likely', 'CODI_Unlikely']
+AttributeMacros: ['CODI_Likely', 'CODI_Unlikely', 'CODI_LAMBDA_INLINE' ]
 BreakBeforeBraces: Attach
 ColumnLimit: 120
 EmptyLineAfterAccessModifier: Leave

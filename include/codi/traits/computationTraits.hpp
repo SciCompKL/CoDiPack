@@ -38,47 +38,20 @@
 #include <type_traits>
 
 #include "../config.h"
+#include "../expressions/complex/complexPredef.hpp"
 #include "../misc/macros.hpp"
+#include "../misc/self.hpp"
 #include "expressionTraits.hpp"
 
 /** \copydoc codi::Namespace */
 namespace codi {
 
+  namespace RealTraits {
+    template<typename T_Type, typename>
+    struct TraitsImplementation;
+  }
+
   namespace ComputationTraits {
-
-    /**
-     * @brief Perform the conversion of Outer(Inner) in the adjoint context. Default implementation for Outer == Inner.
-     *
-     * E.g. for double(std::complex<double>) the conversion returns the real part of the complex number. This is the
-     * adjoint of std::complex<double>(double).
-     *
-     * Simple specialization can be create with the macro CODI_CREATE_ADJOINT_CONVERSION.
-     *
-     * @tparam T_Outer  Type into which was converted.
-     * @tparam T_Inner  Type from which was converted.
-     */
-    template<typename T_Outer, typename T_Inner, typename = void>
-    struct AdjointConversionImpl {
-      public:
-        CODI_STATIC_ASSERT(false && std::is_void<T_Outer>::value, "Instantiation of unspecialized adjoint conversion.");
-        using Outer = CODI_DD(T_Outer, CODI_ANY);  ///< See ReduceImpl.
-        using Inner = CODI_DD(T_Inner, CODI_ANY);  ///< See ReduceImpl.
-
-        using Return = CODI_ANY;  ///< Deduced return type.
-
-        /// @brief Perform the adjoint of Outer(Inner).
-        static Return adjointConversion(Inner const& jacobian);
-    };
-
-    /// Perform the conversion of Outer(Inner) in the adjoint context. Logic can be specialized via
-    /// AdjointConversionImpl.
-    ///
-    /// E.g. for double(std::complex<double>) the conversion returns the real part of the complex number. This is the
-    /// adjoint of std::complex<double>(double).
-    template<typename Outer, typename Inner>
-    CODI_INLINE typename AdjointConversionImpl<Outer, Inner>::Return adjointConversion(Inner const& jacobian) {
-      return AdjointConversionImpl<Outer, Inner>::adjointConversion(jacobian);
-    }
 
     /**
      * @brief Perform \f$ a^T \f$ or \f$ a^H \f$ if entries are complex. No default implementation available.
@@ -136,27 +109,12 @@ namespace codi {
     }
   }
 
-/// Create a specialization of ComputationTraits::AdjointConversionImpl
-///
-/// Has to be used in the codi namespace.
-#define CODI_CREATE_ADJOINT_CONVERSION(OuterType, InnerType, RType, conversion) \
-  template<>                                                                    \
-  struct ComputationTraits::AdjointConversionImpl<OuterType, InnerType> {       \
-    public:                                                                     \
-      using Outer = OuteType;                                                   \
-      using Inner = InnerType;                                                  \
-      using Return = RType;                                                     \
-      static Return adjointConversion(Inner const& jacobian) {                  \
-        return conversion;                                                      \
-      }                                                                         \
-  }
-
 /// Create a specialization of ComputationTraits::TransposeImpl
 ///
 /// Has to be used in the codi namespace.
 #define CODI_CREATE_TRANSPOSE(Type, RType, trans)     \
   template<>                                          \
-  struct ComputationTraits::Transpose<Type> {         \
+  struct ComputationTraits::TransposeImpl<Type> {     \
     public:                                           \
       using Jacobian = Type;                          \
       using Return = RType;                           \
@@ -182,58 +140,24 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
 
-  /// Adjoint conversion specialization for Inner == Outer
-  template<typename Type>
-  struct ComputationTraits::AdjointConversionImpl<Type, Type> {
+  /// Transpose specialization for floating point numbers.
+  template<typename T>
+  struct ComputationTraits::TransposeImpl<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
     public:
-      using Outer = Type;
-      using Inner = Type;
+      using Jacobian = T;
+      using Return = T;
 
-      using Return = Type;
-
-      static Return adjointConversion(Inner const& jacobian) {
+      static Return transpose(Jacobian const& jacobian) {
         return jacobian;
       }
   };
 
-  /// Adjoint conversion specialization for Inner == codi::Expression
-  template<typename T_Outer, typename T_Inner>
-  struct ComputationTraits::AdjointConversionImpl<
-      T_Outer, T_Inner,
-      typename std::enable_if<!std::is_same<T_Outer, T_Inner>::value &
-                              ExpressionTraits::IsExpression<T_Inner>::value>::type> {
-    public:
-
-      using Outer = T_Outer;
-      using Inner = T_Inner;
-
-      using InnerActive = typename Inner::ActiveResult;
-      using InnerActiveConversion = ComputationTraits::AdjointConversionImpl<Outer, InnerActive>;
-
-      using Return = typename InnerActiveConversion::Return;
-
-      static Return adjointConversion(Inner const& jacobian) {
-        return InnerActiveConversion::adjointConversion(jacobian);
-      }
-  };
-
-  /// Adjoint conversion specialization for Outer == std::complex<Inner>
-  template<typename Type>
-  struct ComputationTraits::AdjointConversionImpl<Type, std::complex<Type>> {
-    public:
-      using Outer = Type;
-      using Inner = std::complex<Type>;
-
-      using Return = Type;
-
-      static Return adjointConversion(Inner const& jacobian) {
-        return std::real(jacobian);
-      }
-  };
-
-  /// Transpose specialization for floating point numbers.
+  /// Transpose specialization for expressions of floating point numbers.
   template<typename T>
-  struct ComputationTraits::TransposeImpl<T, typename std::enable_if<std::is_floating_point<T>::value>::type> {
+  struct ComputationTraits::TransposeImpl<
+      T, std::enable_if_t<
+             ExpressionTraits::isExpression<T> &
+             std::is_floating_point<typename RealTraits::TraitsImplementation<T, void>::PassiveReal>::value>> {
     public:
       using Jacobian = T;
       using Return = T;
@@ -255,6 +179,20 @@ namespace codi {
       }
   };
 
+  /// Transpose specialization for active complex types.
+  template<typename Inner>
+  struct ComputationTraits::TransposeImpl<ActiveComplex<Inner>> {
+    public:
+      using Jacobian = ActiveComplex<Inner>;
+      using Return = ActiveComplex<Inner>;
+
+      static Return transpose(Jacobian const& jacobian) {
+        return conj(jacobian);
+      }
+  };
+
+  CODI_CREATE_TRANSPOSE(int, int, jacobian);
+
   /// Update specialization for double += std::complex<double>
   ///
   /// This is the adjoint of std::complex<double> = double;
@@ -268,6 +206,21 @@ namespace codi {
 
       static Return update(Lhs& lhs, Rhs const& rhs) {
         return lhs += std::real(rhs);
+      }
+  };
+
+  ///
+  /// This is the adjoint of std::complex<double> = double;
+  template<typename Inner>
+  struct ComputationTraits::UpdateImpl<Inner, ActiveComplex<Inner>> {
+    public:
+      using Lhs = Inner;
+      using Rhs = ActiveComplex<Inner>;
+
+      using Return = Inner&;
+
+      static Return update(Lhs& lhs, Rhs const& rhs) {
+        return lhs += real(rhs);
       }
   };
 #endif

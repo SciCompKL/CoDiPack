@@ -53,16 +53,18 @@ namespace codi {
     AdjointSize,            ///< [A: RW] Current number of adjoint vector entries, not the maximum possible size.
                             ///<         See LargestIdentifier.
     ConstantValuesSize,     ///< [A: RW] Allocated number of entries in  the constant value vector in primal value
-                            ///<         tapes.
+                            ///<         tapes. [Deprecated]
     ExternalFunctionsSize,  ///< [A: RW] (Deprecated, will be removed on 31.12.2024) Allocated number of entries in the
                             ///<         external function vector.
     JacobianSize,           ///< [A: RW] Allocated number of entries in the argument Jacobian vector in Jacobian tapes.
     LargestIdentifier,      ///< [A: R] Largest identifier distributed by the index manger.
     PassiveValuesSize,      ///< [A: RW] Allocated number of entries in the passive value vector in primal value tapes.
+                            ///< [Deprecated]
     PrimalSize,             ///< [A: RW] Number of primal vector entries in primal value tapes.
-    RhsIdentifiersSize,     ///< [A: RW] Allocated number of entries in the right hand side identifiers vector in primal
-                            ///<         value tapes.
+    IdentifiersSize,        ///< [A: RW] Allocated number of entries in the right hand side identifiers vector in primal
+                            ///<         value tapes. [Deprecated]
     StatementSize,          ///< [A: RW] Allocated number of entries in the statement vector in all tapes.
+    StatementByteSize,      ///< [A: RW] Allocated size of the byte data for the statement data.
     LLFInfoDataSize,        ///< [A: RW] Allocated number of entries in the low level function info  vector in all
                             ///<         tapes.
     LLFByteDataSize         ///< [A: RW] Allocated number of entries in the the byte data vecotor of low level functions

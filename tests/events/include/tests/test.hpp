@@ -37,6 +37,7 @@
 #define TestStatement 1
 #define TestPreacc 2
 #define TestTape 3
+#define TestAggregates 4
 
 #ifndef TEST_NAME
   #error Please define TEST_NAME as one of the tests.
@@ -48,6 +49,8 @@
   #include "testPreacc.hpp"
 #elif (TEST_NAME == TestTape)
   #include "testTape.hpp"
+#elif (TEST_NAME == TestAggregates)
+  #include "testAggregates.hpp"
 #else
   #error Unknown test, please define TEST_NAME as one of the tests.
 #endif

@@ -92,25 +92,37 @@ namespace codi {
 
         if (printColumnNames) {
           fprintf(fileHandleTxt,
-                  "| LHS Index | Primal Value | # of Passive Args | # of Active Args | RHS Indices | RHS "
-                  "Primal Values | # of Constants | Constants | Statement Key |");
+                  "| # of LHS Args | LHS Indices | Primal Values | # of Passive Args | # of Active Args | RHS Indices "
+                  "| RHS Primal Values | # of Constants | Constants | Statement Key |");
         }
       }
 
       /**
-       * \copydoc codi::TapeWriterInterface::writeStatement(WriteInfo const&, Identifier const&, Real const&,
-       *                                                    Config::ArgumentSize const&, size_t const&,
-       *                                                    Identifier const* const, size_t const&,
-       *                                                    Real const* const, size_t&, Real const* const,
-       *                                                    EvalHandle)
+       * \copydoc codi::TapeWriterInterface::writeStatement(WriteInfo const&, Identifier const*, Real const*,
+       *                                                    Config::ArgumentSize const&, Identifier const* const,
+       *                                                    Real const* const, Real const* const, EvalHandle)
        */
-      void writeStatement(WriteInfo const& info, Identifier const& curLhsIdentifier, Real const& primalValue,
-                          Config::ArgumentSize const& nPassiveValues, size_t const& curRhsIdentifiersPos,
-                          Identifier const* const rhsIdentifiers, size_t const& curPassiveValuePos,
-                          Real const* const passiveValues, size_t& curConstantPos, Real const* const constantValues,
+      void writeStatement(WriteInfo const& info, Identifier const* lhsIdentifiers, Real const* primalValues,
+                          Config::ArgumentSize const& nPassiveValues, Identifier const* const rhsIdentifiers,
+                          Real const* const passiveValues, Real const* const constantValues,
                           EvalHandle stmtEvalHandle) {
-        fprintf(fileHandleTxt, "\n%d  %0.12e  %hhu ", curLhsIdentifier, primalValue,
-                static_cast<Config::ArgumentSize>(nPassiveValues));
+        // nOutputArguments
+        fprintf(fileHandleTxt, "\n%hhu [", static_cast<Config::ArgumentSize>(info.numberOfOutputArguments));
+
+        // Lhs Identifiers.
+        for (size_t lhsCount = 0; lhsCount < info.numberOfOutputArguments; lhsCount++) {
+          fprintf(fileHandleTxt, " %d ", lhsIdentifiers[lhsCount]);
+        }
+        fprintf(fileHandleTxt, "]  [");
+
+        // Lhs primal values.
+        for (size_t lhsCount = 0; lhsCount < info.numberOfOutputArguments; lhsCount++) {
+          fprintf(fileHandleTxt, " %0.12e ", primalValues[lhsCount]);
+        }
+        fprintf(fileHandleTxt, "] ");
+
+        // nPassiveValues
+        fprintf(fileHandleTxt, "%hhu ", static_cast<Config::ArgumentSize>(nPassiveValues));
 
         if (nPassiveValues == Config::StatementInputTag) CODI_Unlikely {
           // Do nothing.
@@ -120,13 +132,13 @@ namespace codi {
 
           // Rhs Identifiers.
           for (size_t rhsCount = 0; rhsCount < info.numberOfActiveArguments; rhsCount++) {
-            fprintf(fileHandleTxt, " %d ", rhsIdentifiers[curRhsIdentifiersPos + rhsCount]);
+            fprintf(fileHandleTxt, " %d ", rhsIdentifiers[rhsCount]);
           }
           fprintf(fileHandleTxt, "]  [");
 
           // Rhs Passive Primal Values.
           for (size_t passiveCount = 0; passiveCount < nPassiveValues; passiveCount++) {
-            fprintf(fileHandleTxt, " %0.12e ", passiveValues[curPassiveValuePos + passiveCount]);
+            fprintf(fileHandleTxt, " %0.12e ", passiveValues[passiveCount]);
           }
 
           // nConstants.
@@ -134,7 +146,7 @@ namespace codi {
 
           // Rhs Constants.
           for (size_t constantCount = 0; constantCount < info.numberOfConstantArguments; constantCount++) {
-            fprintf(fileHandleTxt, " %0.12e ", constantValues[curConstantPos + constantCount]);
+            fprintf(fileHandleTxt, " %0.12e ", constantValues[constantCount]);
           }
 
           fprintf(fileHandleTxt, "]");
@@ -213,8 +225,9 @@ namespace codi {
       void readFile(std::string const& name) {
         FILE* fileHandleReadTxt = nullptr;
 
-        Identifier lhsIdentifier;
-        Real primalValue;
+        Config::ArgumentSize nOutputValues;
+        std::vector<Identifier> lhsIdentifiers(Config::MaxArgumentSize, 0);
+        std::vector<Real> primalValues(Config::MaxArgumentSize, 0.0);
         Config::ArgumentSize nPassiveValues;
         Config::ArgumentSize nActiveValues;
         std::vector<Identifier> rhsIdentifiers(Config::MaxArgumentSize, 0);
@@ -236,10 +249,24 @@ namespace codi {
 
         // Read and discard column titles
         fscanf(fileHandleReadTxt,
-               "| LHS Index | Primal Value | # of Passive Args | # of Active Args | RHS Indices | RHS "
-               "Primal Values | # of Constants | Constants | Statement Key |");
+               "| # of LHS Args | LHS Indices | Primal Values | # of Passive Args | # of Active Args | RHS Indices "
+               "| RHS Primal Values | # of Constants | Constants | Statement Key |");
         // Read Statements
-        while (fscanf(fileHandleReadTxt, "\n%d  %lf  %hhu ", &lhsIdentifier, &primalValue, &nPassiveValues) == 3) {
+        while (fscanf(fileHandleReadTxt, "\n%hhu [", &nOutputValues) == 1) {
+          // Lhs identifiers
+          for (size_t argumentCount = 0; argumentCount < nOutputValues; argumentCount++) {
+            fscanf(fileHandleReadTxt, " %d ", &lhsIdentifiers[argumentCount]);
+          }
+          fscanf(fileHandleReadTxt, "]  [");
+
+          // Lhs primal values
+          for (size_t argumentCount = 0; argumentCount < nOutputValues; argumentCount++) {
+            fscanf(fileHandleReadTxt, " %lf ", &primalValues[argumentCount]);
+          }
+
+          // nPassive values
+          fscanf(fileHandleReadTxt, "] %hhu ", &nPassiveValues);
+
           if (nPassiveValues == Config::StatementLowLevelFunctionTag) CODI_Unlikely {
             // TODO.
           } else if (nPassiveValues == Config::StatementInputTag) CODI_Unlikely {
@@ -265,9 +292,9 @@ namespace codi {
           }
           // EvalHandleKey
           fscanf(fileHandleReadTxt, "  [ %zu ]", &evalHandleKey);
-          this->tape.createStatementManual(lhsIdentifier, primalValue, nActiveValues, rhsIdentifiers.data(),
-                                           nPassiveValues, rhsPrimalValues.data(), nConstants, constants.data(),
-                                           evalHandles[evalHandleKey]);
+          this->tape.createStatementManual(nOutputValues, lhsIdentifiers.data(), primalValues.data(), nActiveValues,
+                                           rhsIdentifiers.data(), nPassiveValues, rhsPrimalValues.data(), nConstants,
+                                           constants.data(), evalHandles[evalHandleKey]);
         }
 
         fclose(fileHandleReadTxt);

@@ -78,7 +78,7 @@ A279_1 -> A282_1
 A283_1 [label = "T283 = T277 * T282", color="black"];
 A277_1 -> A283_1
 A282_1 -> A283_1
-A284_1 [label = "Y284 = T255 + T281", color="red"];
+A284_1 [label = "T284 = T255 + T281", color="black"];
 A255_1 -> A284_1
 A281_1 -> A284_1
 A285_1 [label = "Y285 = T261 * T283", color="red"];
@@ -93,14 +93,23 @@ A283_1 -> A287_1
 A288_1 [label = "Y288 = T279 + T281", color="red"];
 A279_1 -> A288_1
 A281_1 -> A288_1
-A289_1 [label = "T289 = Y284", color="black"];
-A284_1 -> A289_1
-A290_1 [label = "T290 = Y285", color="black"];
-A285_1 -> A290_1
-A291_1 [label = "T291 = Y286", color="black"];
-A286_1 -> A291_1
-A292_1 [label = "T292 = Y287", color="black"];
-A287_1 -> A292_1
-A293_1 [label = "T293 = Y288", color="black"];
-A288_1 -> A293_1
+Aggregate1 [label = "{ complex(X254, X260) * complex(X266, X272) | {<A289_1> T289 | <A290_1> T290}}", color="black", shape="record"];
+A254_1 -> Aggregate1
+A260_1 -> Aggregate1
+A266_1 -> Aggregate1
+A272_1 -> Aggregate1
+A291_1 [label = "Y291 = T284 + norm(complex(T289, T290))", color="red"];
+A284_1 -> A291_1
+Aggregate1:A289_1 -> A291_1
+Aggregate1:A290_1 -> A291_1
+A292_1 [label = "T292 = Y291", color="black"];
+A291_1 -> A292_1
+A293_1 [label = "T293 = Y285", color="black"];
+A285_1 -> A293_1
+A294_1 [label = "T294 = Y286", color="black"];
+A286_1 -> A294_1
+A295_1 [label = "T295 = Y287", color="black"];
+A287_1 -> A295_1
+A296_1 [label = "T296 = Y288", color="black"];
+A288_1 -> A296_1
 }

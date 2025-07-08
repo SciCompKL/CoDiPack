@@ -69,7 +69,7 @@ CODI_VERSION = $(MAJOR_VERSION).$(MINOR_VERSION).$(BUILD_VERSION)
 
 CODI_DIR := .
 
-FLAGS = -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE) $(ENZYME_DEFINE) -DCODI_StatementEvents
+FLAGS = -std=c++17 -Wall -Werror=return-type -pedantic -DCODI_OptIgnoreInvalidJacobians=true -DCODI_EnableAssert=true -I$(CODI_DIR)/include -fopenmp $(EIGEN_DEFINE) $(ENZYME_DEFINE) -DCODI_StatementEvents
 
 ifndef CLANG_FORMAT
   CLANG_FORMAT := clang-format
@@ -77,11 +77,6 @@ else
   CLANG_FORMAT := $(CLANG_FORMAT)
 endif
 
-ifeq ($(CPP14), yes)
-  FLAGS += -std=c++14
-else
-  FLAGS += -std=c++11
-endif
 ifeq ($(OPT), yes)
   FLAGS += -O3
 else

@@ -53,10 +53,12 @@ namespace codi {
    * @tparam T_Type  The type of the reference which is captured.
    */
   template<typename T_Type>
-  struct ReferenceActiveType : public LhsExpressionInterface<typename T_Type::Real, typename T_Type::Gradient,
-                                                             typename T_Type::Tape, ReferenceActiveType<T_Type>>,
-                               public AssignmentOperators<typename T_Type::Tape, ReferenceActiveType<T_Type>>,
-                               public IncrementOperators<typename T_Type::Tape, ReferenceActiveType<T_Type>> {
+  struct ReferenceActiveType
+      : public LhsExpressionInterface<typename T_Type::Real, typename T_Type::Gradient, typename T_Type::Tape,
+                                      ReferenceActiveType<T_Type>>,
+        public AssignmentOperators<typename T_Type::Tape::Real, T_Type::Tape::AllowJacobianOptimization,
+                                   ReferenceActiveType<T_Type>>,
+        public IncrementOperators<typename T_Type::Tape, ReferenceActiveType<T_Type>> {
     public:
 
       /// See ReferenceActiveType.
@@ -70,7 +72,7 @@ namespace codi {
 
     protected:
 
-      Type& reference;
+      Type& reference;  ///< Reference to the underlying active type.
 
     public:
 
@@ -82,6 +84,7 @@ namespace codi {
       /// Constructor
       CODI_INLINE ReferenceActiveType(Type& v) : reference(v), jacobian() {}
 
+      /// Copy constructor
       CODI_INLINE ReferenceActiveType(ReferenceActiveType const& o) : reference(o.reference), jacobian() {}
 
       /// See LhsExpressionInterface::operator=(ExpressionInterface const&).
@@ -95,8 +98,8 @@ namespace codi {
       /// @name Implementation of LhsExpressionInterface
       /// @{
 
-      using StoreAs = ReferenceActiveType const&;        ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = typename Type::ActiveResult;  ///< \copydoc codi::ExpressionInterface::ActiveResult
+      using StoreAs = ReferenceActiveType const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ADLogic = Tape;                        ///< \copydoc codi::ExpressionInterface::ADLogic
 
       /// \copydoc codi::LhsExpressionInterface::getIdentifier()
       CODI_INLINE Identifier& getIdentifier() {

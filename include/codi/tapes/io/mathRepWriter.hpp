@@ -67,29 +67,45 @@ namespace codi {
           : Base(false, name, in, out) {};
 
       /**
-       * \copydoc codi::TapeWriterInterface::writeStatement(WriteInfo const&, Identifier const&, Real const&,
-       *                                                    Config::ArgumentSize const&, size_t const&,
-       *                                                    Identifier const* const, size_t const&,
-       *                                                    Real const* const, size_t&, Real const* const,
-       *                                                    EvalHandle)
+       * \copydoc codi::TapeWriterInterface::writeStatement(WriteInfo const&, Identifier const*, Real const*,
+       *                                                    Config::ArgumentSize const&, Identifier const* const,
+       *                                                    Real const* const, Real const* const, EvalHandle)
        */
-      void writeStatement(WriteInfo const& info, Identifier const& curLhsIdentifier, Real const& primalValue,
-                          Config::ArgumentSize const& nPassiveValues, size_t const& curRhsIdentifiersPos,
-                          Identifier const* const rhsIdentifiers, size_t const& curPassiveValuePos,
-                          Real const* const passiveValues, size_t& curConstantPos, Real const* const constantValues,
+      void writeStatement(WriteInfo const& info, Identifier const* lhsIdentifiers, Real const* primalValues,
+                          Config::ArgumentSize const& nPassiveValues, Identifier const* const rhsIdentifiers,
+                          Real const* const passiveValues, Real const* const constantValues,
                           EvalHandle stmtEvalHandle) {
-        CODI_UNUSED(primalValue, curPassiveValuePos, passiveValues, curConstantPos, constantValues, stmtEvalHandle);
+        CODI_UNUSED(primalValues, passiveValues, constantValues, stmtEvalHandle);
 
         if (nPassiveValues == Config::StatementInputTag) CODI_Unlikely {
           // Do nothing.
         } else CODI_Likely {
           // The mathRep string is modified to include the identifier and value.
           std::string mathRep =
-              Base::modifyMathRep(info.mathRepresentation, curLhsIdentifier, &rhsIdentifiers[curRhsIdentifiersPos],
-                                  info.numberOfActiveArguments);
+              formatLhs(lhsIdentifiers, info.numberOfOutputArguments) + " = " +
+              Base::modifyMathRep(info.mathRepresentation, rhsIdentifiers, info.numberOfActiveArguments);
           // Print the statement string.
           fprintf(this->fileHandleGraph, "%s\n", mathRep.c_str());
         }
+      }
+
+    private:
+      std::string formatLhs(Identifier const* lhsIdentifiers, size_t const& nOutputValues) {
+        std::string result = "";
+        if (1 != nOutputValues) {
+          result += "[";
+        }
+        for (size_t curArg = 0; curArg < nOutputValues; curArg++) {
+          if (0 != curArg) {
+            result += ", ";
+          }
+          result += Base::formatNodeLabel(lhsIdentifiers[curArg]);
+        }
+        if (1 != nOutputValues) {
+          result += "]";
+        }
+
+        return result;
       }
   };
 }

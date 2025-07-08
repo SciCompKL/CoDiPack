@@ -69,8 +69,12 @@ struct TestOneArgumentExpr2 : public TestInterface {
       y[1] = log10(x[0]);   // (0, inf)
       y[2] = sqrt(x[0]);    // [0, inf)
       y[3] = tgamma(x[0]);  // R currently only defined for positive arguments
-      y[4] = acosh(x[0]);   // (1, inf)
-      y[5] = log1p(x[0]);   // (0, inf)
-      y[6] = log2(x[0]);    // (0, inf)
+      if (x[0] >= 1.0) {
+        y[4] = acosh(x[0]);  // [1, inf)
+      } else {
+        y[4] = 0.0;
+      }
+      y[5] = log1p(x[0]);  // (0, inf)
+      y[6] = log2(x[0]);   // (0, inf)
     }
 };

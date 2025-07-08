@@ -40,6 +40,7 @@
 #include "../misc/macros.hpp"
 #include "../traits/expressionTraits.hpp"
 #include "../traits/realTraits.hpp"
+#include "expressionMemberOperations.hpp"
 #include "logic/nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -50,20 +51,20 @@ namespace codi {
    *
    * See \ref Expressions "Expression" design documentation for details about the expression system in CoDiPack.
    *
-   * This interface resembles an rvalue in C++.
+   * This interface resembles a rvalue in C++.
    *
    * @tparam T_Real  Original primal value of the statement/expression.
    * @tparam T_Impl  Class implementing this interface.
    */
   template<typename T_Real, typename T_Impl>
-  struct ExpressionInterface : public NodeInterface<T_Impl> {
+  struct ExpressionInterface : public NodeInterface<T_Impl>, public ExpressionMemberOperations<T_Real, T_Impl> {
     public:
 
       using Real = CODI_DD(T_Real, double);               ///< See ExpressionInterface.
       using Impl = CODI_DD(T_Impl, ExpressionInterface);  ///< See ExpressionInterface.
 
-      /// Type into which the expression can be converted. Usually also the type from which it is constructed.
-      using ActiveResult = CODI_UNDEFINED;
+      /// AD logic that governs the expression. Needs to be the same for all inputs of the expression.
+      using ADLogic = CODI_UNDEFINED;
 
       /// Constructor
       ExpressionInterface() = default;
@@ -94,11 +95,35 @@ namespace codi {
       /// Compute the primal value that is usually evaluated by the statement/expression.
       CODI_INLINE Real const getValue() const;
 
-      /// Get the Jacobian with respect to the given argument.
-      ///
-      /// This is just the local Jacobian and not the one for the whole expression tree.
-      template<size_t argNumber>
-      CODI_INLINE Real getJacobian() const;
+      /** Apply the AD forward mode on the expression with respect to the given parameter.
+       *
+       *  This is just the local forward mode application and not the one for the whole expression tree.
+       *
+       *  Does not need to be implemented for expressions with \c NodeInterface::LinkCount = 0 \c .
+       *
+       *  @return The type of the result or a compatible vector type. E.g. Real or Direction<Real>.
+       *
+       *  @tparam Tangent  The type is the Real type of the selected argument or a compatible vector type. E.g. for
+       *  \c Real f(complex<Real>, Real) \c the type with \c argNumber=0 \c is \c complex<Real> \c or
+       *  \c Direction<complex<Real>> \c , with \c argNumber=1 \c it is \c Real \c or \c Direction<Real> \c .
+       */
+      template<size_t argNumber, typename Tangent>
+      CODI_INLINE auto applyTangent(Tangent const& tangent) const;
+
+      /**  Apply the AD reverse mode on the expression with respect to the given parameter.
+       *
+       *  This is just the local reverse mode application and not the one for the whole expression tree.
+       *
+       *  Does not need to be implemented for expressions with \c NodeInterface::LinkCount = 0 \c .
+       *
+       *  @return The type is the Real type of the selected argument or a compatible vector type. E.g. for
+       *  \c Real f(complex<Real>, Real) \c the type with \c argNumber=0 \c is \c complex<Real> \c or
+       *  \c Direction<complex<Real>> \c , with \c argNumber=1 \c it is \c Real \c or \c Direction<Real> \c .
+       *
+       *  @tparam Adjoint  The type of the result or a compatible vector type. E.g. Real or Direction<Real>.
+       */
+      template<size_t argNumber, typename Adjoint>
+      CODI_INLINE auto applyAdjoint(Adjoint const& adjoint) const;
 
       /// @}
 
@@ -118,7 +143,7 @@ namespace codi {
 
       static int constexpr MaxDerivativeOrder = 1 + RealTraits::MaxDerivativeOrder<Real>();
 
-      static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
+      static CODI_INLINE PassiveReal getPassiveValue(Type const& v) {
         return RealTraits::getPassiveValue(v.getValue());
       }
   };

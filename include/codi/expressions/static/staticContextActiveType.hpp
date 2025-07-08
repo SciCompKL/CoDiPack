@@ -76,9 +76,12 @@ namespace codi {
       CODI_INLINE StaticContextActiveType(Real const& primal, Identifier const& identifier)
           : primal(primal), identifier(identifier) {}
 
-      /// Constructor
+      /// Copy constructor
       CODI_INLINE StaticContextActiveType(StaticContextActiveType const& other)
           : Base(static_cast<Base const&>(other)), primal(other.primal), identifier(other.identifier) {}
+
+      /// Empty constructor for delayed construction that is overwritten with placement new operators
+      CODI_INLINE StaticContextActiveType() : primal(), identifier() {}
 
       /*******************************************************************************/
       /// @name Partial implementation of LhsExpressionInterface
@@ -94,18 +97,12 @@ namespace codi {
       /// @name Implementation of ExpressionInterface
       /// @{
 
-      using StoreAs = StaticContextActiveType;       ///< \copydoc codi::ExpressionInterface::EndPoint
-      using ActiveResult = StaticContextActiveType;  ///< \copydoc codi::ExpressionInterface::ActiveResult
+      using StoreAs = StaticContextActiveType;  ///< \copydoc codi::ExpressionInterface::StoreAs
+      using ADLogic = Tape;                     ///< \copydoc codi::ExpressionInterface::ADLogic
 
       /// \copydoc codi::ExpressionInterface::getValue()
       CODI_INLINE Real const getValue() const {
         return primal;
-      }
-
-      /// \copydoc codi::ExpressionInterface::getJacobian()
-      template<size_t argNumber>
-      CODI_INLINE Real getJacobian() const {
-        return Real();
       }
 
       /// @}
@@ -113,23 +110,23 @@ namespace codi {
       /// @name Implementation of NodeInterface
       /// @{
 
-      static bool constexpr EndPoint = true;  ///< \copydoc codi::NodeInterface::EndPoint
-
-      /// \copydoc codi::NodeInterface::forEachLink
-      template<typename Logic, typename... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
-        CODI_UNUSED(logic, args...);
-      }
-
-      /// \copydoc codi::NodeInterface::forEachLinkConstExpr
-      template<typename Logic, typename... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... CODI_UNUSED_ARG(args)) {
-        return Logic::NeutralElement;
-      }
+      static size_t constexpr LinkCount = 0;  ///< \copydoc codi::NodeInterface::LinkCount
 
       /// @}
 
     private:
       StaticContextActiveType& operator=(StaticContextActiveType const&) = delete;
+  };
+
+  /// Specialization of ActiveResultImpl for active types in a static context.
+  template<typename T_Real, typename T_Tape>
+  struct ExpressionTraits::ActiveResultImpl<T_Real, T_Tape, true> {
+    public:
+
+      using Real = CODI_DD(T_Real, CODI_ANY);  ///< See ExpressionTraits::ActiveResultImpl.
+      using Tape = CODI_DD(T_Tape, CODI_ANY);  ///< See ExpressionTraits::ActiveResultImpl.
+
+      /// The resulting active type of an expression.
+      using ActiveResult = StaticContextActiveType<Tape>;
   };
 }

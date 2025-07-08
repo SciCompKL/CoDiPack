@@ -38,11 +38,10 @@
 #include "../../misc/macros.hpp"
 #include "../../tapes/interfaces/reverseTapeInterface.hpp"
 #include "../../traits/expressionTraits.hpp"
-#include "../binaryExpression.hpp"
+#include "../computeExpression.hpp"
 #include "../constantExpression.hpp"
 #include "../expressionInterface.hpp"
 #include "../static/staticContextActiveType.hpp"
-#include "../unaryExpression.hpp"
 #include "nodeInterface.hpp"
 
 /** \copydoc codi::Namespace */
@@ -114,8 +113,8 @@ namespace codi {
       using ResultType = StaticContextActiveType<Tape>;
 
       /// Uses primalVector[identifiers[primalValueOffset]] and identifiers[primalValueOffset].
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers,
-                                  PassiveReal const* const constantData) {
+      CODI_INLINE static ResultType construct(Real* primalVector, Identifier const* const identifiers,
+                                              PassiveReal const* const constantData) {
         CODI_UNUSED(constantData);
 
         Identifier const identifier = identifiers[primalValueOffset];
@@ -135,91 +134,103 @@ namespace codi {
       static constexpr size_t primalValueOffset = T_primalValueOffset;
       static constexpr size_t constantValueOffset = T_constantValueOffset;
 
-      using Real = typename Tape::Real;
+      using Real = typename Rhs::Real;
+      using InnerReal = typename Tape::Real;
       using Identifier = typename Tape::Identifier;
-      using PassiveReal = typename Tape::PassiveReal;
+      using PassiveInnerReal = typename Tape::PassiveReal;
 
       /// Conversion from ConstantExpression to ConstantExpression.
-      using ResultType = ConstantExpression<typename Rhs::Real>;
+      using ResultType = ConstantExpression<Real>;
 
       /// Uses constantData[constantValueOffset].
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers,
-                                  PassiveReal const* const constantData) {
+      CODI_INLINE static ResultType construct(InnerReal* primalVector, Identifier const* const identifiers,
+                                              PassiveInnerReal const* const constantData) {
         CODI_UNUSED(primalVector, identifiers);
 
-        using ConversionOperator = typename Rhs::template ConversionOperator<PassiveReal>;
+        using ConversionOperator = typename Rhs::template ConversionOperator<PassiveInnerReal>;
+        using AggregateTraits = RealTraits::AggregatedTypeTraits<Real>;
 
-        return ResultType(ConversionOperator::fromDataStore(constantData[constantValueOffset]));
+        Real value{};
+        static_for<AggregateTraits::Elements>([&](auto i) CODI_LAMBDA_INLINE {
+          AggregateTraits::template arrayAccess<i.value>(value) =
+              ConversionOperator::fromDataStore(constantData[constantValueOffset + i.value]);
+        });
+
+        return ResultType(value);
       }
   };
 
-  template<typename T_Real, typename T_ArgA, typename T_ArgB, template<typename> class T_Operation, typename T_Tape,
-           size_t T_primalValueOffset, size_t T_constantValueOffset>
-  struct ConstructStaticContextLogic<BinaryExpression<T_Real, T_ArgA, T_ArgB, T_Operation>, T_Tape, T_primalValueOffset,
+  template<typename T_Real, template<typename> class T_Operation, typename T_Tape, size_t T_primalValueOffset,
+           size_t T_constantValueOffset, typename... T_Args>
+  struct ConstructStaticContextLogic<ComputeExpression<T_Real, T_Operation, T_Args...>, T_Tape, T_primalValueOffset,
                                      T_constantValueOffset> {
     public:
 
       using OpReal = T_Real;
-      using ArgA = T_ArgA;
-      using ArgB = T_ArgB;
       template<typename T>
       using Operation = T_Operation<T>;
       using Tape = T_Tape;
       static constexpr size_t primalValueOffset = T_primalValueOffset;
       static constexpr size_t constantValueOffset = T_constantValueOffset;
+      using Args = std::tuple<T_Args...>;
 
       using Real = typename Tape::Real;
       using Identifier = typename Tape::Identifier;
       using PassiveReal = typename Tape::PassiveReal;
 
-      /// Unmodified offsets for first argument.
-      using ArgAConstructor = ConstructStaticContextLogic<ArgA, Tape, primalValueOffset, constantValueOffset>;
-      using ArgAMod = typename ArgAConstructor::ResultType;
+      // Recursively compute the primal value offset. The template parameter T prevents a full template
+      // specialization.
+      template<typename T, size_t ArgNum>
+      struct PrimalValueOffsetForArg
+          : public std::integral_constant<size_t, PrimalValueOffsetForArg<T, ArgNum - 1>::value +
+                                                      ExpressionTraits::NumberOfActiveTypeArguments<
+                                                          typename std::tuple_element<ArgNum - 1, Args>::type>::value> {
+      };
 
-      /// Shift offsets by the number of occurrences in the first sub tree.
-      static size_t constexpr primalValueOffsetArgB =
-          primalValueOffset + ExpressionTraits::NumberOfActiveTypeArguments<ArgA>::value;
-      static size_t constexpr constantValueOffsetArgB =
-          constantValueOffset + ExpressionTraits::NumberOfConstantTypeArguments<ArgA>::value;
-      using ArgBConstructor = ConstructStaticContextLogic<ArgB, Tape, primalValueOffsetArgB, constantValueOffsetArgB>;
-      using ArgBMod = typename ArgBConstructor::ResultType;
-
-      using ResultType = BinaryExpression<OpReal, ArgAMod, ArgBMod, Operation>;
-
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers,
-                                  PassiveReal const* const constantData) {
-        return ResultType(ArgAConstructor::construct(primalVector, identifiers, constantData),
-                          ArgBConstructor::construct(primalVector, identifiers, constantData));
-      }
-  };
-
-  template<typename T_Real, typename T_Arg, template<typename> class T_Operation, typename T_Tape,
-           size_t T_primalValueOffset, size_t T_constantValueOffset>
-  struct ConstructStaticContextLogic<UnaryExpression<T_Real, T_Arg, T_Operation>, T_Tape, T_primalValueOffset,
-                                     T_constantValueOffset> {
-    public:
-
-      using OpReal = T_Real;
-      using Arg = T_Arg;
+      // Primal value offset for the first argument. Here we return the global offset of the construction logic.
       template<typename T>
-      using Operation = T_Operation<T>;
-      using Tape = T_Tape;
-      static constexpr size_t primalValueOffset = T_primalValueOffset;
-      static constexpr size_t constantValueOffset = T_constantValueOffset;
+      struct PrimalValueOffsetForArg<T, 0> : public std::integral_constant<size_t, primalValueOffset> {};
 
-      using Real = typename Tape::Real;
-      using Identifier = typename Tape::Identifier;
-      using PassiveReal = typename Tape::PassiveReal;
+      // Recursively compute the constant value offset. The template parameter T prevents a full template
+      // specialization.
+      template<typename T, size_t ArgNum>
+      struct ConstantValueOffsetForArg
+          : public std::integral_constant<size_t, ConstantValueOffsetForArg<T, ArgNum - 1>::value +
+                                                      ExpressionTraits::NumberOfConstantTypeArguments<
+                                                          typename std::tuple_element<ArgNum - 1, Args>::type>::value> {
+      };
 
-      /// Unmodified offsets since there is just one sub tree.
-      using ArgConstructor = ConstructStaticContextLogic<Arg, Tape, primalValueOffset, constantValueOffset>;
-      using ArgMod = typename ArgConstructor::ResultType;
+      // Constant value offset for the first argument. Here we return the global offset of the construction logic.
+      template<typename T>
+      struct ConstantValueOffsetForArg<T, 0> : public std::integral_constant<size_t, constantValueOffset> {};
 
-      using ResultType = UnaryExpression<OpReal, ArgMod, Operation>;
+      // Static context constructor for the given argument.
+      template<size_t ArgNum>
+      using ArgConstructor = ConstructStaticContextLogic<std::tuple_element_t<ArgNum, Args>, Tape,
+                                                         PrimalValueOffsetForArg<double, ArgNum>::value,
+                                                         ConstantValueOffsetForArg<double, ArgNum>::value>;
 
-      static ResultType construct(Real* primalVector, Identifier const* const identifiers,
-                                  PassiveReal const* const constantData) {
-        return ResultType(ArgConstructor::construct(primalVector, identifiers, constantData));
+      // Modified argument type for the result expression.
+      template<size_t ArgNum>
+      using ArgMod = typename ArgConstructor<ArgNum>::ResultType;
+
+      // Helper for ResultType definition. This allows us to expand on the index sequence Is.
+      template<size_t... Is>
+      static ComputeExpression<OpReal, Operation, ArgMod<Is>...> ResultTypeHelper(std::index_sequence<Is...>);
+
+      // Definition of the return type as the return value of ResultTypeHelper.
+      using ResultType = remove_all<decltype(ResultTypeHelper(std::index_sequence_for<T_Args...>()))>;
+
+      // Helper for construct definition. This allows us to expand on the index sequence Is.
+      template<size_t... Is>
+      CODI_INLINE static ResultType constructHelper(Real* primalVector, Identifier const* const identifiers,
+                                                    PassiveReal const* const constantData, std::index_sequence<Is...>) {
+        return ResultType(ArgConstructor<Is>::construct(primalVector, identifiers, constantData)...);
+      }
+
+      CODI_INLINE static ResultType construct(Real* primalVector, Identifier const* const identifiers,
+                                              PassiveReal const* const constantData) {
+        return constructHelper(primalVector, identifiers, constantData, std::index_sequence_for<T_Args...>());
       }
   };
 #endif

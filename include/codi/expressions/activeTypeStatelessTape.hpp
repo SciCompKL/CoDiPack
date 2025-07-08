@@ -58,7 +58,8 @@ namespace codi {
   template<typename T_Tape>
   struct ActiveTypeStatelessTape : public LhsExpressionInterface<typename T_Tape::Real, typename T_Tape::Gradient,
                                                                  T_Tape, ActiveTypeStatelessTape<T_Tape>>,
-                                   public AssignmentOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>>,
+                                   public AssignmentOperators<typename T_Tape::Real, T_Tape::AllowJacobianOptimization,
+                                                              ActiveTypeStatelessTape<T_Tape>>,
                                    public IncrementOperators<T_Tape, ActiveTypeStatelessTape<T_Tape>> {
     public:
 
@@ -116,7 +117,7 @@ namespace codi {
       /// @{
 
       using StoreAs = ActiveTypeStatelessTape const&;  ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = ActiveTypeStatelessTape;    ///< \copydoc codi::ExpressionInterface::ActiveResult
+      using ADLogic = Tape;                            ///< \copydoc codi::ExpressionInterface::ADLogic
 
       /// @}
       /*******************************************************************************/

@@ -36,32 +36,39 @@
 
 #include <codi.hpp>
 
-template<typename T_Number, typename = void>
+template<typename T_Number, typename T_Tape, typename = void>
 struct MultiplyExternalFunction {
   public:
     using Number = CODI_DECLARE_DEFAULT(T_Number, codi::ActiveType<CODI_ANY>);
+    using Tape = CODI_DECLARE_DEFAULT(T_Tape, CODI_ANY);
 
-    static Number create(Number const& x1, Number const& x2) {
+    static Number create(Number const& x1, Number const& x2, Tape const& tape) {
+      codi::CODI_UNUSED(tape);
       return x1 * x2;
     }
 };
 
-template<typename T_Number>
-struct MultiplyExternalFunction<T_Number, codi::TapeTraits::EnableIfReverseTape<typename T_Number::Tape>> {
+template<typename T_Number, typename T_Tape>
+struct MultiplyExternalFunction<T_Number, T_Tape, codi::TapeTraits::EnableIfReverseTape<T_Tape>> {
   public:
     using Number = CODI_DECLARE_DEFAULT(T_Number, codi::ActiveType<CODI_ANY>);
 
-    using Tape = CODI_DECLARE_DEFAULT(typename Number::Tape,
+    using Tape = CODI_DECLARE_DEFAULT(T_Tape,
                                       CODI_TEMPLATE(codi::FullTapeInterface<double, double, int, codi::EmptyPosition>));
-    using Real = typename Number::Real;
-    using Identifier = typename Number::Identifier;
 
-    using VAI = codi::VectorAccessInterface<Real, Identifier>;
+    using DataExtraction = codi::RealTraits::DataExtraction<Number>;
+    using Real = typename DataExtraction::Real;
+    using Identifier = typename DataExtraction::Identifier;
 
-    static void extFuncReverse(Tape* t, void* d, VAI* vai) {
+    using VAI = codi::VectorAccessInterface<typename Tape::Real, typename Tape::Identifier>;
+    using NumberVAI = typename codi::AggregatedTypeVectorAccessWrapperFactory<Number>::RType;
+
+    static void extFuncReverse(Tape* t, void* d, VAI* vaiReal) {
       codi::CODI_UNUSED(t);
 
       codi::ExternalFunctionUserData* data = static_cast<codi::ExternalFunctionUserData*>(d);
+
+      NumberVAI* vai = codi::AggregatedTypeVectorAccessWrapperFactory<Number>::create(vaiReal);
 
       Real x1_v, x2_v;
       Identifier x1_i, x2_i, w_i;
@@ -77,15 +84,19 @@ struct MultiplyExternalFunction<T_Number, codi::TapeTraits::EnableIfReverseTape<
         Real w_b = vai->getAdjoint(w_i, i);
         vai->resetAdjoint(w_i, i);
 
-        vai->updateAdjoint(x1_i, i, x2_v * w_b);
-        vai->updateAdjoint(x2_i, i, x1_v * w_b);
+        vai->updateAdjoint(x1_i, i, codi::ComputationTraits::transpose(x2_v) * w_b);
+        vai->updateAdjoint(x2_i, i, codi::ComputationTraits::transpose(x1_v) * w_b);
       }
+
+      codi::AggregatedTypeVectorAccessWrapperFactory<Number>::destroy(vai);
     }
 
-    static void extFuncPrimal(Tape* t, void* d, VAI* vai) {
+    static void extFuncPrimal(Tape* t, void* d, VAI* vaiReal) {
       codi::CODI_UNUSED(t);
 
       codi::ExternalFunctionUserData* data = static_cast<codi::ExternalFunctionUserData*>(d);
+
+      NumberVAI* vai = codi::AggregatedTypeVectorAccessWrapperFactory<Number>::create(vaiReal);
 
       Identifier x1_i, x2_i, w_i;
       Real& x1_v = data->getDataRef<Real>();
@@ -99,12 +110,16 @@ struct MultiplyExternalFunction<T_Number, codi::TapeTraits::EnableIfReverseTape<
 
       Real z = x1_v * x2_v;
       vai->setPrimal(w_i, z);
+
+      codi::AggregatedTypeVectorAccessWrapperFactory<Number>::destroy(vai);
     }
 
-    static void extFuncForward(Tape* t, void* d, VAI* vai) {
+    static void extFuncForward(Tape* t, void* d, VAI* vaiReal) {
       codi::CODI_UNUSED(t);
 
       codi::ExternalFunctionUserData* data = static_cast<codi::ExternalFunctionUserData*>(d);
+
+      NumberVAI* vai = codi::AggregatedTypeVectorAccessWrapperFactory<Number>::create(vaiReal);
 
       Identifier x1_i, x2_i, w_i;
       Real& x1_v = data->getDataRef<Real>();
@@ -131,6 +146,8 @@ struct MultiplyExternalFunction<T_Number, codi::TapeTraits::EnableIfReverseTape<
 
       Real z = x1_v * x2_v;
       vai->setPrimal(w_i, z);
+
+      codi::AggregatedTypeVectorAccessWrapperFactory<Number>::destroy(vai);
     }
 
     static void delFunc(Tape* tape, void* d) {
@@ -140,20 +157,19 @@ struct MultiplyExternalFunction<T_Number, codi::TapeTraits::EnableIfReverseTape<
       delete data;
     }
 
-    static Number create(Number const& x1, Number const& x2) {
-      Tape& tape = Number::getTape();
+    static Number create(Number const& x1, Number const& x2, Tape& tape) {
       codi::ExternalFunctionUserData* data = new codi::ExternalFunctionUserData;
       Number w;
       tape.setPassive();
       w = x1 * x2;
       tape.setActive();
 
-      tape.registerExternalFunctionOutput(w);
-      data->addData(x1.getValue());
-      data->addData(x1.getIdentifier());
-      data->addData(x2.getValue());
-      data->addData(x2.getIdentifier());
-      data->addData(w.getIdentifier());
+      codi::RealTraits::registerExternalFunctionOutput(w);
+      data->addData(codi::RealTraits::getValue(x1));
+      data->addData(codi::RealTraits::getIdentifier(x1));
+      data->addData(codi::RealTraits::getValue(x2));
+      data->addData(codi::RealTraits::getIdentifier(x2));
+      data->addData(codi::RealTraits::getIdentifier(w));
       tape.pushExternalFunction(
           codi::ExternalFunction<Tape>(extFuncReverse, extFuncForward, extFuncPrimal, data, delFunc));
 

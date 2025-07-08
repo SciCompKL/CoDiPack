@@ -97,17 +97,11 @@ namespace codi {
       /// @{
 
       using StoreAs = ConstantExpression;  ///< \copydoc codi::ExpressionInterface::StoreAs
-      using ActiveResult = void;           ///< \copydoc codi::ExpressionInterface::ActiveResult
+      using ADLogic = void;                ///< \copydoc codi::ExpressionInterface::ADLogic
 
       /// \copydoc codi::ExpressionInterface::getValue
       CODI_INLINE Real const& getValue() const {
         return primalValue;
-      }
-
-      /// \copydoc codi::ExpressionInterface::getJacobian()
-      template<size_t argNumber>
-      CODI_INLINE Real getJacobian() const {
-        return Real();
       }
 
       /// @}
@@ -115,19 +109,7 @@ namespace codi {
       /// @name Implementation of NodeInterface
       /// @{
 
-      static bool constexpr EndPoint = true;  ///< \copydoc codi::NodeInterface::EndPoint
-
-      /// \copydoc codi::NodeInterface::forEachLink()
-      template<typename Logic, typename... Args>
-      CODI_INLINE void forEachLink(TraversalLogic<Logic>& logic, Args&&... args) const {
-        CODI_UNUSED(logic, args...);
-      }
-
-      /// \copydoc codi::NodeInterface::forEachLinkConstExpr()
-      template<typename Logic, typename... Args>
-      CODI_INLINE static typename Logic::ResultType constexpr forEachLinkConstExpr(Args&&... CODI_UNUSED_ARG(args)) {
-        return Logic::NeutralElement;
-      }
+      static size_t constexpr LinkCount = 0;  ///< \copydoc codi::NodeInterface::LinkCount
 
       /// @}
   };

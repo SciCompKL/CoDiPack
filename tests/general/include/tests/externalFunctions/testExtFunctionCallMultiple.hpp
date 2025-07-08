@@ -50,7 +50,7 @@ struct TestExtFunctionCallMultiple : public TestInterface {
 
       w[0] = x[0];
       for (int i = 1; i < ITER; ++i) {
-        w[i] = MultiplyExternalFunction<Number>::create(w[i - 1], x[1]);
+        w[i] = MultiplyExternalFunction<Number, typename Number::Tape>::create(w[i - 1], x[1], Number::getTape());
       }
 
       y[0] = w[ITER - 1] * w[ITER - 1];

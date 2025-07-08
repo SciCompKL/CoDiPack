@@ -168,12 +168,12 @@ namespace codi {
         std::swap(parameters, other.parameters);
         Base::swap(other);
       }
-      void resetHard() {}            ///< Do nothing.
+      void resetHard() {}  ///< Do nothing.
 
-      void deleteAdjointVector()   {} ///< Do nothing.
-      void resizeAdjointVector()   {} ///< Do nothing.
-      void beginUseAdjointVector() {} ///< Do nothing.
-      void endUseAdjointVector()   {} ///< Do nothing.
+      void deleteAdjointVector() {}    ///< Do nothing.
+      void resizeAdjointVector() {}    ///< Do nothing.
+      void beginUseAdjointVector() {}  ///< Do nothing.
+      void endUseAdjointVector() {}    ///< Do nothing.
 
       /// @}
       /*******************************************************************************/

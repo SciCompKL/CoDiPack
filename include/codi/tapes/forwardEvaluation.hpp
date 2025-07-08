@@ -35,6 +35,8 @@
 #pragma once
 
 #include "../config.h"
+#include "../expressions/aggregate/aggregatedActiveType.hpp"
+#include "../expressions/aggregate/arrayAccessExpression.hpp"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/helpers/jacobianComputationLogic.hpp"
 #include "../misc/macros.hpp"
@@ -126,6 +128,27 @@ namespace codi {
 
         lhs.cast().value() = rhs.cast().getValue();
         lhs.cast().gradient() = newGradient;
+      }
+
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
+      /// Implementation for AggregatedActiveType.
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             ExpressionInterface<Aggregated, Rhs> const& rhs) {
+        using AggregatedTraits = RealTraits::AggregatedTypeTraits<Aggregated>;
+        int constexpr Elements = AggregatedTraits::Elements;
+        LocalReverseLogic reversal;
+
+        Gradient newGradient[Elements] = {};
+        static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+          reversal.eval(ArrayAccessExpression<Aggregated, i.value, Rhs>(rhs), Real(1.0), newGradient[i.value]);
+        });
+
+        Aggregated newValue = rhs.cast().getValue();
+        static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+          lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(newValue);
+          lhs.values[i.value].gradient() = newGradient[i.value];
+        });
       }
 
       /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>

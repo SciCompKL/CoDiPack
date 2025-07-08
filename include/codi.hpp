@@ -38,9 +38,12 @@
 #include "codi/expressions/activeType.hpp"
 #include "codi/expressions/activeTypeStatelessTape.hpp"
 #include "codi/expressions/activeTypeWrapper.hpp"
+#include "codi/expressions/complex/allOperators.hpp"
+#include "codi/expressions/complex/stdComplex.hpp"
 #include "codi/expressions/immutableActiveType.hpp"
 #include "codi/expressions/real/allOperators.hpp"
 #include "codi/expressions/referenceActiveType.hpp"
+#include "codi/expressions/static/staticContextAggregatedActiveType.hpp"
 #include "codi/misc/enumBitset.hpp"
 #include "codi/tapes/data/blockData.hpp"
 #include "codi/tapes/data/chunkedData.hpp"
@@ -90,10 +93,10 @@
 /** \copydoc codi::Namespace */
 namespace codi {
 
-#define CODI_MAJOR_VERSION 2
-#define CODI_MINOR_VERSION 3
+#define CODI_MAJOR_VERSION 3
+#define CODI_MINOR_VERSION 0
 #define CODI_BUILD_VERSION 0
-#define CODI_VERSION "2.3.0"
+#define CODI_VERSION "3.0.0"
 
   /// General forward AD type. See \ref sec_forwardAD for a forward mode AD explanation or \ref ActiveTypeList for a
   /// list of all types.
@@ -170,7 +173,7 @@ namespace codi {
   ///
   /// Primal value taping approach with linear index handling.
   template<typename Real, typename Gradient = Real, typename Index = int,
-           template<typename> class StatementEvaluator = InnerStatementEvaluator>
+           typename StatementEvaluator = InnerStatementEvaluator>
   using RealReversePrimalGen = ActiveType<PrimalValueLinearTape<
       PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, DefaultChunkedData>>>;
 
@@ -188,7 +191,7 @@ namespace codi {
   ///
   /// Primal value taping approach with linear index handling.
   template<typename Real, typename Gradient = Real, typename Index = int,
-           template<typename> class StatementEvaluator = InnerStatementEvaluator>
+           typename StatementEvaluator = InnerStatementEvaluator>
   using RealReversePrimalUncheckedGen = ActiveType<PrimalValueLinearTape<
       PrimalValueTapeTypes<Real, Gradient, LinearIndexManager<Index>, StatementEvaluator, DefaultChunkedData>>>;
 
@@ -200,7 +203,7 @@ namespace codi {
   ///
   /// Primal value taping approach with reuse index handling.
   template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>,
-           template<typename> class StatementEvaluator = InnerStatementEvaluator>
+           typename StatementEvaluator = InnerStatementEvaluator>
   using RealReversePrimalIndexGen = ActiveType<
       PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, DefaultChunkedData>>>;
 
@@ -218,7 +221,7 @@ namespace codi {
   ///
   /// Primal value taping approach with reuse index handling.
   template<typename Real, typename Gradient = Real, typename IndexManager = MultiUseIndexManager<int>,
-           template<typename> class StatementEvaluator = InnerStatementEvaluator>
+           typename StatementEvaluator = InnerStatementEvaluator>
   using RealReversePrimalIndexUncheckedGen = ActiveType<
       PrimalValueReuseTape<PrimalValueTapeTypes<Real, Gradient, IndexManager, StatementEvaluator, DefaultChunkedData>>>;
 

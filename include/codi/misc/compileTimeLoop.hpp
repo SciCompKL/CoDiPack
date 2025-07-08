@@ -44,33 +44,59 @@ namespace codi {
   /**
    * @brief Compile time loop evaluation.
    *
-   * pos is counted backwards until zero excluding zero.
+   * step is added to pos until end is reached.
    *
-   * Called range is: (0,pos]
+   * Be careful if step not -1 or 1, the end position needs to be reached directly.
    *
-   * @tparam T_pos  Starting value for the loop. Counted downwards.
+   * Example:
+   * \code
+   * int a[10];
+   *
+   * // Via lambda:
+   * CompileTimeLoop<0,10,1>::eval([&] (auto i) { a[i.value] = i.value; });
+   *
+   * // Via functor:
+   * struct SetEntry {
+   *
+   *   int* vec;
+   *   template<size_t pos>
+   *   void operator()(std::integral_constant<size_t, pos>, Type& v, Derivative const& d) {
+   *     vec[pos] = pos;
+   *   }
+   * };
+   * CompileTimeLoop<0,10,1>::eval(SetEntry{a});
+   * \endcode
+   *
+   * Called range is: [pos, end)
+   *
+   * @tparam T_pos   Start value for the loop.
+   * @tparam T_end   End value for the loop.
+   * @tparam T_step  Step value for increment or decrement.
    */
-  template<size_t T_pos>
+  template<size_t T_pos, size_t T_end, int T_step>
   struct CompileTimeLoop {
     public:
 
       static size_t constexpr pos = T_pos;  ///< See CompileTimeLoop.
+      static size_t constexpr end = T_end;  ///< See CompileTimeLoop.
+      static int constexpr step = T_step;   ///< See CompileTimeLoop.
 
       /// Func is evaluated with args as func(pos, args...)
       template<typename Func, typename... Args>
       static CODI_INLINE void eval(Func&& func, Args&&... args) {
         func(std::integral_constant<size_t, pos>{}, std::forward<Args>(args)...);
-
-        CompileTimeLoop<pos - 1>::eval(std::forward<Func>(func), std::forward<Args>(args)...);
+        CompileTimeLoop<pos + step, end, step>::eval(std::forward<Func>(func), std::forward<Args>(args)...);
       }
   };
 
   /// Termination of loop evaluation.
-  template<>
-  struct CompileTimeLoop<0> {
+  template<size_t T_pos, int T_step>
+  struct CompileTimeLoop<T_pos, T_pos, T_step> {
     public:
 
-      static size_t constexpr pos = 0;  ///< See CompileTimeLoop.
+      static size_t constexpr pos = T_pos;  ///< See CompileTimeLoop.
+      static size_t constexpr end = T_pos;  ///< See CompileTimeLoop.
+      static int constexpr step = T_step;   ///< See CompileTimeLoop.
 
       /// Nothing is evaluated.
       template<typename... Args>
@@ -78,4 +104,10 @@ namespace codi {
         CODI_UNUSED(args...);
       }
   };
+
+  /// Static for with i = 0 .. (N - 1). See CompileTimeLoop for details.
+  template<std::size_t N, typename F, typename... Args>
+  CODI_INLINE void static_for(F func, Args&&... args) {
+    CompileTimeLoop<0, N, 1>::eval(func, std::forward<Args>(args)...);
+  }
 }
