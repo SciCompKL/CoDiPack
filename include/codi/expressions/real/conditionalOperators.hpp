@@ -47,42 +47,42 @@ namespace codi {
   /// @name Builtin binary comparison operators
   /// @{
 
-#define RETURN   bool
+#define RETURN bool
 #define OPERATOR ==
 #include "conditionalBinaryOverloads.tpp"
 
-#define RETURN   bool
+#define RETURN bool
 #define OPERATOR !=
 #include "conditionalBinaryOverloads.tpp"
 
-#define RETURN   bool
+#define RETURN bool
 #define OPERATOR >
 #include "conditionalBinaryOverloads.tpp"
 
-#define RETURN   bool
+#define RETURN bool
 #define OPERATOR <
 #include "conditionalBinaryOverloads.tpp"
 
-#define RETURN   bool
+#define RETURN bool
 #define OPERATOR >=
 #include "conditionalBinaryOverloads.tpp"
 
-#define RETURN   bool
+#define RETURN bool
 #define OPERATOR <=
 #include "conditionalBinaryOverloads.tpp"
 
-#define RETURN   bool
+#define RETURN bool
 #define OPERATOR &&
 #include "conditionalBinaryOverloads.tpp"
 
-#define RETURN   bool
+#define RETURN bool
 #define OPERATOR ||
 #include "conditionalBinaryOverloads.tpp"
 
 #if CODI_HasCpp20
-#define RETURN   std::partial_ordering
-#define OPERATOR <=>
-#include "conditionalBinaryOverloads.tpp"
+  #define RETURN std::partial_ordering
+  #define OPERATOR <=>
+  #include "conditionalBinaryOverloads.tpp"
 #endif
 
   /// @}

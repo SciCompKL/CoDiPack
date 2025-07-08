@@ -1,7 +1,7 @@
 Changelog {#Changelog}
 ===========================
 
-### v3.0.0 - ???
+### v3.0.0 - 2025-07-08
  - General:
    * Raised default cpp version of CoDiPack to 17. If you require a lower cpp version please use CoDiPack 2.*.
 

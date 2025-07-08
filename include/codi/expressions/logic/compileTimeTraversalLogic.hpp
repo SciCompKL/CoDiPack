@@ -157,7 +157,7 @@ namespace codi {
       /// Helper method to distinguish between leaf nodes and normal nodes.
       template<typename Node, typename... Args>
       CODI_INLINE static ResultType constexpr toNode(Args&&... args) {
-        return CallSwitch<Impl, 0 == Node::LinkCount>::template call<Node>(std::forward<Args>(args)...);
+        return CallSwitch < Impl, 0 == Node::LinkCount > ::template call<Node>(std::forward<Args>(args)...);
       }
 
     private:

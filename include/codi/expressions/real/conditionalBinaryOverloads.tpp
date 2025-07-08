@@ -65,7 +65,7 @@ namespace codi {
   /// Function overload for operator OPERATOR.
   template<typename Real, typename ArgA, typename ArgB>
   CODI_INLINE RETURN operator OPERATOR(ExpressionInterface<Real, ArgA> const& argA,
-                                     ExpressionInterface<Real, ArgB> const& argB) {
+                                       ExpressionInterface<Real, ArgB> const& argB) {
     return RealTraits::getPassiveValue(argA.cast()) OPERATOR RealTraits::getPassiveValue(argB.cast());
   }
 

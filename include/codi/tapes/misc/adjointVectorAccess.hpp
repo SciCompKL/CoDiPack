@@ -71,8 +71,9 @@ namespace codi {
 
     private:
 
-      std::array<Gradient, Config::MaxArgumentSize> lhs;  ///< Temporary storage for indirect adjoint or tangent updates.
-      size_t lhsPos;              ///< Defines which lhs is currently used. Index into the lhs vector.
+      std::array<Gradient, Config::MaxArgumentSize> lhs;  ///< Temporary storage for indirect adjoint or tangent
+                                                          ///< updates.
+      size_t lhsPos;  ///< Defines which lhs is currently used. Index into the lhs vector.
 
       std::array<Real, GradientTraits::dim<Gradient>()> buffer;  ///< Temporary storage for getAdjointVec.
 

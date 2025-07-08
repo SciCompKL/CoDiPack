@@ -361,8 +361,8 @@ namespace codi {
           shape = ", shape=\"record\"";
         }
 
-        std::string node =
-            name + " [label = \"" + finalLabel + "\", color=\"" + nodeColorProperties(identifiers[0]) + "\"" + shape + "];\n";
+        std::string node = name + " [label = \"" + finalLabel + "\", color=\"" + nodeColorProperties(identifiers[0]) +
+                           "\"" + shape + "];\n";
         fprintf(this->fileHandleGraph, "%s", node.c_str());
 
         return name;

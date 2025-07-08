@@ -275,7 +275,7 @@ namespace codi {
       template<size_t argNumber, typename Tangent, typename ArgA, typename ArgB>
       static CODI_INLINE auto applyTangent(Tangent const& tangent, Real const& result, ArgA const& argA,
                                            ArgB const& argB) {
-        return CallSwitchTangent<void, argNumber == 1>::call(tangent, result, argA, argB);
+        return CallSwitchTangent < void, argNumber == 1 > ::call(tangent, result, argA, argB);
       }
 
       /// \copydoc codi::ComputeOperation::applyAdjoint
@@ -284,7 +284,7 @@ namespace codi {
       template<size_t argNumber, typename Adjoint, typename ArgA, typename ArgB>
       static CODI_INLINE auto applyAdjoint(Adjoint const& adjoint, Real const& result, ArgA const& argA,
                                            ArgB const& argB) {
-        return CallSwitchAdjoint<void, argNumber == 1>::call(adjoint, result, argA, argB);
+        return CallSwitchAdjoint < void, argNumber == 1 > ::call(adjoint, result, argA, argB);
       }
   };
 
