@@ -12,15 +12,15 @@ CoDiPack (Code Differentiation Package) is a tool for gradient evaluation in com
 The design principle for CoDiPack is that it is easy to use.
 However, it also gives experienced AD developers full access to all the data structures.
 
-The Scientific Computing Group at the TU Kaiserslautern develops CoDiPack and
+The Scientific Computing Group at the RPTU Kaiserslautern-Landau develops CoDiPack and
 will enhance and extend CoDiPack in the future.
 
 ## Usage
 
 CoDiPack is a header only library.
 The only file the user needs to include is `codi.hpp`.
-The only other requirement is a C++11 compliant compiler
-where one usually needs to specify '-std=c++11' in compiler arguments.
+The only other requirement is a C++17 compliant compiler
+where one usually needs to specify '-std=c++17' in compiler arguments. For a C++11 compliant version of CoDiPack use the 2.* release.
 CoDiPack is tested with gcc, clang, and the Intel compiler.
 
 The file `codi.hpp` defines several datatypes. The most important ones are:
@@ -78,11 +78,11 @@ A very small and simple example for the usage of the RealForward type is the fol
 
 It is compiled with
 ~~~~{.txt}
-  g++  -I<path to codi>/include -std=c++11 -g -o forward forward.cpp
+  g++  -I<path to codi>/include -std=c++17 -g -o forward forward.cpp
 ~~~~
 for the gcc compiler or with
 ~~~~{.txt}
-  icpc  -I<path to codi>/include -std=c++11 -g -o forward forward.cpp
+  icpc  -I<path to codi>/include -std=c++17 -g -o forward forward.cpp
 ~~~~
 for the Intel compiler.
 

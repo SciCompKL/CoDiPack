@@ -22,7 +22,7 @@ There is a newsletter available at [codi-info@uni-kl.de](https://lists.uni-kl.de
 CoDiPack is a header only library.
 The only file the user needs to include is `codi.hpp`.
 The only other requirement is a C++17 compliant compiler
-where one usually needs to specify '-std=c++17' in compiler arguments. For a C++11 compilant version of CoDiPack use th 2.* release.
+where one usually needs to specify '-std=c++17' in compiler arguments. For a C++11 compliant version of CoDiPack use the 2.* release.
 CoDiPack is tested with gcc, clang, and the Intel compiler.
 
 The file `codi.hpp` defines several datatypes. The most important ones are:
