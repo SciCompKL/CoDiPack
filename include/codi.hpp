@@ -73,6 +73,7 @@
 #include "codi/tools/helpers/preaccumulationHelper.hpp"
 #include "codi/tools/helpers/statementPushHelper.hpp"
 #include "codi/tools/helpers/tapeHelper.hpp"
+#include "codi/tools/identifierCacheOptimizer.hpp"
 #include "codi/tools/lowlevelFunctions/lowLevelFunctionCreationUtilities.hpp"
 #include "codi/traits/computationTraits.hpp"
 #include "codi/traits/numericLimits.hpp"

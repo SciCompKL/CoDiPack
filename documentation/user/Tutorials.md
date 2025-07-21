@@ -48,6 +48,7 @@ or pointers to other features.
 | \subpage Example_26_Jacobian_Tape_Readers "" | Reading Jacobian tapes from disk. |
 | \subpage Example_27_Primal_Tape_Readers "" | Rading primal value tapes from disk. |
 | \subpage Example_28_Complex_numbers "" | How to use complex numbers in CoDiPack. |
+| \subpage Example_29_Tape_cache_optimization "" | Applying a cache optimimization for faster reverse evaluations to the tape.|
 
 The graph shows how the tutorials and examples are connected. Usually it is better to understand first the prerequisites
 of a tutorial/example before reading the actual example.

@@ -37,7 +37,7 @@
 
 /// w = a * b
 template<typename Type>
-struct MultLowLevelFunction {
+struct OutputLowLevelFunction {
     using Real = typename Type::Real;
     using Identifier = typename Type::Identifier;
     using AdjointVectorAccess = codi::VectorAccessInterface<Real, Identifier>*;
@@ -50,36 +50,30 @@ struct MultLowLevelFunction {
 
     struct Data {
 
-        static size_t constexpr size_per_entry = sizeof(Real) * 3 + sizeof(Identifier) * 3;
+        static size_t constexpr size_per_entry = sizeof(Real) * 1 + sizeof(Identifier) * 1;
 
         static size_t size(int n) {
-          return sizeof(int) + n * size_per_entry;
+          return sizeof(int) + n * size_per_entry + sizeof(Real*);
         }
 
         int n;
 
-        Real* a_v;
-        Real* b_v;
         Real* w_v_old;
 
-        Identifier* a_i;
-        Identifier* b_i;
         Identifier* w_i;
 
+        Real* buffer;
 
         void read(codi::ByteDataView& dataStore) {
           n = dataStore.read<int>();
-          a_v = dataStore.read<Real>(n);
-          b_v = dataStore.read<Real>(n);
           w_v_old = dataStore.read<Real>(n);
-          a_i = dataStore.read<Identifier>(n);
-          b_i = dataStore.read<Identifier>(n);
           w_i = dataStore.read<Identifier>(n);
+          buffer = dataStore.read<Real*>();
         }
     };
 
     /// Store on tape.
-    CODI_INLINE static void evalAndStore(Type const* a, Type const* b, Type* w, int n) {
+    CODI_INLINE static void evalAndStore(Type* w, int n, Real* buffer) {
       std::vector<Real> oldPrimals = {};
       Tape& tape = Type::getTape();
 
@@ -87,11 +81,16 @@ struct MultLowLevelFunction {
 
       // Perform passive primal operation.
       for(int i = 0; i < n; i += 1) {
-        w[i].value() = a[i].getValue() * b[i].getValue();
+        w[i].value() = buffer[i];
       }
       // Register on tape
       for(int i = 0; i < n; i += 1) {
-        oldPrimals.push_back(tape.registerExternalFunctionOutput(w[i]));
+        if(buffer[i + n] != 0) {
+          oldPrimals.push_back(tape.registerExternalFunctionOutput(w[i]));
+        } else {
+          w[i] = buffer[i]; // Delete old index.
+          oldPrimals.push_back(0.0);
+        }
       }
 
 
@@ -102,28 +101,18 @@ struct MultLowLevelFunction {
 
       dataStore.write(n);
       for(int i = 0; i < n; i += 1) {
-        dataStore.write(a[i].getValue());
-      }
-      for(int i = 0; i < n; i += 1) {
-        dataStore.write(b[i].getValue());
-      }
-      for(int i = 0; i < n; i += 1) {
         dataStore.write(oldPrimals[i]);
       }
 
       for(int i = 0; i < n; i += 1) {
-        dataStore.write(a[i].getIdentifier());
-      }
-      for(int i = 0; i < n; i += 1) {
-        dataStore.write(b[i].getIdentifier());
-      }
-      for(int i = 0; i < n; i += 1) {
         dataStore.write(w[i].getIdentifier());
       }
+
+      dataStore.write(buffer);
     }
 
-    CODI_INLINE static void evalAndStore(Type const& a, Type const& b, Type& w) {
-      evalAndStore(&a, &b, &w, 1);
+    CODI_INLINE static void evalAndStore(Type& w, Real* buffer) {
+      evalAndStore(&w, 1, buffer);
     }
 
     /// Function for forward interpretation.
@@ -134,24 +123,16 @@ struct MultLowLevelFunction {
 
       if (Tape::HasPrimalValues) {
         for(int i = 0; i < data.n; i += 1) {
-          data.a_v[i] = adjoints->getPrimal(data.a_i[i]);
-          data.b_v[i] = adjoints->getPrimal(data.b_i[i]);
-
-          Real w = data.a_v[i] * data.b_v[i];
-
           data.w_v_old[i] = adjoints->getPrimal(data.w_i[i]);
-          adjoints->setPrimal(data.w_i[i], w);
+          adjoints->setPrimal(data.w_i[i], data.buffer[i]);
         }
       }
 
       size_t vecDim = adjoints->getVectorSize();
       for(int i = 0; i < data.n; i += 1) {
         for (size_t curDim = 0; curDim < vecDim; curDim += 1) {
-          Real w_d = data.b_v[i] * adjoints->getAdjoint(data.a_i[i], curDim)
-                     + data.a_v[i] * adjoints->getAdjoint(data.b_i[i], curDim);
-
           adjoints->resetAdjoint(data.w_i[i], curDim);
-          adjoints->updateAdjoint(data.w_i[i], curDim, w_d);
+          adjoints->updateAdjoint(data.w_i[i], curDim, data.buffer[i + (vecDim + 1) * data.n]);
         }
       }
     }
@@ -171,11 +152,8 @@ struct MultLowLevelFunction {
       size_t vecDim = adjoints->getVectorSize();
       for(int i = 0; i < data.n; i += 1) {
         for (size_t curDim = 0; curDim < vecDim; curDim += 1) {
-          Real w_b = adjoints->getAdjoint(data.w_i[i], curDim);
+          data.buffer[i + (curDim + 1) * data.n] = adjoints->getAdjoint(data.w_i[i], curDim);
           adjoints->resetAdjoint(data.w_i[i], curDim);
-
-          adjoints->updateAdjoint(data.a_i[i], curDim, data.b_v[i] * w_b);
-          adjoints->updateAdjoint(data.b_i[i], curDim, data.a_v[i] * w_b);
         }
       }
     }
@@ -185,13 +163,6 @@ struct MultLowLevelFunction {
       Data data = {};
 
       data.read(dataStore);
-
-      for(int i = 0; i < data.n; i += 1) {
-        func(&data.a_i[i], userData);
-      }
-      for(int i = 0; i < data.n; i += 1) {
-        func(&data.b_i[i], userData);
-      }
     }
 
     /// Function for iteration over inputs.
@@ -205,8 +176,7 @@ struct MultLowLevelFunction {
       }
     }
 
-
-            /// Register function on tape.
+    ///Register function on tape.
     CODI_INLINE static void registerOnTape() {
       if (codi::Config::LowLevelFunctionTokenInvalid == ID) {
         using Entry = codi::LowLevelFunctionEntry<Tape, typename Type::Real, typename Type::Identifier>;
@@ -216,4 +186,4 @@ struct MultLowLevelFunction {
 };
 
 template<typename Type>
-codi::Config::LowLevelFunctionToken MultLowLevelFunction<Type>::ID = codi::Config::LowLevelFunctionTokenInvalid;
+codi::Config::LowLevelFunctionToken OutputLowLevelFunction<Type>::ID = codi::Config::LowLevelFunctionTokenInvalid;

@@ -243,8 +243,8 @@ namespace codi {
           size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from jacobianData */
-          size_t& curJacobianPos, size_t const& endJacobianPos, typename Real::Real const* const rhsJacobians,
-          typename Real::Identifier const* const rhsIdentifiers,
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
@@ -254,7 +254,7 @@ namespace codi {
         ByteDataView dataView = {};
         LowLevelFunctionEntry<JacobianLinearTape, Real, Identifier> const* func = nullptr;
 
-        typename Real::Identifier curLhsIdentifier;
+        Identifier curLhsIdentifier;
         Config::ArgumentSize argsSize;
         size_t curAdjointPos = startAdjointPos;
         while (curAdjointPos < endAdjointPos) CODI_Likely {

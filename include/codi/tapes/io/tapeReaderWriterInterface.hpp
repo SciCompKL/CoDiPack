@@ -263,9 +263,9 @@ namespace codi {
 
       virtual Tape& getTape() = 0;  ///< Used to get a reference to the restored tape.
 
-      virtual std::vector<Identifier> const& getInputs() const& = 0;  ///< Used to get the restored inputs of the tape.
+      virtual std::vector<Identifier>& getInputs() = 0;  ///< Used to get the restored inputs of the tape.
 
-      virtual std::vector<Identifier> const& getOutputs() const& = 0;  ///< Used to get the restored outputs of the
-                                                                       ///< tape.
+      virtual std::vector<Identifier>& getOutputs() = 0;  ///< Used to get the restored outputs of the
+                                                          ///< tape.
   };
 }

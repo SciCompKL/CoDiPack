@@ -191,7 +191,7 @@ namespace codi {
 
       /// Calls the iterate inputs function if not nullptr, otherwise throws a CODI_EXCEPTION.
       void iterateInputs(Tape* tape, IterCallback func, void* userData) const {
-        if (nullptr != funcPrimal) {
+        if (nullptr != funcIterIn) {
           funcIterIn(tape, data, (ExternalFunctionInternalData::IterCallbackUntyped)func, userData);
         } else {
           CODI_EXCEPTION(
@@ -201,7 +201,7 @@ namespace codi {
 
       /// Calls the iterate inputs function if not nullptr, otherwise throws a CODI_EXCEPTION.
       void iterateOutputs(Tape* tape, IterCallback func, void* userData) const {
-        if (nullptr != funcPrimal) {
+        if (nullptr != funcIterOut) {
           funcIterOut(tape, data, (ExternalFunctionInternalData::IterCallbackUntyped)func, userData);
         } else {
           CODI_EXCEPTION(
