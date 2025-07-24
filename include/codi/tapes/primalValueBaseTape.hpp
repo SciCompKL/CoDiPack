@@ -2012,7 +2012,7 @@ namespace codi {
           CODI_INLINE static void evaluateFull(Func const& evalInner, size_t const& maxOutputArgs,
                                                size_t const& maxActiveArgs, size_t const& maxConstantArgs,
                                                Real* primalVector, STMT_COMMON_ARGS) {
-            CODI_UNUSED(evalInner, maxActiveArgs, maxConstantArgs, numberOfPassiveArguments);
+            CODI_UNUSED(evalInner, maxOutputArgs, maxActiveArgs, maxConstantArgs, numberOfPassiveArguments);
 
             StatementDataPointers pointers = {};
             pointers.populate(1, size, size, 0, byteData);
