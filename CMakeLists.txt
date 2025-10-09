@@ -6,7 +6,8 @@ project(
   ${CODIPACK_NAME}
   VERSION ${CODIPACK_VERSION}
   DESCRIPTION "CoDiPack - Code Differentiation Package"
-  HOMEPAGE_URL "http://scicomp.rptu.de/software/codi")
+  HOMEPAGE_URL "http://scicomp.rptu.de/software/codi"
+  LANGUAGES CXX)
 
 add_library(${PROJECT_NAME} INTERFACE)
 
