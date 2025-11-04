@@ -199,6 +199,31 @@ namespace codi {
 
         return *this;
       }
+
+#if CODI_HasCpp20
+      using Base::real;
+
+      template<typename Arg>
+      void real(ExpressionInterface<InnerReal, Arg> const& arg) {
+        Base::values[0] = arg;
+      }
+
+      void real(InnerReal const& arg) {
+        Base::values[0] = arg;
+      }
+
+      using Base::imag;
+
+      template<typename Arg>
+      void imag(ExpressionInterface<InnerReal, Arg> const& arg) {
+        Base::values[1] = arg;
+      }
+
+      void imag(InnerReal const& arg) {
+        Base::values[1] = arg;
+      }
+
+#endif
   };
 
   namespace RealTraits {
