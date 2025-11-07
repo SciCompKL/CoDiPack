@@ -181,6 +181,44 @@ namespace codi {
         CODI_UNUSED(value, data);
       }
 
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             ExpressionInterface<Aggregated, Rhs> const& rhs) {
+        using AggregatedTraits = RealTraits::AggregatedTypeTraits<Aggregated>;
+
+        int constexpr Elements = AggregatedTraits::Elements;
+
+        ValidationIndicator<Real, Tag> vi[Elements];
+
+        Aggregated real = rhs.cast().getValue();
+
+        static_for<Elements>([this, &vi, &lhs, &rhs, &real](auto i) CODI_LAMBDA_INLINE {
+          ValidateTags validate;
+
+          validate.eval(ArrayAccessExpression<Aggregated, i.value, Rhs>(rhs), vi[i.value], cast());
+          checkLhsError(lhs.values[i.value], AggregatedTraits::template arrayAccess<i.value>(real));
+
+          handleError(vi[i.value]);
+        });
+
+        static_for<Elements>([this, &vi, &lhs, &real](auto i) CODI_LAMBDA_INLINE {
+          if (vi[i.value].isActive) {
+            setTag(lhs.values[i.value].getTapeData().tag);
+          } else {
+            resetTag(lhs.values[i.value].getTapeData().tag);
+          }
+          lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
+        });
+      }
+
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
+      /// Optimization for copy statements of aggregated types.
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             AggregatedActiveType<Aggregated, Type, Rhs> const& rhs) {
+        store<Aggregated, Type, Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Aggregated, Rhs> const&>(rhs));
+      }
+
       /// Verify all tags of the rhs and the lhs properties.
       template<typename Lhs, typename Rhs>
       void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, ExpressionInterface<Real, Rhs> const& rhs) {
