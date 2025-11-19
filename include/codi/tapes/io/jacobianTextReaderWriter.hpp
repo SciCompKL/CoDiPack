@@ -62,13 +62,19 @@ namespace codi {
 
       FILE* fileHandleTxt = nullptr;  ///< File handle.
 
-      bool printIO;           ///< Flag to enable the writing of the IO file.
-      bool printColumnNames;  ///< Flag to enable column names.
+      bool printIO;                      ///< Flag to enable the writing of the IO file.
+      bool printColumnNames;             ///< Flag to enable column names.
+      bool printInputStatements = true;  ///< Flag to enable the output of input statements.
 
       /// Constructor.
       JacobianTextTapeWriter(std::string const& name, std::vector<Identifier> const& in,
                              std::vector<Identifier> const& out, bool ifIO, bool ifColumnNames)
           : CommonBaseTapeWriter<T_Type>(name, in, out), printIO(ifIO), printColumnNames(ifColumnNames) {};
+
+      /// Set if input statements should be printed.
+      void setInputStatementOutput(bool value) {
+        printInputStatements = value;
+      }
 
       /// \copydoc codi::TapeWriterInterface::start()
       void start(Tape& tape) {
@@ -88,11 +94,13 @@ namespace codi {
        */
       void writeStatement(Identifier const& curLhsIdentifier, size_t& curJacobianPos, Real const* const rhsJacobians,
                           Identifier const* const rhsIdentifiers, Config::ArgumentSize const& nJacobians) {
-        fprintf(fileHandleTxt, "\n%d  %hhu  [", curLhsIdentifier, static_cast<Config::ArgumentSize>(nJacobians));
-
         if (nJacobians == Config::StatementInputTag) CODI_Unlikely {
-          // Do nothing.
+          if (printInputStatements) {
+            fprintf(fileHandleTxt, "\n%d  %hhu  []", curLhsIdentifier, static_cast<Config::ArgumentSize>(nJacobians));
+          }
         } else CODI_Likely {
+          fprintf(fileHandleTxt, "\n%d  %hhu  [", curLhsIdentifier, static_cast<Config::ArgumentSize>(nJacobians));
+
           for (size_t argCount = 0; argCount < nJacobians; argCount++) {
             fprintf(fileHandleTxt, " %d ", rhsIdentifiers[curJacobianPos + argCount]);
           }
@@ -101,8 +109,9 @@ namespace codi {
           for (size_t argCount = 0; argCount < nJacobians; argCount++) {
             fprintf(fileHandleTxt, " %0.12e ", rhsJacobians[curJacobianPos + argCount]);
           }
+
+          fprintf(fileHandleTxt, "]");
         }
-        fprintf(fileHandleTxt, "]");
       }
 
       /// \copydoc codi::TapeWriterInterface::finish()
