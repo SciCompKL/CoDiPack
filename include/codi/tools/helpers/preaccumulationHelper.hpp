@@ -83,17 +83,19 @@ namespace codi {
       using Real = typename Type::Real;              ///< See LhsExpressionInterface.
       using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
       using Gradient = typename Type::Gradient;      ///< See LhsExpressionInterface.
+      using TapeData = typename Type::TapeData;      ///< See LhsExpressionInterface.
 
       /// See LhsExpressionInterface.
       using Tape = CODI_DD(typename Type::Tape, CODI_DEFAULT_TAPE);
       using Position = typename Tape::Position;  ///< See PositionalEvaluationTapeInterface.
 
-      std::vector<Identifier> inputData;   ///< List of input identifiers. Can be added manually after start() was
-                                           ///< called.
-      std::vector<Identifier> outputData;  ///< List of output identifiers. Can be added manually before finish() is
-                                           ///< called. Has to be in sync with outputValues.
-      std::vector<Type*> outputValues;     ///< List of output value pointers. Can be added manually before finish() is
-                                           ///< called. Has to be in sync with outputData.
+      std::vector<Identifier> inputData;    ///< List of input identifiers. Can be added manually after start() was
+                                            ///< called.
+      std::vector<TapeData> inputTapeData;  ///< List of input tape data. Used for the manual statement push.
+      std::vector<Identifier> outputData;   ///< List of output identifiers. Can be added manually before finish() is
+                                            ///< called. Has to be in sync with outputValues.
+      std::vector<Type*> outputValues;      ///< List of output value pointers. Can be added manually before finish() is
+                                            ///< called. Has to be in sync with outputData.
 
       std::vector<Gradient> localAdjoints;  ///< Vector of local adjoint variables. Persists across preaccumulations to
                                             ///< reduce the number of allocations, can be freed anytime if needed.
@@ -108,7 +110,14 @@ namespace codi {
 
       /// Constructor
       PreaccumulationHelper()
-          : inputData(), outputData(), outputValues(), localAdjoints(), startPos(), storedAdjoints(), jacobian(0, 0) {}
+          : inputData(),
+            inputTapeData(),
+            outputData(),
+            outputValues(),
+            localAdjoints(),
+            startPos(),
+            storedAdjoints(),
+            jacobian(0, 0) {}
 
       /// Add multiple additional inputs. Inputs need to be of type `Type`. Called after start().
       template<typename... Inputs>
@@ -129,6 +138,7 @@ namespace codi {
 
         if (tape.isActive()) {
           inputData.clear();
+          inputTapeData.clear();
           outputData.clear();
           outputValues.clear();
 
@@ -284,6 +294,7 @@ namespace codi {
         Identifier const& identifier = input.getIdentifier();
         if (Type::getTape().getPassiveIndex() != identifier) {
           inputData.push_back(identifier);
+          inputTapeData.push_back(input.getTapeData());
         }
       }
 
@@ -530,7 +541,7 @@ namespace codi {
 
             // We need to initialize with the output's current identifier such that it is correctly deleted in
             // storeManual.
-            Identifier lastIdentifier = value.getIdentifier();
+            TapeData lastIdentifier = value.getTapeData();
             bool staggeringActive = false;
             int curIn = 0;
 
@@ -559,7 +570,7 @@ namespace codi {
               }
               nonZerosLeft -= jacobiansForStatement;  // Update nonzeros so that we know if it is the last round.
 
-              Identifier storedIdentifier = lastIdentifier;
+              TapeData storedIdentifier = lastIdentifier;
               // storeManual creates a new identifier which is either the identifier of the output w or the temporary
               // staggering variables t_1, t_2, ...
               tape.storeManual(value.getValue(), lastIdentifier, jacobiansForStatement + (int)staggeringActive);
@@ -570,7 +581,7 @@ namespace codi {
               // Push the rest of the Jacobians for the statement.
               while (jacobiansForStatement > 0) {
                 if (Real() != (Real)jacobian(curOut, curIn)) {
-                  tape.pushJacobianManual(jacobian(curOut, curIn), 0.0, inputData[curIn]);
+                  tape.pushJacobianManual(jacobian(curOut, curIn), 0.0, inputTapeData[curIn]);
                   jacobiansForStatement -= 1;
                 }
                 curIn += 1;
@@ -579,10 +590,10 @@ namespace codi {
               staggeringActive = true;
             }
 
-            value.getIdentifier() = lastIdentifier; /* now set gradient data for the real output value */
+            value.getTapeData() = lastIdentifier; /* now set gradient data for the real output value */
           } else {
             // Disable tape index since there is no dependency.
-            tape.destroyIdentifier(value.value(), value.getIdentifier());
+            tape.destroyTapeData(value.value(), value.getTapeData());
           }
         }
       }

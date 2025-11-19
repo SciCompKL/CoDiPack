@@ -88,6 +88,8 @@ namespace codi {
                            CODI_T(DataInterface<Nested>));  ///< See JacobianTapeTypes.
 
       using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
+      using ActiveTypeTapeData =
+          typename IndexManager::ActiveTypeIndexData;  ///< Take the active real data from the index manager.
 
       /// See JacobianTapeTypes.
       template<typename Impl>
@@ -138,10 +140,11 @@ namespace codi {
       using Base = CommonTapeImplementation<T_TapeTypes, T_Impl>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;  ///< See JacobianTapeTypes.
-      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;                      ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;              ///< See JacobianTapeTypes.
+      using Identifier = typename TapeTypes::Identifier;                  ///< See TapeTypesInterface.
+      using ActiveTypeTapeData = typename TapeTypes::ActiveTypeTapeData;  ///< See TapeTypesInterface.
 
       using StatementData = typename TapeTypes::StatementData;  ///< See JacobianTapeTypes.
       using JacobianData = typename TapeTypes::JacobianData;    ///< See JacobianTapeTypes.
@@ -266,20 +269,20 @@ namespace codi {
       /// @name Functions from InternalStatementRecordingTapeInterface
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingTapeInterface::initIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::initTapeData()
       template<typename Real>
-      CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void initTapeData(Real& value, ActiveTypeTapeData& data) {
         CODI_UNUSED(value);
 
-        identifier = IndexManager::InactiveIndex;
+        indexManager.get().initIndex(data);
       }
 
-      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyTapeData()
       template<typename Real>
-      CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void destroyTapeData(Real& value, ActiveTypeTapeData& data) {
         CODI_UNUSED(value);
 
-        indexManager.get().template freeIndex<Impl>(identifier);
+        indexManager.get().template freeIndex<Impl>(data);
       }
 
       /// @}
@@ -291,7 +294,10 @@ namespace codi {
         public:
           /// General implementation. Checks for invalid and passive values/Jacobians.
           template<typename Node, typename DataVector>
-          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector) {
+          CODI_INLINE void handleJacobianOnActive(Node const& node, Real jacobian, DataVector& dataVector,
+                                                  IndexManager const& indexManager) {
+            indexManager.validateRhsIndex(node.getTapeData());
+
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
               if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
                 if (CODI_ENABLE_CHECK(Config::CheckJacobianIsZero, !RealTraits::isTotalZero(jacobian))) {
@@ -304,8 +310,9 @@ namespace codi {
           /// Specialization for ReferenceActiveType nodes. Delays Jacobian push.
           template<typename Type, typename DataVector>
           CODI_INLINE void handleJacobianOnActive(ReferenceActiveType<Type> const& node, Real jacobian,
-                                                  DataVector& dataVector) {
+                                                  DataVector& dataVector, IndexManager const& indexManager) {
             CODI_UNUSED(dataVector);
+            indexManager.validateRhsIndex(node.getTapeData());
 
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
               // Do a delayed push for these leaf nodes, accumulate the jacobian in the local member.
@@ -320,7 +327,10 @@ namespace codi {
 
           /// Specialization for ReferenceActiveType nodes. Pushes the delayed Jacobian.
           template<typename Type, typename DataVector>
-          CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, DataVector& dataVector) {
+          // indexManager should be a const&, for some reason gcc did not preferred this overload to the ellipsis one.
+          CODI_INLINE void handleActive(ReferenceActiveType<Type> const& node, DataVector& dataVector,
+                                        IndexManager& indexManager) {
+            indexManager.validateRhsIndex(node.getTapeData());
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != node.getIdentifier())) {
               if (CODI_ENABLE_CHECK(Config::CheckJacobianIsZero, !RealTraits::isTotalZero(node.jacobian))) {
                 dataVector.pushData(node.jacobian, node.getIdentifier());
@@ -346,8 +356,8 @@ namespace codi {
         auto& insertVector = jacobianData;
 #endif
 
-        pushJacobianLogic.eval(rhs.cast(), Real(1.0), insertVector);
-        pushDelayedJacobianLogic.eval(rhs.cast(), insertVector);
+        pushJacobianLogic.eval(rhs.cast(), Real(1.0), insertVector, indexManager.get());
+        pushDelayedJacobianLogic.eval(rhs.cast(), insertVector, indexManager.get());
 
 #if CODI_RemoveDuplicateJacobianArguments
         jacobianSorter.storeData(jacobianData);
@@ -398,7 +408,7 @@ namespace codi {
             // problem does not arise.
 
             // Create new identifiers to prevent self references.
-            std::array<Identifier, Elements> identifiers = {};
+            std::array<ActiveTypeTapeData, Elements> identifiers = {};
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
               if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments[i.value])) {
                 indexManager.get().template assignIndex<Impl>(identifiers[i.value]);
@@ -410,10 +420,10 @@ namespace codi {
             size_t eventJacobianOffset = 0;
 
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-              indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+              indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getTapeData());
 
               if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments[i.value])) {
-                lhs.values[i.value].getIdentifier() = identifiers[i.value];
+                lhs.values[i.value].getTapeData() = identifiers[i.value];
                 cast().pushStmtData(lhs.values[i.value].getIdentifier(),
                                     (Config::ArgumentSize)numberOfArguments[i.value]);
 
@@ -443,7 +453,7 @@ namespace codi {
 
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
             lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
-            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getTapeData());
           });
         }
       }
@@ -463,13 +473,13 @@ namespace codi {
             return;
           } else {
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-              indexManager.get().template copyIndex<Impl>(lhs.values[i.value].getIdentifier(),
-                                                          rhs.values[i.value].getIdentifier());
+              indexManager.get().template copyIndex<Impl>(lhs.values[i.value].getTapeData(),
+                                                          rhs.values[i.value].getTapeData());
             });
           }
         } else {
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getTapeData());
           });
         }
 
@@ -494,7 +504,7 @@ namespace codi {
 
           size_t numberOfArguments = jacobianData.getPushedDataCount(jacobianStart);
           if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != numberOfArguments)) {
-            indexManager.get().template assignIndex<Impl>(lhs.cast().getIdentifier());
+            indexManager.get().template assignIndex<Impl>(lhs.cast().getTapeData());
             cast().pushStmtData(lhs.cast().getIdentifier(), (Config::ArgumentSize)numberOfArguments);
 
             if (Config::StatementEvents) {
@@ -509,10 +519,10 @@ namespace codi {
                                                                      rhsIdentifiers, jacobians);
             }
           } else {
-            indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
+            indexManager.get().template freeIndex<Impl>(lhs.cast().getTapeData());
           }
         } else {
-          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getTapeData());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -528,10 +538,10 @@ namespace codi {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
             return;
           } else {
-            indexManager.get().template copyIndex<Impl>(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
+            indexManager.get().template copyIndex<Impl>(lhs.cast().getTapeData(), rhs.cast().getTapeData());
           }
         } else {
-          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getTapeData());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -541,7 +551,7 @@ namespace codi {
       /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) {
-        indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
+        indexManager.get().template freeIndex<Impl>(lhs.cast().getTapeData());
 
         lhs.cast().value() = rhs;
       }
@@ -562,9 +572,9 @@ namespace codi {
         }
 
         if (unusedIndex) {
-          indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
+          indexManager.get().template assignUnusedIndex<Impl>(value.cast().getTapeData());
         } else {
-          indexManager.get().template assignIndex<Impl>(value.cast().getIdentifier());
+          indexManager.get().template assignIndex<Impl>(value.cast().getTapeData());
         }
 
         if (TapeTypes::IsLinearIndexHandler) {
@@ -867,12 +877,12 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobianManual()
-      void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
+      void pushJacobianManual(Real const& jacobian, Real const& value, ActiveTypeTapeData const& data) {
         CODI_UNUSED(value);
 
         cast().incrementManualPushCounter();
 
-        jacobianData.pushData(jacobian, index);
+        jacobianData.pushData(jacobian, indexManager.get().getIndex(data));
 
         if (Config::StatementEvents) {
           if (this->manualPushCounter == this->manualPushGoal) {
@@ -891,7 +901,7 @@ namespace codi {
       }
 
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
-      void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
+      void storeManual(Real const& lhsValue, ActiveTypeTapeData& lhsData, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
         Impl& impl = cast();
 
@@ -900,10 +910,10 @@ namespace codi {
         statementData.reserveItems(1);
         jacobianData.reserveItems(size);
 
-        indexManager.get().template assignIndex<Impl>(lhsIndex);
-        impl.pushStmtData(lhsIndex, (Config::ArgumentSize)size);
+        indexManager.get().template assignIndex<Impl>(lhsData);
+        impl.pushStmtData(indexManager.get().getIndex(lhsData), (Config::ArgumentSize)size);
 
-        impl.initializeManualPushData(lhsValue, lhsIndex, size);
+        impl.initializeManualPushData(lhsValue, indexManager.get().getIndex(lhsData), size);
       }
 
       /// @}
@@ -969,11 +979,11 @@ namespace codi {
 
         Base::internalStoreLowLevelFunction(token, size, data);
 
-        Identifier lhsIndex = Identifier();
+        ActiveTypeTapeData lhsData = ActiveTypeTapeData();
         if (LinearIndexHandling) {
-          indexManager.get().template assignIndex<Impl>(lhsIndex);
+          indexManager.get().template assignIndex<Impl>(lhsData);
         }
-        cast().pushStmtData(lhsIndex, Config::StatementLowLevelFunctionTag);
+        cast().pushStmtData(indexManager.get().getIndex(lhsData), Config::StatementLowLevelFunctionTag);
       }
 
       /// @}

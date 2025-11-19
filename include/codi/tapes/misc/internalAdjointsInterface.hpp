@@ -81,7 +81,7 @@ namespace codi {
     public:
 
       /// See InternalAdjointsInterface.
-      using Tape = CODI_DD(T_Tape, CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);
       using Gradient = CODI_DD(T_Gradient, double);   ///< See InternalAdjointsInterface.
       using Identifier = CODI_DD(T_Identifier, int);  ///< See InternalAdjointsInterface.
 

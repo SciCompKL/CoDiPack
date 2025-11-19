@@ -136,7 +136,21 @@ namespace codi {
         std::swap(preaccumulationHandling, other.preaccumulationHandling);
         std::swap(preaccumulationTag, other.preaccumulationTag);
       }
+      /*******************************************************************************/
+      /// @name IdentifierInformationTapeInterface interface parital implementation
+      /// @{
 
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier const& getIdentifier(Identifier const& data) {
+        return data;
+      }
+
+              /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier& getIdentifier(Identifier& data) {
+        return data;
+      }
+
+              /// @}
       /*******************************************************************************/
       /// @name Tagging specific functions.
       /// @{

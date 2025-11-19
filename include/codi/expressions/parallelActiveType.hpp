@@ -65,6 +65,7 @@ namespace codi {
       using typename Base::Identifier;   ///< See ActiveTypeBase.
       using typename Base::PassiveReal;  ///< See ActiveTypeBase.
       using typename Base::Real;         ///< See ActiveTypeBase.
+      using typename Base::TapeData;     ///< See ActiveTypeBase.
 
       using typename Base::ADLogic;  ///< See ActiveTypeBase.
       using typename Base::StoreAs;  ///< See ActiveTypeBase.

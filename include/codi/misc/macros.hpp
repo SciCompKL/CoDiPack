@@ -43,7 +43,8 @@ namespace codi {
 
   struct EmptyPosition;
 
-  template<typename T_Real, typename T_Gradient, typename T_Identifier, typename T_Position>
+  template<typename T_Real, typename T_Gradient, typename T_Identifier, typename T_Position,
+           typename T_ActiveTypeTapeData>
   struct FullTapeInterface;
 
   template<typename T_Tape>
@@ -134,10 +135,11 @@ namespace codi {
   struct ActiveTypeProxy {
       using Real = double;
       using Identifier = int;
+      using TapeData = int;
   };
 
   /// Declaration of the default full tape interface.
-  #define CODI_DEFAULT_TAPE FullTapeInterface<double, double, int, EmptyPosition>
+  #define CODI_DEFAULT_TAPE FullTapeInterface<double, double, int, EmptyPosition, int>
 
   /// Declaration of a default parallel tape interface.
   #define CODI_DEFAULT_PARALLEL_TAPE CODI_UNION<CODI_DEFAULT_TAPE, EditingTapeInterface<EmptyPosition>>

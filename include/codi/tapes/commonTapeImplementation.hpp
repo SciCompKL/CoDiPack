@@ -64,9 +64,10 @@ namespace codi {
   struct TapeTypesInterface {
     public:
 
-      using Real = CODI_ANY;        ///< Primal computation type, e.g. double.
-      using Gradient = CODI_ANY;    ///< Gradient computation type, e.g. double or Direction.
-      using Identifier = CODI_ANY;  ///< Identifier for the internal management, e.g. int.
+      using Real = CODI_ANY;                ///< Primal computation type, e.g. double.
+      using Gradient = CODI_ANY;            ///< Gradient computation type, e.g. double or Direction.
+      using Identifier = CODI_ANY;          ///< Identifier for the internal management, e.g. int.
+      using ActiveTypeTapeData = CODI_ANY;  ///< Tape data stored in each active type. Usually the identifier data.
 
       /// Indicates the storage strategy that will be used by all data vectors. See DataInterface and its
       /// implementations.
@@ -126,17 +127,18 @@ namespace codi {
    */
   template<typename T_ImplTapeTypes, typename T_Impl>
   struct CommonTapeImplementation
-      : public FullTapeInterface<typename T_ImplTapeTypes::Real, typename T_ImplTapeTypes::Gradient,
-                                 typename T_ImplTapeTypes::Identifier,
-                                 typename CommonTapeTypes<T_ImplTapeTypes>::Position> {
+      : public FullTapeInterface<
+            typename T_ImplTapeTypes::Real, typename T_ImplTapeTypes::Gradient, typename T_ImplTapeTypes::Identifier,
+            typename CommonTapeTypes<T_ImplTapeTypes>::Position, typename T_ImplTapeTypes::ActiveTypeTapeData> {
     public:
 
       using ImplTapeTypes = CODI_DD(T_ImplTapeTypes, TapeTypesInterface);  ///< See CommonTapeImplementation.
       using Impl = CODI_DD(T_Impl, CommonTapeImplementation);              ///< See CommonTapeImplementation.
 
-      using Real = typename ImplTapeTypes::Real;              ///< See TapeTypesInterface.
-      using Gradient = typename ImplTapeTypes::Gradient;      ///< See TapeTypesInterface.
-      using Identifier = typename ImplTapeTypes::Identifier;  ///< See TapeTypesInterface.
+      using Real = typename ImplTapeTypes::Real;                              ///< See TapeTypesInterface.
+      using Gradient = typename ImplTapeTypes::Gradient;                      ///< See TapeTypesInterface.
+      using Identifier = typename ImplTapeTypes::Identifier;                  ///< See TapeTypesInterface.
+      using ActiveTypeTapeData = typename ImplTapeTypes::ActiveTypeTapeData;  ///< See TapeTypesInterface.
 
       /// See CommonTapeTypes.
       using LowLevelFunctionInfoData = typename CommonTapeTypes<ImplTapeTypes>::LowLevelFunctionInfoData;
@@ -673,6 +675,18 @@ namespace codi {
       template<typename Lhs>
       void deactivateValue(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         value = value.getValue();
+      }
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier const& getIdentifier(ActiveTypeTapeData const& data) {
+        Impl& impl = cast();
+        return impl.getIndexManager().getIndex(data);
+      }
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier& getIdentifier(ActiveTypeTapeData& data) {
+        Impl& impl = cast();
+        return impl.getIndexManager().getIndex(data);
       }
 
       /// @}

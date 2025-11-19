@@ -65,10 +65,11 @@ namespace codi {
 
       using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See ActiveTypeStatelessTape.
 
-      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
-      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
-      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
+      using Real = typename Tape::Real;                    ///< See LhsExpressionInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;   ///< Basic computation type.
+      using Identifier = typename Tape::Identifier;        ///< See LhsExpressionInterface.
+      using Gradient = typename Tape::Gradient;            ///< See LhsExpressionInterface.
+      using TapeData = typename Tape::ActiveTypeTapeData;  ///< See IdentifierInformationTapeInterface.
 
       using Base = LhsExpressionInterface<Real, Gradient, T_Tape, ActiveTypeStatelessTape<T_Tape>>;  ///< Base class
                                                                                                      ///< abbreviation.
@@ -76,7 +77,7 @@ namespace codi {
     private:
 
       Real primalValue;
-      Identifier identifier;
+      TapeData tapeData;
 
     public:
 
@@ -85,17 +86,17 @@ namespace codi {
       constexpr CODI_INLINE_NO_FA ActiveTypeStatelessTape() = default;
 
       /// Constructor
-      constexpr CODI_INLINE ActiveTypeStatelessTape(PassiveReal const& value) : primalValue(value), identifier() {}
+      constexpr CODI_INLINE ActiveTypeStatelessTape(PassiveReal const& value) : primalValue(value), tapeData() {}
 
       /// Constructor
-      CODI_INLINE ActiveTypeStatelessTape(ActiveTypeStatelessTape const& v) : primalValue(), identifier() {
+      CODI_INLINE ActiveTypeStatelessTape(ActiveTypeStatelessTape const& v) : primalValue(), tapeData() {
         Base::init(v.getValue(), EventHints::Statement::Copy);
         getTape().store(*this, v);
       }
 
       /// Constructor
       template<typename Rhs>
-      CODI_INLINE ActiveTypeStatelessTape(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), identifier() {
+      CODI_INLINE ActiveTypeStatelessTape(ExpressionInterface<Real, Rhs> const& rhs) : primalValue(), tapeData() {
         Base::init(rhs.cast().getValue(), EventHints::Statement::Expression);
         getTape().store(*this, rhs.cast());
       }
@@ -126,12 +127,22 @@ namespace codi {
 
       /// \copydoc codi::LhsExpressionInterface::getIdentifier()
       CODI_INLINE Identifier& getIdentifier() {
-        return identifier;
+        return getTape().getIdentifier(tapeData);
       }
 
       /// \copydoc codi::LhsExpressionInterface::getIdentifier() const
       CODI_INLINE Identifier const& getIdentifier() const {
-        return identifier;
+        return getTape().getIdentifier(tapeData);
+      }
+
+      /// \copydoc codi::LhsExpressionInterface::getTapeData()
+      CODI_INLINE TapeData& getTapeData() {
+        return tapeData;
+      }
+
+      /// \copydoc codi::LhsExpressionInterface::getTapeData() const
+      CODI_INLINE TapeData const& getTapeData() const {
+        return tapeData;
       }
 
       /// \copydoc codi::LhsExpressionInterface::value()

@@ -306,7 +306,7 @@ namespace std {
     public:
 
       /// See complex.
-      using Tape = CODI_DD(T_Tape, CODI_T(codi::FullTapeInterface<double, double, int, codi::EmptyPosition>));
+      using Tape = CODI_DD(T_Tape, CODI_T(codi::FullTapeInterface<double, double, int, codi::EmptyPosition, int>));
 
       using Real = complex<typename Tape::Real>;     ///< See ActiveComplex::Real.
       using InnerActive = codi::ActiveType<Tape>;    ///< See ActiveComplex::InnerActive.

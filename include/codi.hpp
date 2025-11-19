@@ -48,6 +48,7 @@
 #include "codi/tapes/data/blockData.hpp"
 #include "codi/tapes/data/chunkedData.hpp"
 #include "codi/tapes/forwardEvaluation.hpp"
+#include "codi/tapes/indices/debugMultiUseIndexManager.hpp"
 #include "codi/tapes/indices/linearIndexManager.hpp"
 #include "codi/tapes/indices/multiUseIndexManager.hpp"
 #include "codi/tapes/jacobianLinearTape.hpp"

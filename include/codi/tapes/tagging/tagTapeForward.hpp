@@ -74,9 +74,10 @@ namespace codi {
           };
       };
 
-      using Gradient = TagData<Tag>;   ///< See TapeTypesInterface.
-      using Identifier = Gradient;     ///< Same as the gradient type. Tangent data is stored in the active types.
-      using Position = EmptyPosition;  ///< See TapeTypesInterface.
+      using Gradient = TagData<Tag>;  ///< See TapeTypesInterface.
+      using Identifier = Gradient;    ///< Same as the gradient type. Tangent data is stored in the active types.
+      using ActiveTypeTapeData = TagData<Tag>;  ///< See TapeTypesInterface.
+      using Position = EmptyPosition;           ///< See TapeTypesInterface.
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
@@ -92,6 +93,8 @@ namespace codi {
       /// Constructor.
       TagTapeForward() : Base(), tempGradient() {}
 
+      using Base::getIdentifier;
+
       /*******************************************************************************/
       /// @name Implementation of InternalStatementRecordingTapeInterface
       /// @{
@@ -100,14 +103,14 @@ namespace codi {
 
       /// Do nothing.
       template<typename Real>
-      void initIdentifier(Real& value, Identifier& identifier) {
+      void initTapeData(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
         identifier = Identifier();
       }
 
       /// Do nothing.
       template<typename Real>
-      void destroyIdentifier(Real& value, Identifier& identifier) {
+      void destroyTapeData(Real& value, Identifier& identifier) {
         CODI_UNUSED(value, identifier);
       }
 

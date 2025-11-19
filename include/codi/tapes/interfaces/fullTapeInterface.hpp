@@ -61,24 +61,27 @@ namespace codi {
    *
    * A tape that implements this interface correctly can be used in all helper structures of CoDiPack.
    *
-   * @tparam T_Real        The computation type of a tape, usually chosen as ActiveType::Real.
-   * @tparam T_Gradient    The gradient type of a tape, usually chosen as ActiveType::Gradient.
-   * @tparam T_Identifier  The adjoint/tangent identification type of a tape, usually chosen as ActiveType::Identifier.
-   * @tparam T_Position  Global tape position, usually chosen as Tape::Position.
+   * @tparam T_Real                The computation type of a tape, usually chosen as ActiveType::Real.
+   * @tparam T_Gradient            The gradient type of a tape, usually chosen as ActiveType::Gradient.
+   * @tparam T_Identifier          The adjoint/tangent identification type of a tape, usually chosen as
+   * ActiveType::Identifier.
+   * @tparam T_Position            Global tape position, usually chosen as Tape::Position.
+   * @tparam T_ActiveTypeTapeData  The tape data stored in each active type.
    */
-  template<typename T_Real, typename T_Gradient, typename T_Identifier, typename T_Position>
+  template<typename T_Real, typename T_Gradient, typename T_Identifier, typename T_Position,
+           typename T_ActiveTypeTapeData>
   struct FullTapeInterface
       : public virtual CustomAdjointVectorEvaluationTapeInterface<T_Position>,
         public virtual DataManagementTapeInterface<T_Real, T_Identifier>,
         public virtual ExternalFunctionTapeInterface<T_Real, T_Gradient, T_Identifier>,
         public virtual ForwardEvaluationTapeInterface<T_Position>,
         public virtual GradientAccessTapeInterface<T_Gradient, T_Identifier>,
-        public virtual IdentifierInformationTapeInterface<T_Real, T_Gradient, T_Identifier>,
+        public virtual IdentifierInformationTapeInterface<T_Real, T_Gradient, T_Identifier, T_ActiveTypeTapeData>,
         public virtual InternalStatementRecordingTapeInterface<T_Identifier>,
         public virtual LowLevelFunctionTapeInterface<T_Real, T_Gradient, T_Identifier>,
-        public virtual ManualStatementPushTapeInterface<T_Real, T_Gradient, T_Identifier>,
+        public virtual ManualStatementPushTapeInterface<T_Real, T_Gradient, T_ActiveTypeTapeData>,
         public virtual PositionalEvaluationTapeInterface<T_Position>,
-        public virtual PreaccumulationEvaluationTapeInterface<T_Real, T_Gradient, T_Identifier, T_Position>,
+        public virtual PreaccumulationEvaluationTapeInterface<T_Real, T_Gradient, T_Position, T_ActiveTypeTapeData>,
         public virtual PrimalEvaluationTapeInterface<T_Real, T_Identifier, T_Position>,
         public virtual ReadWriteTapeInterface<T_Real, T_Gradient, T_Identifier, T_Position>,
         public virtual ReverseTapeInterface<T_Real, T_Gradient, T_Identifier> {

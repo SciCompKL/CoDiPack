@@ -46,6 +46,7 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
     using Real = double;
     using Gradient = double;
     using Identifier = int;
+    using ActiveTypeTapeData = int;
 
 //! [Data stream - Type definition]
     using OperatorData = codi::ChunkedData<codi::Chunk1<OperatorCode>>;
@@ -176,17 +177,25 @@ struct SimpleTape : public codi::ReverseTapeInterface<double, double, int> {
 
     static bool constexpr AllowJacobianOptimization = false; // If certain operations can be hidden from the tape.
 
-//! [Identifiers - Initialization]
+//! [Identifiers - Initialization and handling]
     template<typename Real>
-    void initIdentifier(Real& value, Identifier& identifier) {
-      identifier = 0; // Initialize with zero we perform an online activity analysis.
+    void initTapeData(Real& value, ActiveTypeTapeData& data) {
+      data = 0; // Initialize with zero we perform an online activity analysis.
     }
 
     template<typename Real>
-    void destroyIdentifier(Real& value, Identifier& identifier) {
+    void destroyTapeData(Real& value, ActiveTypeTapeData& data) {
       // Do nothing: Identifiers are not reused.
     }
-//! [Identifiers - Initialization]
+
+    Identifier const& getIdentifier(ActiveTypeTapeData const& data) {
+      return data;
+    }
+
+    Identifier& getIdentifier(ActiveTypeTapeData& data) {
+      return data;
+    }
+//! [Identifiers - Initialization and handling]
 
 //! [Storing - Entry]
     template<typename Lhs, typename Rhs>

@@ -52,7 +52,7 @@ namespace codi {
    * @tparam T_tag   The type of the tag, usually int.
    */
   template<typename T_Real, typename T_Tag>
-  struct TagTapeReverse : public FullTapeInterface<T_Real, T_Real, TagData<T_Tag>, EmptyPosition>,
+  struct TagTapeReverse : public FullTapeInterface<T_Real, T_Real, TagData<T_Tag>, EmptyPosition, TagData<T_Tag>>,
                           public TagTapeBase<T_Real, T_Tag, T_Real, TagTapeReverse<T_Real, T_Tag>> {
       using Real = CODI_DD(T_Real, double);  ///< See TagTapeReverse.
       using Tag = CODI_DD(T_Tag, int);       ///< See TagTapeReverse.
@@ -66,9 +66,10 @@ namespace codi {
           };
       };
 
-      using Gradient = Real;            ///< See TapeTypesInterface.
-      using Identifier = TagData<Tag>;  ///< See TapeTypesInterface.
-      using Position = EmptyPosition;   ///< See TapeTypesInterface.
+      using Gradient = Real;                    ///< See TapeTypesInterface.
+      using Identifier = TagData<Tag>;          ///< See TapeTypesInterface.
+      using ActiveTypeTapeData = TagData<Tag>;  ///< See TapeTypesInterface.
+      using Position = EmptyPosition;           ///< See TapeTypesInterface.
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
@@ -86,6 +87,8 @@ namespace codi {
 
       /// Constructor.
       TagTapeReverse() : Base(), active(), tempPrimal(), tempGradient(), parameters() {}
+
+      using Base::getIdentifier;
 
       /*******************************************************************************/
       /// @name CustomAdjointVectorEvaluationTapeInterface interface implementation
@@ -288,14 +291,14 @@ namespace codi {
 
       /// Do nothing.
       template<typename Real>
-      void initIdentifier(Real& value, Identifier& identifier) {
+      void initTapeData(Real& value, Identifier& identifier) {
         CODI_UNUSED(value);
         identifier = Identifier();
       }
 
       /// Do nothing.
       template<typename Real>
-      void destroyIdentifier(Real& value, Identifier& identifier) {
+      void destroyTapeData(Real& value, Identifier& identifier) {
         CODI_UNUSED(value, identifier);
       }
 

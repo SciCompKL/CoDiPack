@@ -58,6 +58,7 @@ namespace codi {
     public:
 
       using Index = CODI_DD(T_Index, int);    ///< See MultiUseIndexManager.
+      using ActiveTypeIndexData = Index;      ///< Same as the index.
       using Base = ReuseIndexManager<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/

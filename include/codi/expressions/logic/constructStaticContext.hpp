@@ -225,6 +225,7 @@ namespace codi {
       template<size_t... Is>
       CODI_INLINE static ResultType constructHelper(Real* primalVector, Identifier const* const identifiers,
                                                     PassiveReal const* const constantData, std::index_sequence<Is...>) {
+        CODI_UNUSED(primalVector, identifiers, constantData);  // Required for empty sequence Is
         return ResultType(ArgConstructor<Is>::construct(primalVector, identifiers, constantData)...);
       }
 

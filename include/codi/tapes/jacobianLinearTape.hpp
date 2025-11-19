@@ -70,11 +70,12 @@ namespace codi {
       using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
-      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
-      using Position = typename Base::Position;               ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;                      ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;              ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;                  ///< See TapeTypesInterface.
+      using ActiveTypeTapeData = typename TapeTypes::ActiveTypeTapeData;  ///< See TapeTypesInterface.
+      using Position = typename Base::Position;                           ///< See TapeTypesInterface.
 
       CODI_STATIC_ASSERT(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");
 
