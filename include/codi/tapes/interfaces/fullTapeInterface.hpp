@@ -37,6 +37,7 @@
 #include "../../config.h"
 #include "../../misc/macros.hpp"
 #include "customAdjointVectorEvaluationTapeInterface.hpp"
+#include "customIteratorTapeInterface.hpp"
 #include "dataManagementTapeInterface.hpp"
 #include "externalFunctionTapeInterface.hpp"
 #include "forwardEvaluationTapeInterface.hpp"
@@ -72,6 +73,7 @@ namespace codi {
            typename T_ActiveTypeTapeData>
   struct FullTapeInterface
       : public virtual CustomAdjointVectorEvaluationTapeInterface<T_Position>,
+        public virtual CustomIteratorTapeInterface<T_Position>,
         public virtual DataManagementTapeInterface<T_Real, T_Identifier>,
         public virtual ExternalFunctionTapeInterface<T_Real, T_Gradient, T_Identifier>,
         public virtual ForwardEvaluationTapeInterface<T_Position>,

@@ -157,6 +157,57 @@ struct MultiplyExternalFunction<T_Number, T_Tape, codi::TapeTraits::EnableIfReve
       delete data;
     }
 
+    static void iterInFunc(Tape* t, void* d, typename codi::ExternalFunction<Tape>::IterCallback func, void* userData) {
+      codi::CODI_UNUSED(t);
+
+      codi::ExternalFunctionUserData* data = static_cast<codi::ExternalFunctionUserData*>(d);
+
+      Real x1_v, x2_v;
+      data->getData(x1_v);
+      Identifier& x1_i = data->template getDataRef<Identifier>();
+      data->getData(x2_v);
+      Identifier& x2_i = data->template getDataRef<Identifier>();
+      Identifier& w_i = data->template getDataRef<Identifier>();
+
+      if constexpr (std::is_integral_v<Identifier>) {
+        func(&x1_i, userData);
+        func(&x2_i, userData);
+      } else {
+        for (auto& i : x1_i) {
+          func(&i, userData);
+        }
+        for (auto& i : x2_i) {
+          func(&i, userData);
+        }
+      }
+
+      codi::CODI_UNUSED(w_i);
+    }
+
+    static void iterOutFunc(Tape* t, void* d, typename codi::ExternalFunction<Tape>::IterCallback func,
+                            void* userData) {
+      codi::CODI_UNUSED(t);
+
+      codi::ExternalFunctionUserData* data = static_cast<codi::ExternalFunctionUserData*>(d);
+
+      Real x1_v, x2_v;
+      data->getData(x1_v);
+      Identifier& x1_i = data->template getDataRef<Identifier>();
+      data->getData(x2_v);
+      Identifier& x2_i = data->template getDataRef<Identifier>();
+      Identifier& w_i = data->template getDataRef<Identifier>();
+
+      if constexpr (std::is_integral_v<Identifier>) {
+        func(&w_i, userData);
+      } else {
+        for (auto& i : w_i) {
+          func(&i, userData);
+        }
+      }
+
+      codi::CODI_UNUSED(x1_i, x2_i);
+    }
+
     static Number create(Number const& x1, Number const& x2, Tape& tape) {
       codi::ExternalFunctionUserData* data = new codi::ExternalFunctionUserData;
       Number w;
@@ -170,8 +221,8 @@ struct MultiplyExternalFunction<T_Number, T_Tape, codi::TapeTraits::EnableIfReve
       data->addData(codi::RealTraits::getValue(x2));
       data->addData(codi::RealTraits::getIdentifier(x2));
       data->addData(codi::RealTraits::getIdentifier(w));
-      tape.pushExternalFunction(
-          codi::ExternalFunction<Tape>(extFuncReverse, extFuncForward, extFuncPrimal, data, delFunc));
+      tape.pushExternalFunction(codi::ExternalFunction<Tape>(extFuncReverse, extFuncForward, extFuncPrimal, data,
+                                                             delFunc, iterInFunc, iterOutFunc));
 
       return w;
     }

@@ -49,14 +49,20 @@ namespace codi {
   /// Internal untyped data for an external function.
   struct ExternalFunctionInternalData {
     protected:
-      typedef void (*CallFunctionUntyped)(void* tape, void* data,
-                                          void* adjointInterface);    ///< Call function definition.
-      typedef void (*DeleteFunctionUntyped)(void* tape, void* data);  ///< Delete function definition.
+      using CallFunctionUntyped = void (*)(void* tape, void* data,
+                                           void* adjointInterface);    ///< Call function definition.
+      using DeleteFunctionUntyped = void (*)(void* tape, void* data);  ///< Delete function definition.
 
-      CallFunctionUntyped funcReverse;   ///< Reverse evaluation function pointer.
-      CallFunctionUntyped funcForward;   ///< Forward evaluation function pointer.
-      CallFunctionUntyped funcPrimal;    ///< Primal evaluation function pointer.
-      DeleteFunctionUntyped funcDelete;  ///< User data deletion function pointer.
+      using IterCallbackUntyped = void (*)(void* id, void* userData);  ///< Untyped callback function for id iteration.
+      using IterateIdsFunctionUntyped = void (*)(void* tape, void* data, IterCallbackUntyped callback,
+                                                 void* userData);  ///< Iterate ids function definition.
+
+      CallFunctionUntyped funcReverse;        ///< Reverse evaluation function pointer.
+      CallFunctionUntyped funcForward;        ///< Forward evaluation function pointer.
+      CallFunctionUntyped funcPrimal;         ///< Primal evaluation function pointer.
+      DeleteFunctionUntyped funcDelete;       ///< User data deletion function pointer.
+      IterateIdsFunctionUntyped funcIterIn;   ///< Iterate over inputs.
+      IterateIdsFunctionUntyped funcIterOut;  ///< Iterate over outputs.
 
       void* data;  ///< User data pointer.
 
@@ -64,17 +70,27 @@ namespace codi {
 
       /// Constructor
       ExternalFunctionInternalData()
-          : funcReverse(nullptr), funcForward(nullptr), funcPrimal(nullptr), funcDelete(nullptr), data(nullptr) {}
+          : funcReverse(nullptr),
+            funcForward(nullptr),
+            funcPrimal(nullptr),
+            funcDelete(nullptr),
+            funcIterIn(nullptr),
+            funcIterOut(nullptr),
+            data(nullptr) {}
 
     protected:
 
       /// Constructor
       ExternalFunctionInternalData(CallFunctionUntyped funcReverse, CallFunctionUntyped funcForward,
-                                   CallFunctionUntyped funcPrimal, DeleteFunctionUntyped funcDelete, void* data)
+                                   CallFunctionUntyped funcPrimal, DeleteFunctionUntyped funcDelete,
+                                   IterateIdsFunctionUntyped funcIterIn, IterateIdsFunctionUntyped funcIterOut,
+                                   void* data)
           : funcReverse(funcReverse),
             funcForward(funcForward),
             funcPrimal(funcPrimal),
             funcDelete(funcDelete),
+            funcIterIn(funcIterIn),
+            funcIterOut(funcIterOut),
             data(data) {}
   };
 
@@ -104,26 +120,36 @@ namespace codi {
 
       using Tape = CODI_DD(T_Tape,
                            CODI_T(ExternalFunctionTapeInterface<double, double, int>));  ///< See ExternalFunction
+      using Real = typename Tape::Real;                                                  ///< See FullTapeInterface.
+      using Identifier = typename Tape::Identifier;                                      ///< See FullTapeInterface.
 
-      using VectorAccess =
-          VectorAccessInterface<typename Tape::Real, typename Tape::Identifier>;  ///< Shortcut for
-                                                                                  ///< VectorAccessInterface.
-      typedef void (*CallFunction)(Tape* tape, void* data,
-                                   VectorAccess* adjointInterface);  ///< Call function definition.
-      typedef void (*DeleteFunction)(Tape* tape, void* data);        ///< Delete function definition.
+      using VectorAccess = VectorAccessInterface<Real, Identifier>;  ///< Shortcut for
+                                                                     ///< VectorAccessInterface.
+      using IterCallback =
+          typename LowLevelFunctionEntry<Tape, Real, Identifier>::IterCallback;  ///< Callback for iterate ids function.
+
+      using CallFunction = void (*)(Tape* tape, void* data,
+                                    VectorAccess* adjointInterface);  ///< Call function definition.
+      using DeleteFunction = void (*)(Tape* tape, void* data);        ///< Delete function definition.
+      using IterateIdsFunction = void (*)(Tape* tape, void* data, IterCallback callback,
+                                          void* userData);  ///< Iterate ids function definition.
 
       /// Any arguments can be nullptr if not required.
       ExternalFunction(CallFunction funcReverse, CallFunction funcForward, CallFunction funcPrimal, void* data,
-                       DeleteFunction funcDelete)
+                       DeleteFunction funcDelete, IterateIdsFunction funcIterIn, IterateIdsFunction funcIterOut)
           : ExternalFunctionInternalData((ExternalFunctionInternalData::CallFunctionUntyped)funcReverse,
                                          (ExternalFunctionInternalData::CallFunctionUntyped)funcForward,
                                          (ExternalFunctionInternalData::CallFunctionUntyped)funcPrimal,
-                                         (ExternalFunctionInternalData::DeleteFunctionUntyped)funcDelete, data) {}
+                                         (ExternalFunctionInternalData::DeleteFunctionUntyped)funcDelete,
+                                         (ExternalFunctionInternalData::IterateIdsFunctionUntyped)funcIterIn,
+                                         (ExternalFunctionInternalData::IterateIdsFunctionUntyped)funcIterOut, data) {}
 
       /// Helper function for the creation of an ExternalFunction object.
       static ExternalFunction create(CallFunction funcReverse, void* data, DeleteFunction funcDelete,
-                                     CallFunction funcForward = nullptr, CallFunction funcPrimal = nullptr) {
-        return ExternalFunction(funcReverse, funcForward, funcPrimal, data, funcDelete);
+                                     CallFunction funcForward = nullptr, CallFunction funcPrimal = nullptr,
+                                     IterateIdsFunction funcIterIn = nullptr,
+                                     IterateIdsFunction funcIterOut = nullptr) {
+        return ExternalFunction(funcReverse, funcForward, funcPrimal, data, funcDelete, funcIterIn, funcIterOut);
       }
 
       /// Calls the delete function if not nullptr.
@@ -162,6 +188,26 @@ namespace codi {
           CODI_EXCEPTION("Calling an external function in primal mode without providing a primal evaluation function.");
         }
       }
+
+      /// Calls the iterate inputs function if not nullptr, otherwise throws a CODI_EXCEPTION.
+      void iterateInputs(Tape* tape, IterCallback func, void* userData) const {
+        if (nullptr != funcPrimal) {
+          funcIterIn(tape, data, (ExternalFunctionInternalData::IterCallbackUntyped)func, userData);
+        } else {
+          CODI_EXCEPTION(
+              "Calling an external function for iteration of inputs without providing an iteration function.");
+        }
+      }
+
+      /// Calls the iterate inputs function if not nullptr, otherwise throws a CODI_EXCEPTION.
+      void iterateOutputs(Tape* tape, IterCallback func, void* userData) const {
+        if (nullptr != funcPrimal) {
+          funcIterOut(tape, data, (ExternalFunctionInternalData::IterCallbackUntyped)func, userData);
+        } else {
+          CODI_EXCEPTION(
+              "Calling an external function for iteration of outputs without providing an iteration function.");
+        }
+      }
   };
 
   /**
@@ -180,9 +226,12 @@ namespace codi {
       using Real = CODI_DD(T_Real, double);             ///< See ExternalFunctionLowLevelEntryMapper.
       using Identifier = CODI_DD(T_Identifier, int);    ///< See ExternalFunctionLowLevelEntryMapper.
 
+      /// See LowLevelFunctionEntry.
+      using IterCallback = typename LowLevelFunctionEntry<T_Tape, T_Real, T_Identifier>::IterCallback;
+
       using ExtFunc = ExternalFunction<Tape>;  ///< Abbreviation for ExternalFunction.
       /// Shortcut for VectorAccessInterface.
-      using VectorAccess = VectorAccessInterface<typename Tape::Real, typename Tape::Identifier>;
+      using VectorAccess = VectorAccessInterface<Real, Identifier>;
 
       /// Recovers the external function data and calls evaluateForward on it.
       CODI_INLINE static void forward(Tape* tape, ByteDataView& data, VectorAccess* access) {
@@ -208,6 +257,22 @@ namespace codi {
         extFunc->deleteData(tape);
       }
 
+      /// Iterate over the inputs of the external function. \c func is called for each input with \c userData.
+      CODI_INLINE static void iterateInputs(Tape* tape, ByteDataView& data, IterCallback func, void* userData) {
+        CODI_UNUSED(tape);
+
+        ExtFunc* extFunc = data.read<ExtFunc>(1);
+        extFunc->iterateInputs(tape, func, userData);
+      }
+
+      /// Iterate over the outputs of the external function. \c func is called for each output with \c userData.
+      CODI_INLINE static void iterateOutputs(Tape* tape, ByteDataView& data, IterCallback func, void* userData) {
+        CODI_UNUSED(tape);
+
+        ExtFunc* extFunc = data.read<ExtFunc>(1);
+        extFunc->iterateOutputs(tape, func, userData);
+      }
+
       /// Store an external function on the tape.
       CODI_INLINE static void store(Tape& tape, Config::LowLevelFunctionToken token, ExtFunc const& extFunc) {
         ByteDataView data = {};
@@ -218,7 +283,8 @@ namespace codi {
 
       /// Create the function entry for the tape registration.
       CODI_INLINE static LowLevelFunctionEntry<Tape, Real, Identifier> create() {
-        return LowLevelFunctionEntry<Tape, Real, Identifier>(reverse, forward, primal, del);
+        return LowLevelFunctionEntry<Tape, Real, Identifier>(reverse, forward, primal, del, iterateInputs,
+                                                             iterateOutputs);
       }
   };
 }

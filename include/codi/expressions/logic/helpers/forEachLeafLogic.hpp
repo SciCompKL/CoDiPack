@@ -78,10 +78,18 @@ namespace codi {
         CODI_UNUSED(node, args...);
       }
 
+      /// Called for leaf nodes which have an EmptyOperation..
+      template<typename Node, typename... Args>
+      void handleEmpty(Node const& node, Args&&... args) {
+        CODI_UNUSED(node, args...);
+      }
+
       /// @}
       /*******************************************************************************/
       /// @name Overwrites from TraversalLogic
       /// @{
+
+      // TODO: Rewrite for C++17. One function with if constexpr.
 
       /// \copydoc codi::TraversalLogic::leaf()
       template<typename Node, typename... Args>
@@ -93,6 +101,12 @@ namespace codi {
       template<typename Node, typename... Args>
       CODI_INLINE ExpressionTraits::EnableIfConstantExpression<Node> leaf(Node const& node, Args&&... args) {
         cast().handleConstant(node, std::forward<Args>(args)...);
+      }
+
+      /// \copydoc codi::TraversalLogic::leaf()
+      template<typename Node, typename... Args>
+      CODI_INLINE ExpressionTraits::EnableIfEmptyExpression<Node> leaf(Node const& node, Args&&... args) {
+        cast().handleEmpty(node, std::forward<Args>(args)...);
       }
 
       /// @}

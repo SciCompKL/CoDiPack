@@ -1071,6 +1071,13 @@ namespace codi {
         return temp;
       }
 
+      /// Not implemented, raises an exception.
+      Real* getPrimalVector() {
+        CODI_EXCEPTION("Accessing primal vector of an Jacobian tape.");
+
+        return nullptr;
+      }
+
       /// @}
 
     private:

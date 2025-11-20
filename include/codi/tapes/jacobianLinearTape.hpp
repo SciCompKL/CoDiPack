@@ -269,5 +269,126 @@ namespace codi {
           curStmtPos += 1;
         }
       }
+
+    public:
+      /*******************************************************************************/
+      /// @name Functions from CustomIteratorTapeInterface
+      /// @{
+
+      using Base::iterateForward;
+      /// \copydoc codi::CustomIteratorTapeInterface::iterateForward
+      template<typename Callbacks>
+      CODI_INLINE void iterateForward(Callbacks&& callbacks, Position start, Position end) {
+        auto evalFunc =
+            [&callbacks](
+                /* data from call */
+                JacobianLinearTape& tape,
+                /* data from low level function byte data vector */
+                size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+                /* data from low level function info data vector */
+                size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
+                Config::LowLevelFunctionToken* const tokenPtr, Config::LowLevelFunctionDataSize* const dataSizePtr,
+                /* data from jacobian vector */
+                size_t& curJacobianPos, size_t const& endJacobianPos, Real* const rhsJacobians,
+                Identifier* const rhsIdentifiers,
+                /* data from statement vector */
+                size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
+                /* data from index handler */
+                size_t const& startAdjointPos, size_t const& endAdjointPos) CODI_LAMBDA_INLINE {
+              CODI_UNUSED(tape, endJacobianPos, endLLFByteDataPos, endLLFInfoDataPos, endStmtPos);
+
+              ByteDataView dataView = {};
+              LowLevelFunctionEntry<JacobianLinearTape, Real, Identifier> const* func = nullptr;
+
+              size_t curAdjointPos = startAdjointPos;
+              while (curAdjointPos < endAdjointPos) CODI_Likely {
+                curAdjointPos += 1;
+
+                Config::ArgumentSize argsSize = numberOfJacobians[curStmtPos];
+
+                if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+                  Base::prepareLowLevelFunction(true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr,
+                                                dataSizePtr, dataView, func);
+                  callbacks.handleLowLevelFunction(*func, dataView);
+                } else CODI_Likely {
+                  if (Config::StatementInputTag == argsSize) CODI_Unlikely {
+                    argsSize = 0;
+                  }
+
+                  Identifier lhsIdentifier = curAdjointPos;
+                  callbacks.handleStatement(lhsIdentifier, argsSize, &rhsJacobians[curJacobianPos],
+                                            &rhsIdentifiers[curJacobianPos]);
+
+                  codiAssert(lhsIdentifier ==
+                             (Identifier)curAdjointPos);  // Lhs identifiers can not be edited in a linear tape.
+
+                  curJacobianPos += argsSize;
+                }
+
+                curStmtPos += 1;
+              }
+            };
+
+        Base::llfByteData.evaluateForward(start, end, evalFunc, *this);
+      }
+
+      using Base::iterateReverse;
+      /// \copydoc codi::CustomIteratorTapeInterface::iterateReverse
+      template<typename Callbacks>
+      CODI_INLINE void iterateReverse(Callbacks&& callbacks, Position start, Position end) {
+        auto evalFunc =
+            [&callbacks](
+                /* data from call */
+                JacobianLinearTape& tape,
+                /* data from low level function byte data vector */
+                size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+                /* data from low level function info data vector */
+                size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
+                Config::LowLevelFunctionToken* const tokenPtr, Config::LowLevelFunctionDataSize* const dataSizePtr,
+                /* data from jacobian vector */
+                size_t& curJacobianPos, size_t const& endJacobianPos, Real* const rhsJacobians,
+                Identifier* const rhsIdentifiers,
+                /* data from statement vector */
+                size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
+                /* data from index handler */
+                size_t const& startAdjointPos, size_t const& endAdjointPos) CODI_LAMBDA_INLINE {
+              CODI_UNUSED(tape, endJacobianPos, endLLFByteDataPos, endLLFInfoDataPos, endStmtPos);
+
+              ByteDataView dataView = {};
+              LowLevelFunctionEntry<JacobianLinearTape, Real, Identifier> const* func = nullptr;
+
+              size_t curAdjointPos = startAdjointPos;
+              while (curAdjointPos > endAdjointPos) CODI_Likely {
+                curStmtPos -= 1;
+
+                Config::ArgumentSize argsSize = numberOfJacobians[curStmtPos];
+
+                if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+                  Base::prepareLowLevelFunction(false, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr,
+                                                dataSizePtr, dataView, func);
+                  callbacks.handleLowLevelFunction(*func, dataView);
+                } else CODI_Likely {
+                  if (Config::StatementInputTag == argsSize) CODI_Unlikely {
+                    argsSize = 0;
+                  }
+
+                  curJacobianPos -= argsSize;
+
+                  Identifier lhsIdentifier = curAdjointPos;
+                  callbacks.handleStatement(lhsIdentifier, argsSize, &rhsJacobians[curJacobianPos],
+                                            &rhsIdentifiers[curJacobianPos]);
+
+                  codiAssert(lhsIdentifier ==
+                             (Identifier)curAdjointPos);  // Lhs identifiers can not be edited in a linear tape.
+                }
+
+                curAdjointPos -= 1;
+              }
+            };
+
+        Base::llfByteData.evaluateForward(start, end, evalFunc, *this);
+      }
+
+      /// @}
   };
 }

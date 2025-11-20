@@ -43,6 +43,7 @@
 #include "../config.h"
 #include "../expressions/aggregate/aggregatedActiveType.hpp"
 #include "../expressions/aggregate/arrayAccessExpression.hpp"
+#include "../expressions/emptyExpression.hpp"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/constructStaticContext.hpp"
@@ -177,6 +178,7 @@ namespace codi {
 
     protected:
 
+      ///< Expressions for manual statement pushes.
       static EvalHandle const jacobianExpressions[Config::MaxArgumentSize];
 
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;  ///< Index manager.
@@ -682,8 +684,9 @@ namespace codi {
 
         Real& primalEntry = primals[value.cast().getIdentifier()];
         if (TapeTypes::IsLinearIndexHandler) {
-          statementData.pushData(Config::StatementInputTag,
-                                 StatementEvaluator::template createHandle<Impl, Impl, AssignStatement<Lhs, Lhs>>(), 0);
+          statementData.pushData(
+              Config::StatementInputTag,
+              StatementEvaluator::template createHandle<Impl, Impl, AssignStatement<Lhs, EmptyExpression<Real>>>(), 0);
         }
 
         Real oldValue = primalEntry;
@@ -1329,6 +1332,11 @@ namespace codi {
         return primals[identifier];
       }
 
+      /// \copydoc codi::PrimalEvaluationTapeInterface::getPrimalVector
+      Real* getPrimalVector() {
+        return primals.data();
+      }
+
       /// @}
       /*******************************************************************************/
       /// @name Function from StatementEvaluatorInnerTapeInterface and StatementEvaluatorInnerTapeInterface
@@ -1429,6 +1437,97 @@ namespace codi {
           CODI_INLINE static void evaluate(WriteInfo& CODI_RESTRICT writeInfo, Real* CODI_RESTRICT primalVector,
                                            STMT_COMMON_ARGS) {
             Base::internalEvaluate(writeInfo, primalVector, STMT_COMMON_CALL);
+          }
+      };
+
+      /*******************************************************************************/
+      /// IterateInputs implementation
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::IterateInputs, Stmt>
+          : public StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateInputs, Stmt>> {
+        public:
+          /// Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateInputs, Stmt>>;
+          using StaticRhs = typename Base::StaticRhs;  ///< See StatementCallGeneratorBase.
+
+          /// See LowLevelFunctionEntry::IterCallback.
+          using IterCallback = typename LowLevelFunctionEntry<Impl, Real, Identifier>::IterCallback;
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
+          CODI_INLINE static void evaluateInner(size_t const& CODI_RESTRICT maxOutputArgs,
+                                                size_t const& CODI_RESTRICT maxActiveArgs,
+                                                size_t const& CODI_RESTRICT maxConstantArgs,
+                                                size_t& CODI_RESTRICT linearAdjointPos, IterCallback func,
+                                                void* userData, STMT_COMMON_ARGS) {
+            CODI_UNUSED(linearAdjointPos);
+
+            StatementDataPointers pointers = {};
+            pointers.populate(maxOutputArgs, maxActiveArgs, numberOfPassiveArguments, maxConstantArgs, byteData);
+
+            for (Config::ArgumentSize i = 0; i < maxActiveArgs; i += 1) {
+              if (pointers.rhsIdentifiers[i] >= (Identifier)Config::MaxArgumentSize) {
+                func(&pointers.rhsIdentifiers[i], userData);
+              }
+            }
+          }
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
+          template<typename Func, typename... Args>
+          CODI_INLINE static void evaluateFull(Func const& func, Args&&... args) {
+            func(std::forward<Args>(args)...);
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
+          CODI_INLINE static void evaluate(size_t& CODI_RESTRICT linearAdjointPos, IterCallback func, void* userData,
+                                           STMT_COMMON_ARGS) {
+            Base::internalEvaluate(linearAdjointPos, func, userData, STMT_COMMON_CALL);
+          }
+      };
+
+      /*******************************************************************************/
+      /// IterateOutputs implementation
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::IterateOutputs, Stmt>
+          : public StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateOutputs, Stmt>> {
+        public:
+          /// Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateOutputs, Stmt>>;
+          using StaticRhs = typename Base::StaticRhs;  ///< See StatementCallGeneratorBase.
+
+          /// See LowLevelFunctionEntry::IterCallback.
+          using IterCallback = typename LowLevelFunctionEntry<Impl, Real, Identifier>::IterCallback;
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
+          CODI_INLINE static void evaluateInner(size_t const& CODI_RESTRICT maxOutputArgs,
+                                                size_t const& CODI_RESTRICT maxActiveArgs,
+                                                size_t const& CODI_RESTRICT maxConstantArgs,
+                                                size_t& CODI_RESTRICT linearAdjointPos, IterCallback func,
+                                                void* userData, STMT_COMMON_ARGS) {
+            StatementDataPointers pointers = {};
+            pointers.populate(maxOutputArgs, maxActiveArgs, numberOfPassiveArguments, maxConstantArgs, byteData);
+
+            for (size_t iLhs = 0; iLhs < maxOutputArgs; iLhs += 1) {
+              if (LinearIndexHandling) {
+                Identifier lhsIdentifier = linearAdjointPos + 1 + iLhs;
+                func(&lhsIdentifier, userData);
+
+                codiAssert(lhsIdentifier == (Identifier)(linearAdjointPos + 1 + iLhs));
+              } else {
+                func(&pointers.lhsIdentifiers[iLhs], userData);
+              }
+            }
+          }
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
+          template<typename Func, typename... Args>
+          CODI_INLINE static void evaluateFull(Func const& func, Args&&... args) {
+            func(std::forward<Args>(args)...);
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
+          CODI_INLINE static void evaluate(size_t& CODI_RESTRICT linearAdjointPos, IterCallback func, void* userData,
+                                           STMT_COMMON_ARGS) {
+            Base::internalEvaluate(linearAdjointPos, func, userData, STMT_COMMON_CALL);
           }
       };
 
@@ -2032,6 +2131,95 @@ namespace codi {
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
           CODI_INLINE static void evaluate(Real* CODI_RESTRICT primalVector, STMT_COMMON_ARGS) {
             Base::internalEvaluate(primalVector, STMT_COMMON_CALL);
+          }
+      };
+
+      /// IterateInputs implementation
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::IterateInputs, Stmt>
+          : public StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateInputs, Stmt>> {
+        public:
+          /// Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateInputs, Stmt>>;
+
+          /// Callback for identifier iteration.
+          using IterCallback = typename LowLevelFunctionEntry<TapeImpl, Real, Identifier>::IterCallback;
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
+          CODI_INLINE static void evaluateInner(size_t const& CODI_RESTRICT maxOutputArgs,
+                                                size_t const& CODI_RESTRICT maxActiveArgs,
+                                                size_t const& CODI_RESTRICT maxConstantArgs,
+                                                size_t& CODI_RESTRICT linearAdjointPos, IterCallback func,
+                                                void* userData, STMT_COMMON_ARGS) {
+            CODI_UNUSED(linearAdjointPos);
+
+            StatementDataPointers pointers = {};
+            pointers.populate(maxOutputArgs, maxActiveArgs, numberOfPassiveArguments, maxConstantArgs, byteData);
+
+            for (Config::ArgumentSize i = 0; i < maxActiveArgs; i += 1) {
+              if (pointers.rhsIdentifiers[i] >= (Identifier)Config::MaxArgumentSize) {
+                func(&pointers.rhsIdentifiers[i], userData);
+              }
+            }
+          }
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
+          template<typename Func, typename... Args>
+          CODI_INLINE static void evaluateFull(Func const& func, Args&&... args) {
+            func(std::forward<Args>(args)...);
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
+          CODI_INLINE static void evaluate(size_t& CODI_RESTRICT linearAdjointPos, IterCallback func, void* userData,
+                                           STMT_COMMON_ARGS) {
+            Base::internalEvaluate(linearAdjointPos, func, userData, STMT_COMMON_CALL);
+          }
+      };
+
+      /*******************************************************************************/
+      /// IterateOutputs implementation
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::IterateOutputs, Stmt>
+          : public StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateOutputs, Stmt>> {
+        public:
+          /// Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateOutputs, Stmt>>;
+          using StaticRhs = typename Base::StaticRhs;  ///< See StatementCallGeneratorBase.
+
+          /// Callback for identifier iteration.
+          using IterCallback = typename LowLevelFunctionEntry<TapeImpl, Real, Identifier>::IterCallback;
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
+          CODI_INLINE static void evaluateInner(size_t const& CODI_RESTRICT maxOutputArgs,
+                                                size_t const& CODI_RESTRICT maxActiveArgs,
+                                                size_t const& CODI_RESTRICT maxConstantArgs,
+                                                size_t& CODI_RESTRICT linearAdjointPos, IterCallback func,
+                                                void* userData, STMT_COMMON_ARGS) {
+            StatementDataPointers pointers = {};
+            pointers.populate(maxOutputArgs, maxActiveArgs, numberOfPassiveArguments, maxConstantArgs, byteData);
+
+            for (size_t iLhs = 0; iLhs < maxOutputArgs; iLhs += 1) {
+              if (LinearIndexHandling) {
+                Identifier lhsIdentifier = linearAdjointPos + 1 + iLhs;
+                func(&lhsIdentifier, userData);
+
+                codiAssert(lhsIdentifier == (Identifier)(linearAdjointPos + 1 + iLhs));
+              } else {
+                func(&pointers.lhsIdentifiers[iLhs], userData);
+              }
+            }
+          }
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
+          template<typename Func, typename... Args>
+          CODI_INLINE static void evaluateFull(Func const& func, Args&&... args) {
+            func(std::forward<Args>(args)...);
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
+          CODI_INLINE static void evaluate(size_t& CODI_RESTRICT linearAdjointPos, IterCallback func, void* userData,
+                                           STMT_COMMON_ARGS) {
+            Base::internalEvaluate(linearAdjointPos, func, userData, STMT_COMMON_CALL);
           }
       };
 
