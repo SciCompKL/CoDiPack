@@ -313,11 +313,16 @@ namespace codi {
           Config::LowLevelFunctionDataSize* const stmtByteSize) {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos);
 
+        ByteDataView dataView = {};
+        LowLevelFunctionEntry<PrimalValueReuseTape, Real, Identifier> const* func = nullptr;
+
         while (curStatementPos < endStatementPos) {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
-            writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+            Base::prepareLowLevelFunction(true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
+                                          dataView, func);
+            writer->writeLowLevelFunction(func, dataView);
           } else CODI_Likely {
             WriteInfo writeInfo;
             StatementEvaluator::template call<StatementCall::WriteInformation, PrimalValueReuseTape>(

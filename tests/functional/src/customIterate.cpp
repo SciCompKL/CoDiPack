@@ -79,7 +79,6 @@ struct IdStats {
       }
     }
 
-    //void handleStatement(EvalHandle const& evalHandle, Config::ArgumentSize const& nPassiveValues, char* stmtData);
     void handleLowLevelFunction(codi::LowLevelFunctionEntry<Tape, Real, Identifier> const& func, codi::ByteDataView& llfData) {
       func.template call<codi::LowLevelFunctionEntryCallKind::IterateOutputs>(&tape, llfData, reinterpret_cast<void (*)(int*, void*)>(countId), this);
       llfData.reset();

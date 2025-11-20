@@ -168,10 +168,9 @@ namespace codi {
       }
 
       /// Used for statements that contain a low level function.
-      virtual void writeLowLevelFunction(size_t& curLLFByteDataPos, char* dataPtr, size_t& curLLFInfoDataPos,
-                                         Config::LowLevelFunctionToken* const tokenPtr,
-                                         Config::LowLevelFunctionDataSize* const dataSizePtr) {
-        CODI_UNUSED(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+      virtual void writeLowLevelFunction(LowLevelFunctionEntry<Tape, Real, Identifier> const* func,
+                                         ByteDataView& data) {
+        CODI_UNUSED(func, data);
       }
 
       /// After all the statements have been written, the finish method finalizes the writing process.

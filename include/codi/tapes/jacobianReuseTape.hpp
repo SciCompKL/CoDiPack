@@ -257,11 +257,16 @@ namespace codi {
         Identifier curLhsIdentifier;
         Config::ArgumentSize curNumberOfJacobians;
 
+        ByteDataView dataView = {};
+        LowLevelFunctionEntry<JacobianReuseTape, Real, Identifier> const* func = nullptr;
+
         while (curStmtPos < endStmtPos) CODI_Likely {
           curLhsIdentifier = lhsIdentifiers[curStmtPos];
           curNumberOfJacobians = numberOfJacobians[curStmtPos];
           if (Config::StatementLowLevelFunctionTag == curNumberOfJacobians) CODI_Unlikely {
-            writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+            Base::prepareLowLevelFunction(true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
+                                          dataView, func);
+            writer->writeLowLevelFunction(func, dataView);
           } else CODI_Likely {
             writer->writeStatement(curLhsIdentifier, curJacobianPos, rhsJacobians, rhsIdentifiers,
                                    curNumberOfJacobians);

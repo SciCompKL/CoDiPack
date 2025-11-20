@@ -77,7 +77,7 @@ struct MultLowLevelFunction {
 
       registerOnTape();
 
-              // Perform passive primal operation.
+      // Perform passive primal operation.
       w.value() = a.getValue() * b.getValue();
       // Register on tape
       Real oldPrimal = tape.registerExternalFunctionOutput(w);

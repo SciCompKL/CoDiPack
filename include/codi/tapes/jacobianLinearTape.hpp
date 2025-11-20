@@ -233,10 +233,10 @@ namespace codi {
       }
 
       /// Passes the statement to the writer.
-      template<typename Real>
+      template<typename TapeTypes>
       CODI_INLINE static void internalWriteTape(
           /* file interface pointer*/
-          codi::TapeWriterInterface<Real>* writer,
+          codi::TapeWriterInterface<TapeTypes>* writer,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
@@ -251,6 +251,9 @@ namespace codi {
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endJacobianPos, endStmtPos);
 
+        ByteDataView dataView = {};
+        LowLevelFunctionEntry<JacobianLinearTape, Real, Identifier> const* func = nullptr;
+
         typename Real::Identifier curLhsIdentifier;
         Config::ArgumentSize argsSize;
         size_t curAdjointPos = startAdjointPos;
@@ -259,7 +262,9 @@ namespace codi {
           curLhsIdentifier = curAdjointPos;
           argsSize = numberOfJacobians[curStmtPos];
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
-            writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+            Base::prepareLowLevelFunction(true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
+                                          dataView, func);
+            writer->writeLowLevelFunction(func, dataView);
           } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
             writer->writeStatement(curLhsIdentifier, curJacobianPos, rhsJacobians, rhsIdentifiers, argsSize);
           } else CODI_Likely {
