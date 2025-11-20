@@ -726,6 +726,7 @@ namespace codi {
         if (tape.isActive() && tape.isPreaccumulationHandlingEnabled()) {
           inputLocations.clear();
           outputLocations.clear();
+
           oldTag = tape.getCurTag();
           tape.setCurTag(tape.getPreaccumulationHandlingTag());
 
@@ -807,9 +808,11 @@ namespace codi {
       }
 
       void handleInput(Type const& input) {
-        if (Type::getTape().getPassiveIndex() != input.getIdentifier()) {
+        Tape& tape = getTape();
+
+        if (tape.getPassiveIndex() != input.getIdentifier()) {
           inputLocations.push_back(&input);
-          getTape().setTagOnVariable(input);
+          tape.setTagOnVariable(input);
         }
       }
 

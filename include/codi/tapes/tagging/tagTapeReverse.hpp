@@ -67,7 +67,7 @@ namespace codi {
       };
 
       using Gradient = Real;                    ///< See TapeTypesInterface.
-      using Identifier = TagData<Tag>;          ///< See TapeTypesInterface.
+      using Identifier = int;                   ///< See TapeTypesInterface.
       using ActiveTypeTapeData = TagData<Tag>;  ///< See TapeTypesInterface.
       using Position = EmptyPosition;           ///< See TapeTypesInterface.
 
@@ -88,7 +88,11 @@ namespace codi {
       /// Constructor.
       TagTapeReverse() : Base(), active(), tempPrimal(), tempGradient(), parameters() {}
 
+      using Base::AllowJacobianOptimization;
+      using Base::destroyTapeData;
       using Base::getIdentifier;
+      using Base::initTapeData;
+      using Base::store;
 
       /*******************************************************************************/
       /// @name CustomAdjointVectorEvaluationTapeInterface interface implementation
@@ -217,17 +221,13 @@ namespace codi {
       /// Verify tag.
       void setGradient(Identifier const& identifier, Gradient const& gradient,
                        AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-        CODI_UNUSED(gradient, adjointsManagement);
-
-        Base::verifyTagAndProperties(identifier.tag, 0.0, identifier.properties);
+        CODI_UNUSED(identifier, gradient, adjointsManagement);
       }
 
       /// Verify tag.
       Gradient const& getGradient(Identifier const& identifier,
                                   AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
-        CODI_UNUSED(adjointsManagement);
-
-        Base::verifyTagAndProperties(identifier.tag, 0.0, identifier.properties);
+        CODI_UNUSED(identifier, adjointsManagement);
 
         return tempGradient;
       }
@@ -235,9 +235,7 @@ namespace codi {
       /// Verify tag.
       Gradient& gradient(Identifier const& identifier,
                          AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) {
-        CODI_UNUSED(adjointsManagement);
-
-        Base::verifyTagAndProperties(identifier.tag, 0.0, identifier.properties);
+        CODI_UNUSED(identifier, adjointsManagement);
 
         return tempGradient;
       }
@@ -245,9 +243,7 @@ namespace codi {
       /// Verify tag.
       Gradient const& gradient(Identifier const& identifier,
                                AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
-        CODI_UNUSED(adjointsManagement);
-
-        Base::verifyTagAndProperties(identifier.tag, 0.0, identifier.properties);
+        CODI_UNUSED(identifier, adjointsManagement);
 
         return tempGradient;
       }
@@ -260,84 +256,25 @@ namespace codi {
       /// Behave as linear index handler.
       static bool constexpr LinearIndexHandling = true;
 
-      /// Zero tag.
+      /// Zero id.
       Identifier getPassiveIndex() const {
-        return Identifier(Base::PassiveTag);
+        return Identifier(IndexManagerInterface<int>::InactiveIndex);
       }
 
-      /// -1 tag.
+      /// -1 id.
       Identifier getInvalidIndex() const {
-        return Identifier(Base::InvalidTag);
+        return Identifier(IndexManagerInterface<int>::InvalidIndex);
       }
 
       /// Verify tag.
       bool isIdentifierActive(Identifier const& index) const {
-        return index.tag != Base::PassiveTag;
+        return index != Base::PassiveTag;
       }
 
       /// Set tag to passive.
       template<typename Lhs>
       void deactivateValue(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& value) {
-        value.getIdentifier() = getPassiveIndex();
-      }
-
-      /// @}
-      /*******************************************************************************/
-      /// @name InternalStatementRecordingTapeInterface interface implementation
-      /// @{
-
-      /// Do not allow Jacobian optimization.
-      static bool constexpr AllowJacobianOptimization = false;
-
-      /// Do nothing.
-      template<typename Real>
-      void initTapeData(Real& value, Identifier& identifier) {
-        CODI_UNUSED(value);
-        identifier = Identifier();
-      }
-
-      /// Do nothing.
-      template<typename Real>
-      void destroyTapeData(Real& value, Identifier& identifier) {
-        CODI_UNUSED(value, identifier);
-      }
-
-      /// Verify all tags of the rhs and the lhs properties.
-      template<typename Lhs, typename Rhs>
-      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& lhs,
-                             ExpressionInterface<Real, Rhs> const& rhs) {
-        typename Base::ValidateTags validate;
-        ValidationIndicator<Real, Tag> vi;
-
-        validate.eval(rhs, vi, *this);
-
-        Base::checkLhsError(lhs, rhs.cast().getValue());
-
-        Base::handleError(vi);
-
-        if (vi.isActive) {
-          Base::setTag(lhs.cast().getIdentifier().tag);
-        } else {
-          Base::resetTag(lhs.cast().getIdentifier().tag);
-        }
-        lhs.cast().value() = rhs.cast().getValue();
-      }
-
-      /// Verify all tags of the rhs and the lhs properties.
-      template<typename Lhs, typename Rhs>
-      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& lhs,
-                             LhsExpressionInterface<Real, Gradient, TagTapeReverse, Rhs> const& rhs) {
-        store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
-      }
-
-      /// Verify the lhs properties.
-      template<typename Lhs>
-      CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& lhs, PassiveReal const& rhs) {
-        Base::checkLhsError(lhs, rhs);
-
-        Base::resetTag(lhs.cast().getIdentifier().tag);
-
-        lhs.cast().value() = rhs;
+        value.getTapeData() = ActiveTypeTapeData();
       }
 
       /// @}
@@ -346,12 +283,12 @@ namespace codi {
       /// @{
 
       /// Do nothing.
-      void pushJacobiManual(Real const& jacobian, Real const& value, Identifier const& index) {
+      void pushJacobiManual(Real const& jacobian, Real const& value, ActiveTypeTapeData const& index) {
         CODI_UNUSED(jacobian, value, index);
       }
 
       /// Set tag on lhs.
-      void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
+      void storeManual(Real const& lhsValue, ActiveTypeTapeData& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue, size);
 
         Base::checkLhsError(lhsValue, lhsIndex, lhsValue);
@@ -454,14 +391,14 @@ namespace codi {
       /// Verify value properties.
       template<typename Lhs>
       void registerInput(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& value) {
-        Base::setTag(value.cast().getIdentifier().tag);
-        Base::verifyRegisterValue(value, value.cast().getIdentifier());  // verification is mainly for the properties
+        Base::setTag(value.cast().getTapeData().tag);
+        Base::verifyRegisterValue(value, value.cast().getTapeData());  // verification is mainly for the properties
       }
 
       /// Verify tag.
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& value) {
-        Base::verifyRegisterValue(value, value.cast().getIdentifier());
+        Base::verifyRegisterValue(value, value.cast().getTapeData());
       }
 
       /// Set tape to active.
@@ -481,7 +418,7 @@ namespace codi {
 
       /// Default check.
       bool isActive(Identifier const& identifier) const {
-        return identifier.tag != Base::PassiveTag;
+        return identifier != getPassiveIndex();
       }
 
       void evaluate() {}  ///< Do nothing.
