@@ -66,7 +66,7 @@ medi:
   image: ubuntu:24.04
   script:
     - apt update && apt install -y $COMMON_PACKAGES build-essential openmpi-bin libopenmpi-dev
-    - git clone --depth 1 --branch develop https://github.com/SciCompKL/MeDiPack.git
+    - git clone --depth 1 --branch feature/id_redist https://github.com/SciCompKL/MeDiPack.git
     - export CODI_DIR=$(pwd)
     - cd MeDiPack/tests
     - export OMPI_ALLOW_RUN_AS_ROOT=1
