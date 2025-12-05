@@ -104,6 +104,7 @@ namespace codi {
   using std::erf;
   using std::erfc;
   using std::exp;
+  using std::expm1;
   using std::fabs;
   using std::floor;
   using std::isfinite;
@@ -762,6 +763,43 @@ namespace codi {
 
 #define OPERATION_LOGIC OperationExp
 #define FUNCTION expl
+#include "unaryOverloads.tpp"
+
+  /// UnaryJacobianOperation implementation for expm1
+  template<typename T_Real>
+  struct OperationExpm1 : public UnaryJacobianOperation<T_Real, OperationExpm1<T_Real>> {
+    public:
+
+      using Real = CODI_DD(T_Real, double);  ///< See UnaryJacobianOperation.
+
+      /// \copydoc UnaryJacobianOperation::primal
+      template<typename Arg>
+      static CODI_INLINE Real primal(Arg const& arg) {
+        return expm1(arg);
+      }
+
+      /// \copydoc UnaryJacobianOperation::gradient
+      template<typename Arg>
+      static CODI_INLINE Real gradient(Arg const& arg, Real const& result) {
+        CODI_UNUSED(arg);
+        return result;
+      }
+
+      /// \copydoc UnaryJacobianOperation::getMathRep()
+      static CODI_INLINE std::string getMathRep() {
+        return "expm1";
+      }
+  };
+#define OPERATION_LOGIC OperationExpm1
+#define FUNCTION expm1
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationExpm1
+#define FUNCTION expm1f
+#include "unaryOverloads.tpp"
+
+#define OPERATION_LOGIC OperationExpm1
+#define FUNCTION expm1l
 #include "unaryOverloads.tpp"
 
   /// Function overload for floor

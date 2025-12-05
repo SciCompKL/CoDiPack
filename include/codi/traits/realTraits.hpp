@@ -74,7 +74,7 @@ namespace codi {
         static int constexpr MaxDerivativeOrder = 0;  ///< CoDiPack derivative order of the type.
 
         /// Get the basic primal value of the type.
-        static CODI_INLINE PassiveReal getPassiveValue(Type const& v) {
+        static CODI_INLINE PassiveReal const& getPassiveValue(Type const& v) {
           return v;
         }
     };
@@ -130,7 +130,7 @@ namespace codi {
 
     /// \copydoc codi::RealTraits::TraitsImplementation::getPassiveValue()
     template<typename Type>
-    CODI_INLINE PassiveReal<Type> getPassiveValue(Type const& v) {
+    CODI_INLINE PassiveReal<Type> const& getPassiveValue(Type const& v) {
       return TraitsImplementation<Type>::getPassiveValue(v);
     }
 
