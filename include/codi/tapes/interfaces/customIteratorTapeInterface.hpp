@@ -73,7 +73,7 @@ namespace codi {
   /**
    * @brief Iterate over the statement and low level function entries in a tape.
    *
-   * Access to adjoint, primal and other tape data needs to be capture in the callbacks object. The callback object
+   * Access to adjoint, primal and other tape data needs to be captured in the callbacks object. The callback object
    * needs to implement the CallbacksInterface.
    *
    * @tparam T_Position  Global tape position, usually chosen as Tape::Position.

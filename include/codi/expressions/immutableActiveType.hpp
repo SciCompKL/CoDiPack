@@ -84,21 +84,21 @@ namespace codi {
 
     public:
 
-      /// The tapeData is not initialized. It is assumed to be a valid tapeData (either default or assigned by an
+      /// The tape data is not initialized. It is assumed to be a valid tape data (either default or assigned by an
       /// expression) and has to be valid throughout the lifespan of this object.
       CODI_INLINE ImmutableActiveType(Real const& value, TapeData const& tapeData)
           : primalValue(value), tapeData(tapeData) {
         // deliberately left empty
       }
 
-      /// Create an immutable copy of an active type. It is assumed that the tapeData is valid throughout the lifespan
+      /// Create an immutable copy of an active type. It is assumed that the tape data is valid throughout the lifespan
       /// of this object.
       CODI_INLINE ImmutableActiveType(ActiveType const& value)
           : primalValue(value.getValue()), tapeData(value.getTapeData()) {
         // deliberately left empty
       }
 
-      /// The tapeData is not destroyed. It is assumed to be still valid, since this is only an immutable copy of
+      /// The tape data is not destroyed. It is assumed to be still valid, since this is only an immutable copy of
       /// the actual value.
       CODI_INLINE ~ImmutableActiveType() {
         // deliberately left empty

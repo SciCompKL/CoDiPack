@@ -196,7 +196,7 @@ namespace codi {
 
   /// Helper for generating new identifiers.
   ///
-  /// Will generate start + direction * i identifiers with i running from 1 to infinity.
+  /// Will generate start + direction * i identifiers with i running from 0 to infinity.
   ///
   /// @tparam T_Identifier  The identifier of the CoDiPack type.
   template<typename T_Identifier>
@@ -512,7 +512,7 @@ namespace codi {
           using Base = ApplyIdentifierModification<Tape, HandleTranslate>;  ///< Base class abbreviation.
 
           IdentifierCacheOptimizerHotCold* parent;  ///< Access general information.
-          Lifetime curStmtId = 0;                 ///< Keep track of the current statement.
+          Lifetime curStmtId = 0;                   ///< Keep track of the current statement.
 
           std::vector<Identifier> translateMap = {};  ///< Map for id translation.
 
