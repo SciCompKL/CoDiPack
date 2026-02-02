@@ -1,7 +1,7 @@
 Changelog {#Changelog}
 ===========================
 
-### v3.?.? - ????-??-??
+### v3.1.0 - 2026-02-02
  - Features:
    * It is now possible to define custom tape evaluators for all CoDiPack tapes. The evaluators have access to the full
      statement data and functionality for low level functions.
