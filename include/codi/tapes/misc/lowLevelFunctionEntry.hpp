@@ -53,6 +53,8 @@ namespace codi {
     Reverse,
     Primal,
     Delete,
+    IterateInputs,
+    IterateOutputs,
     MaxElement
   };
 
@@ -75,17 +77,23 @@ namespace codi {
       /// Call syntax for Delete calls.
       using FuncDel = void (*)(Tape* tape, ByteDataView& data);
 
+      /// Callback function for the identifier iteration.
+      using IterCallback = void (*)(Identifier* id, void* userData);
+      /// Call syntax for IterateInputs and IterateOutputs calls.
+      using FuncIterate = void (*)(Tape* tape, ByteDataView& data, IterCallback func, void* userData);
+
     private:
 
-      void* functions[(size_t)LowLevelFunctionEntryCallKind::MaxElement];       ///< Array for function pointers.
-      using FunctionTypes = std::tuple<FuncEval, FuncEval, FuncEval, FuncDel>;  ///< Types for function entries.
+      void* functions[(size_t)LowLevelFunctionEntryCallKind::MaxElement];  ///< Array for function pointers.
+      using FunctionTypes =
+          std::tuple<FuncEval, FuncEval, FuncEval, FuncDel, FuncIterate, FuncIterate>;  ///< Types for function entries.
 
     public:
 
       /// Constructors.
       LowLevelFunctionEntry(FuncEval reverse = nullptr, FuncEval forward = nullptr, FuncEval primal = nullptr,
-                            FuncDel del = nullptr)
-          : functions{(void*)forward, (void*)reverse, (void*)primal, (void*)del} {}
+                            FuncDel del = nullptr, FuncIterate iterIn = nullptr, FuncIterate iterOut = nullptr)
+          : functions{(void*)forward, (void*)reverse, (void*)primal, (void*)del, (void*)iterIn, (void*)iterOut} {}
 
       /// Call the function corresponding to callType with the given arguments.
       template<LowLevelFunctionEntryCallKind callType, typename... Args>

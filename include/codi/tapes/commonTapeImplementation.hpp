@@ -64,9 +64,10 @@ namespace codi {
   struct TapeTypesInterface {
     public:
 
-      using Real = CODI_ANY;        ///< Primal computation type, e.g. double.
-      using Gradient = CODI_ANY;    ///< Gradient computation type, e.g. double or Direction.
-      using Identifier = CODI_ANY;  ///< Identifier for the internal management, e.g. int.
+      using Real = CODI_ANY;                ///< Primal computation type, e.g. double.
+      using Gradient = CODI_ANY;            ///< Gradient computation type, e.g. double or Direction.
+      using Identifier = CODI_ANY;          ///< Identifier for the internal management, e.g. int.
+      using ActiveTypeTapeData = CODI_ANY;  ///< Tape data stored in each active type. Usually the identifier data.
 
       /// Indicates the storage strategy that will be used by all data vectors. See DataInterface and its
       /// implementations.
@@ -126,17 +127,18 @@ namespace codi {
    */
   template<typename T_ImplTapeTypes, typename T_Impl>
   struct CommonTapeImplementation
-      : public FullTapeInterface<typename T_ImplTapeTypes::Real, typename T_ImplTapeTypes::Gradient,
-                                 typename T_ImplTapeTypes::Identifier,
-                                 typename CommonTapeTypes<T_ImplTapeTypes>::Position> {
+      : public FullTapeInterface<
+            typename T_ImplTapeTypes::Real, typename T_ImplTapeTypes::Gradient, typename T_ImplTapeTypes::Identifier,
+            typename CommonTapeTypes<T_ImplTapeTypes>::Position, typename T_ImplTapeTypes::ActiveTypeTapeData> {
     public:
 
       using ImplTapeTypes = CODI_DD(T_ImplTapeTypes, TapeTypesInterface);  ///< See CommonTapeImplementation.
       using Impl = CODI_DD(T_Impl, CommonTapeImplementation);              ///< See CommonTapeImplementation.
 
-      using Real = typename ImplTapeTypes::Real;              ///< See TapeTypesInterface.
-      using Gradient = typename ImplTapeTypes::Gradient;      ///< See TapeTypesInterface.
-      using Identifier = typename ImplTapeTypes::Identifier;  ///< See TapeTypesInterface.
+      using Real = typename ImplTapeTypes::Real;                              ///< See TapeTypesInterface.
+      using Gradient = typename ImplTapeTypes::Gradient;                      ///< See TapeTypesInterface.
+      using Identifier = typename ImplTapeTypes::Identifier;                  ///< See TapeTypesInterface.
+      using ActiveTypeTapeData = typename ImplTapeTypes::ActiveTypeTapeData;  ///< See TapeTypesInterface.
 
       /// See CommonTapeTypes.
       using LowLevelFunctionInfoData = typename CommonTapeTypes<ImplTapeTypes>::LowLevelFunctionInfoData;
@@ -361,6 +363,29 @@ namespace codi {
 
       /// @}
       /*******************************************************************************/
+      /// @name Functions from CustomIteratorTapeInterface
+      /// @{
+
+      /// \copydoc codi::CustomIteratorTapeInterface::iterateForward
+      template<typename Callbacks>
+      void iterateForward(Callbacks&& callbacks) {
+        Impl& impl = cast();
+
+        impl.iterateForward(std::forward<Callbacks>(callbacks), impl.getZeroPosition(), impl.getPosition());
+      }
+
+      /// \copydoc codi::CustomIteratorTapeInterface::iterateReverse
+      template<typename Callbacks>
+      void iterateReverse(Callbacks&& callbacks) {
+        Impl& impl = cast();
+
+        impl.iterateReverse(std::forward<Callbacks>(callbacks), impl.getPosition(), impl.getZeroPosition());
+      }
+
+      // iterateForward(callbacks, start, end) and iterateForward(callbacks, start, end) are not implemented.
+
+      /// @}
+      /*******************************************************************************/
       /// @name Functions from DataManagementTapeInterface
       /// @{
 
@@ -511,6 +536,33 @@ namespace codi {
         llfByteData.addDataSize(size);
       }
 
+      /// @brief Prepare the call of a low level function.
+      CODI_INLINE static Config::LowLevelFunctionToken prepareLowLevelFunction(
+          bool forward,
+          /* data from low level function byte data vector */
+          size_t& curLLFByteDataPos, char* dataPtr,
+          /* data from low level function info data vector */
+          size_t& curLLFTInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
+          Config::LowLevelFunctionDataSize* const dataSizePtr, ByteDataView& dataView,
+          LowLevelFunctionEntry<Impl, Real, Identifier> const*& func) {
+        if (!forward) {
+          curLLFTInfoDataPos -= 1;
+          curLLFByteDataPos -= dataSizePtr[curLLFTInfoDataPos];
+        }
+        size_t endPos = curLLFByteDataPos + dataSizePtr[curLLFTInfoDataPos];
+        dataView.init(dataPtr, curLLFByteDataPos, endPos);
+
+        Config::LowLevelFunctionToken id = tokenPtr[curLLFTInfoDataPos];
+        func = &((*lowLevelFunctionLookup)[id]);
+
+        if (forward) {
+          curLLFByteDataPos += dataSizePtr[curLLFTInfoDataPos];
+          curLLFTInfoDataPos += 1;
+        }
+
+        return id;
+      }
+
       /// @brief Called by the implementing tapes during a tape evaluation when a low level function statement has been
       /// reached.
       template<LowLevelFunctionEntryCallKind callType, typename... Args>
@@ -522,29 +574,18 @@ namespace codi {
                                                    Config::LowLevelFunctionToken* const tokenPtr,
                                                    Config::LowLevelFunctionDataSize* const dataSizePtr,
                                                    Args&&... args) {
-        if (!forward) {
-          curLLFTInfoDataPos -= 1;
-          curLLFByteDataPos -= dataSizePtr[curLLFTInfoDataPos];
-        }
+        ByteDataView dataView = {};
+        LowLevelFunctionEntry<Impl, Real, Identifier> const* func = nullptr;
+        Config::LowLevelFunctionToken id = prepareLowLevelFunction(
+            forward, curLLFByteDataPos, dataPtr, curLLFTInfoDataPos, tokenPtr, dataSizePtr, dataView, func);
+        if (func->template has<callType>()) CODI_Likely {
+          func->template call<callType>(&impl, dataView, std::forward<Args>(args)...);
 
-        size_t endPos = curLLFByteDataPos + dataSizePtr[curLLFTInfoDataPos];
-        ByteDataView dataView(dataPtr, curLLFByteDataPos, endPos);
-
-        Config::LowLevelFunctionToken id = tokenPtr[curLLFTInfoDataPos];
-        LowLevelFunctionEntry<Impl, Real, Identifier> const& func = (*lowLevelFunctionLookup)[id];
-        if (func.template has<callType>()) CODI_Likely {
-          func.template call<callType>(&impl, dataView, std::forward<Args>(args)...);
-
-          codiAssert(endPos == dataView.getPosition());
+          codiAssert(dataView.getEnd() == dataView.getPosition());
         } else CODI_Unlikely if (LowLevelFunctionEntryCallKind::Delete == callType) {
           // No delete registered. Data is skiped by the curLLFByteDataPos update.
         } else {
           CODI_EXCEPTION("Requested call is not supported for low level function with token '%d'.", (int)id);
-        }
-
-        if (forward) {
-          curLLFByteDataPos += dataSizePtr[curLLFTInfoDataPos];
-          curLLFTInfoDataPos += 1;
         }
       }
 
@@ -675,6 +716,18 @@ namespace codi {
         value = value.getValue();
       }
 
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier const& getIdentifier(ActiveTypeTapeData const& data) {
+        Impl& impl = cast();
+        return impl.getIndexManager().getIndex(data);
+      }
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier& getIdentifier(ActiveTypeTapeData& data) {
+        Impl& impl = cast();
+        return impl.getIndexManager().getIndex(data);
+      }
+
       /// @}
       /*******************************************************************************/
       /// @name Functions from PositionalEvaluationTapeInterface
@@ -775,6 +828,7 @@ namespace codi {
       /// @}
   };
 
+  /// Definition of CommonTapeImplementation<ImplTapeTypes, Impl>::lowLevelFunctionLookup.
   template<typename ImplTapeTypes, typename Impl>
   std::vector<LowLevelFunctionEntry<Impl, typename ImplTapeTypes::Real, typename ImplTapeTypes::Identifier>>*
       CommonTapeImplementation<ImplTapeTypes, Impl>::lowLevelFunctionLookup = nullptr;

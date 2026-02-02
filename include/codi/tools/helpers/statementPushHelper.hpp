@@ -141,15 +141,15 @@ namespace codi {
       ///< See StatementPushHelper.
       using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);
 
-      using Real = typename Type::Real;              ///< See LhsExpressionInterface.
-      using Identifier = typename Type::Identifier;  ///< See LhsExpressionInterface.
+      using Real = typename Type::Real;          ///< See LhsExpressionInterface.
+      using TapeData = typename Type::TapeData;  ///< See LhsExpressionInterface.
       /// See LhsExpressionInterface.
       using Tape = typename Type::Tape;
 
     protected:
-      Identifier indexData[Config::MaxArgumentSize];  ///< Storage for the identifiers of the arguments.
-      Real jacobianData[Config::MaxArgumentSize];     ///< Storage for the Jacobians of the arguments.
-      size_t dataPos;                                 ///< Current number of arguments.
+      TapeData indexData[Config::MaxArgumentSize];  ///< Storage for the identifiers of the arguments.
+      Real jacobianData[Config::MaxArgumentSize];   ///< Storage for the Jacobians of the arguments.
+      size_t dataPos;                               ///< Current number of arguments.
 
     public:
 
@@ -174,7 +174,7 @@ namespace codi {
           if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, 0 != arg.getIdentifier())) {
             if (CODI_ENABLE_CHECK(Config::IgnoreInvalidJacobians, RealTraits::isTotalFinite(jacobian))) {
               if (CODI_ENABLE_CHECK(Config::CheckJacobianIsZero, !RealTraits::isTotalZero(jacobian))) {
-                indexData[dataPos] = arg.getIdentifier();
+                indexData[dataPos] = arg.getTapeData();
                 jacobianData[dataPos] = jacobian;
                 dataPos += 1;
               }
@@ -189,7 +189,7 @@ namespace codi {
 
         if (CODI_ENABLE_CHECK(Config::CheckTapeActivity, tape.isActive())) {
           if (0 != dataPos) {
-            tape.storeManual(primal, lhs.getIdentifier(), dataPos);
+            tape.storeManual(primal, lhs.getTapeData(), dataPos);
 
             for (size_t i = 0; i < dataPos; ++i) {
               tape.pushJacobianManual(jacobianData[i], 0.0, indexData[i]);

@@ -69,35 +69,36 @@ namespace codi {
       using ActiveType = CODI_DD(T_ActiveType, CODI_T(ActiveType<CODI_DEFAULT_TAPE>));  ///< See ImmutableActiveType.
       using Tape = typename ActiveType::Tape;                                           ///< See ActiveType.
 
-      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
-      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
-      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
+      using Real = typename Tape::Real;                    ///< See LhsExpressionInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;   ///< Basic computation type.
+      using Identifier = typename Tape::Identifier;        ///< See LhsExpressionInterface.
+      using Gradient = typename Tape::Gradient;            ///< See LhsExpressionInterface.
+      using TapeData = typename Tape::ActiveTypeTapeData;  ///< See IdentifierInformationTapeInterface.
 
       using Base = LhsExpressionInterface<Real, Gradient, Tape, ImmutableActiveType>;  ///< Base class abbreviation.
 
     private:
 
       Real const primalValue;
-      Identifier const identifier;
+      TapeData const tapeData;
 
     public:
 
-      /// The identifier is not initialized. It is assumed to be a valid identifier (either default or assigned by an
+      /// The tape data is not initialized. It is assumed to be a valid tape data (either default or assigned by an
       /// expression) and has to be valid throughout the lifespan of this object.
-      CODI_INLINE ImmutableActiveType(Real const& value, Identifier const& identifier)
-          : primalValue(value), identifier(identifier) {
+      CODI_INLINE ImmutableActiveType(Real const& value, TapeData const& tapeData)
+          : primalValue(value), tapeData(tapeData) {
         // deliberately left empty
       }
 
-      /// Create an immutable copy of an active type. It is assumed that the identifier is valid throughout the lifespan
+      /// Create an immutable copy of an active type. It is assumed that the tape data is valid throughout the lifespan
       /// of this object.
       CODI_INLINE ImmutableActiveType(ActiveType const& value)
-          : primalValue(value.getValue()), identifier(value.getIdentifier()) {
+          : primalValue(value.getValue()), tapeData(value.getTapeData()) {
         // deliberately left empty
       }
 
-      /// The identifier is not destroyed. It is assumed to be still valid, since this is only an immutable copy of
+      /// The tape data is not destroyed. It is assumed to be still valid, since this is only an immutable copy of
       /// the actual value.
       CODI_INLINE ~ImmutableActiveType() {
         // deliberately left empty
@@ -123,7 +124,12 @@ namespace codi {
 
       /// \copydoc codi::LhsExpressionInterface::getIdentifier() const
       CODI_INLINE Identifier const& getIdentifier() const {
-        return identifier;
+        return getTape().getIdentifier(tapeData);
+      }
+
+      /// \copydoc codi::LhsExpressionInterface::getTapeData() const
+      CODI_INLINE TapeData const& getTapeData() const {
+        return tapeData;
       }
 
       /// \copydoc codi::LhsExpressionInterface::value() const

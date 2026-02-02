@@ -78,7 +78,8 @@ namespace codi {
   struct IndexManagerInterface {
     public:
 
-      using Index = CODI_DD(T_Index, int);  ///< See IndexManagerInterface.
+      using Index = CODI_DD(T_Index, int);                ///< See IndexManagerInterface.
+      using ActiveTypeIndexData = CODI_DD(T_Index, int);  ///< Index data stored in the active type. Can be arbitrary.
 
       /*******************************************************************************/
       /// @name Global constants
@@ -98,26 +99,35 @@ namespace codi {
       /// True if the index manager is specific to a tape type (and not a tape instance). See IndexManagerInterface.
       static bool constexpr NeedsStaticStorage = CODI_UNDEFINED_VALUE;
 
+      void initIndex(ActiveTypeIndexData& index);  ///< Initialize the index data. Usually zero everything.
+
       /// @brief Call on assignment of a primal value, e.g. on `w` for `w = a + b`.
       /// @return true if new indices have been generated internally.
       template<typename Tape>
-      bool assignIndex(Index& index);
+      bool assignIndex(ActiveTypeIndexData& index);
 
       /// @brief Update the largest generated index.
-      void updateLargestCreatedIndex(Index const& index);
+      void updateLargestCreatedIndex(ActiveTypeIndexData const& index);
 
       /// @brief Call on registering input values.
       /// @return true if new indices have been generated internally.
       template<typename Tape>
-      bool assignUnusedIndex(Index& index);
+      bool assignUnusedIndex(ActiveTypeIndexData& index);
 
       template<typename Tape>
-      void copyIndex(Index& lhs, Index const& rhs);  ///< Call on copy of a primal value, e.g. `w = a`.
+      void copyIndex(ActiveTypeIndexData& lhs,
+                     ActiveTypeIndexData const& rhs);  ///< Call on copy of a primal value, e.g. `w = a`.
 
       template<typename Tape>
-      void freeIndex(Index& index);  ///< Call on destruction of a primal value. Usually called from the destructor.
+      void freeIndex(ActiveTypeIndexData& index);  ///< Call on destruction of a primal value. Usually called from the
+                                                   ///< destructor.
 
       void reset();  ///< Reset for a new recording.
+
+      Index const& getIndex(ActiveTypeIndexData const& data);  ///< Extract index from data stored in active type.
+      Index& getIndex(ActiveTypeIndexData& data);              ///< Extract index from data stored in active type.
+
+      void validateRhsIndex(ActiveTypeIndexData const& data) const;  ///< Check if the rhs index is valid.
 
       /*******************************************************************************/
       /// @name Misc functions
@@ -137,8 +147,11 @@ namespace codi {
   };
 
   // clang-format off
+  /// Instantiate IndexManagerInterface::InactiveIndex.
   template<typename Index>
   CODI_DD(Index, int) constexpr IndexManagerInterface<Index>::InactiveIndex;
+
+  /// Instantiate IndexManagerInterface::InactiveIndex.
   template<typename Index>
   CODI_DD(Index, int) constexpr IndexManagerInterface<Index>::InvalidIndex;
   // clang-format on

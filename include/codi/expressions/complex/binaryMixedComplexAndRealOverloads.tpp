@@ -71,7 +71,6 @@
   #include "../../misc/macros.hpp"
   #include "../../traits/realTraits.hpp"
   #include "../activeType.hpp"
-  #include "../arbitraryExpression.hpp"
   #include "../constantExpression.hpp"
   #include "../expressionInterface.hpp"
   #include "realToComplexCast.hpp"

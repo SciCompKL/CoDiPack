@@ -54,10 +54,9 @@ namespace codi {
   struct LocalAdjoints : public InternalAdjointsInterface<T_Gradient, T_Identifier, T_Tape> {
     public:
 
-      using Tape = CODI_DD(T_Tape,
-                           CODI_T(FullTapeInterface<double, double, int, EmptyPosition>));  ///< See LocalAdjoints.
-      using Gradient = CODI_DD(T_Gradient, double);                                         ///< See LocalAdjoints.
-      using Identifier = CODI_DD(T_Identifier, int);                                        ///< See LocalAdjoints.
+      using Tape = CODI_DD(T_Tape, CODI_DEFAULT_TAPE);  ///< See LocalAdjoints.
+      using Gradient = CODI_DD(T_Gradient, double);     ///< See LocalAdjoints.
+      using Identifier = CODI_DD(T_Identifier, int);    ///< See LocalAdjoints.
 
     private:
 

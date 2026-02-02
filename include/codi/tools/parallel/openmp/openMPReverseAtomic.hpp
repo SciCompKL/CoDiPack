@@ -38,6 +38,7 @@
 
 #include "../../../expressions/activeType.hpp"
 #include "../../../traits/atomicTraits.hpp"
+#include "../../../traits/gradientTraits.hpp"
 #include "../../../traits/realTraits.hpp"
 #include "../../../traits/tapeTraits.hpp"
 #include "../reverseAtomicInterface.hpp"
@@ -111,6 +112,51 @@ namespace codi {
       }
   };
 
+  // Specialization for vector mode, that is, T_Type == Direction<...>. Acts on vector components with individual
+  // atomic operations.
+  template<typename T_Type>
+  struct OpenMPReverseAtomicImpl<T_Type, GradientTraits::EnableIfDirection<T_Type>>
+      : public ReverseAtomicInterface<T_Type,
+                                      OpenMPReverseAtomicImpl<T_Type, GradientTraits::EnableIfDirection<T_Type>>>,
+        public T_Type {
+    public:
+      using Type = T_Type;
+      using Base =
+          ReverseAtomicInterface<T_Type, OpenMPReverseAtomicImpl<T_Type, GradientTraits::EnableIfDirection<T_Type>>>;
+      using Real = typename Type::Real;
+      using AtomicReal = OpenMPReverseAtomicImpl<Real>;
+
+      CODI_INLINE OpenMPReverseAtomicImpl() : Base(), Type() {}
+
+      CODI_INLINE OpenMPReverseAtomicImpl(OpenMPReverseAtomicImpl const& other) : Base(), Type(other) {}
+
+      CODI_INLINE OpenMPReverseAtomicImpl(Type const& other) : Base(), Type(other) {}
+
+      CODI_INLINE OpenMPReverseAtomicImpl& operator=(OpenMPReverseAtomicImpl const& other) {
+        return operator=(static_cast<Type const&>(other));
+      }
+
+      CODI_INLINE OpenMPReverseAtomicImpl& operator=(Type const& other) {
+        Type::operator=(other);
+        return *this;
+      }
+
+      CODI_INLINE void operator+=(OpenMPReverseAtomicImpl const& other) {
+        operator+=(static_cast<Type const&>(other));
+      }
+
+      CODI_INLINE void operator+=(Type const& other) {
+        AtomicReal* atomicVector = reinterpret_cast<AtomicReal*>(this->vector);
+        for (size_t i = 0; i < Type::dim; ++i) {
+          atomicVector[i] += other[i];
+        }
+      }
+
+      CODI_INLINE operator Type() const {
+        return static_cast<Type>(*this);
+      }
+  };
+
   // Specialization for forward CoDiPack types. Acts on value and gradient with individual atomic operations.
   template<typename T_Type>
   struct OpenMPReverseAtomicImpl<T_Type, TapeTraits::EnableIfForwardTape<typename T_Type::Tape>>
@@ -165,11 +211,16 @@ namespace codi {
   template<typename Type>
   using OpenMPReverseAtomic = OpenMPReverseAtomicImpl<Type>;
 
-  /// Declare OpenMPAtomic to be atomic in terms of AtomicTraits.
+  /// Declare OpenMPReverseAtomic to be atomic in terms of AtomicTraits.
   template<typename T_Type>
   struct AtomicTraits::IsAtomic<OpenMPReverseAtomic<T_Type>> : std::true_type {};
 
 #ifndef DOXYGEN_DISABLE
+  // Specialize IsDirection for OpenMPReverseAtomic on directions.
+  template<typename T_Type>
+  struct GradientTraits::IsDirection<OpenMPReverseAtomicImpl<T_Type>,
+                                     typename GradientTraits::EnableIfDirection<T_Type>> : std::true_type {};
+
   // Specialize IsTotalZero for OpenMPReverseAtomic on arithmetic types.
   template<typename T_Type>
   struct RealTraits::IsTotalZero<

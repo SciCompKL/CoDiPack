@@ -196,12 +196,12 @@ namespace codi {
       }
 
       /// \copydoc codi::TapeReaderInterface::getInputs()
-      std::vector<Identifier> const& getInputs() const& {
+      std::vector<Identifier>& getInputs() {
         return inputVariables;
       }
 
       /// \copydoc codi::TapeReaderInterface::getOutputs()
-      std::vector<Identifier> const& getOutputs() const& {
+      std::vector<Identifier>& getOutputs() {
         return outputVariables;
       }
 

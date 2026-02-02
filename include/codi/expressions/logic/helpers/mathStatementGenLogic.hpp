@@ -120,6 +120,14 @@ namespace codi {
         linkRep.push_back("c(" + convert_value(node.getValue()) + ")");
       }
 
+      /// Called for leaf nodes which have an EmptyOperation
+      template<typename Node>
+      void handleEmpty(Node const& node, std::vector<std::string>& linkRep) {
+        CODI_UNUSED(node);
+
+        linkRep.push_back("");
+      }
+
     private:
 
       template<typename T>

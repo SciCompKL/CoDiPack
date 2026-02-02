@@ -76,7 +76,8 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, int);  ///< See TagTapeBase.
       using Impl = CODI_DD(T_Impl, int);          ///< See TagTapeBase.
 
-      using Identifier = TagData<Tag>;  ///< See TapeTypesInterface.
+      using Identifier = int;                   ///< See TapeTypesInterface.
+      using ActiveTypeTapeData = TagData<Tag>;  ///< See TapeTypesInterface.
 
       /// Callback for a change in a lhs value.
       using TagPropertyErrorCallback = void (*)(Real const& currentValue, Real const& newValue, TagFlags flag,
@@ -101,6 +102,10 @@ namespace codi {
       bool preaccumulationHandling;  ///< Parameter to enable/disable preaccumulation handling.
       Tag preaccumulationTag;        ///< Tag used for preaccumulation specialized handling.
 
+      Identifier tempIdentifier = 0;           ///< Temporary for identifier values.
+      Identifier const activeIdentifier = 1;   ///< Temporary for active identifier.
+      Identifier const passiveIdentifier = 0;  ///< Temporary for passive identifier.
+
     public:
 
       /// Constructor.
@@ -120,7 +125,7 @@ namespace codi {
           /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
           CODI_INLINE void handleActive(Node const& node, ValidationIndicator<Real, Tag>& vi, Impl& tape) {
-            Identifier tagData = node.getIdentifier();
+            ActiveTypeTapeData tagData = node.getTapeData();
             tape.verifyTag(vi, tagData.tag);
             tape.verifyProperties(vi, node.getValue(), tagData.properties);
           }
@@ -138,6 +143,122 @@ namespace codi {
       }
 
       /*******************************************************************************/
+      /// @name IdentifierInformationTapeInterface interface partial implementation
+      /// @{
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier const& getIdentifier(ActiveTypeTapeData const& data) {
+        if (data.tag != 0) {
+          return activeIdentifier;
+        } else {
+          return passiveIdentifier;
+        }
+      }
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier& getIdentifier(ActiveTypeTapeData& data) {
+        tempIdentifier = getIdentifier(std::as_const(data));
+        return tempIdentifier;
+      }
+
+      /// @}
+      /*******************************************************************************/
+      /// @name Implementation of InternalStatementRecordingTapeInterface
+      /// @{
+
+      static bool constexpr AllowJacobianOptimization = false;  ///< Do not allow Jacobian optimization.
+
+      /// Do nothing.
+      template<typename Real>
+      void initTapeData(Real& value, ActiveTypeTapeData& data) {
+        CODI_UNUSED(value);
+        data = ActiveTypeTapeData();
+      }
+
+      /// Do nothing.
+      template<typename Real>
+      void destroyTapeData(Real& value, ActiveTypeTapeData& data) {
+        CODI_UNUSED(value, data);
+      }
+
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             ExpressionInterface<Aggregated, Rhs> const& rhs) {
+        using AggregatedTraits = RealTraits::AggregatedTypeTraits<Aggregated>;
+
+        int constexpr Elements = AggregatedTraits::Elements;
+
+        ValidationIndicator<Real, Tag> vi[Elements];
+
+        Aggregated real = rhs.cast().getValue();
+
+        static_for<Elements>([this, &vi, &lhs, &rhs, &real](auto i) CODI_LAMBDA_INLINE {
+          ValidateTags validate;
+
+          validate.eval(ArrayAccessExpression<Aggregated, i.value, Rhs>(rhs), vi[i.value], cast());
+          checkLhsError(lhs.values[i.value], AggregatedTraits::template arrayAccess<i.value>(real));
+
+          handleError(vi[i.value]);
+        });
+
+        static_for<Elements>([this, &vi, &lhs, &real](auto i) CODI_LAMBDA_INLINE {
+          if (vi[i.value].isActive) {
+            setTag(lhs.values[i.value].getTapeData().tag);
+          } else {
+            resetTag(lhs.values[i.value].getTapeData().tag);
+          }
+          lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
+        });
+      }
+
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::store() <br>
+      /// Optimization for copy statements of aggregated types.
+      template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
+      CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
+                             AggregatedActiveType<Aggregated, Type, Rhs> const& rhs) {
+        store<Aggregated, Type, Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Aggregated, Rhs> const&>(rhs));
+      }
+
+      /// Verify all tags of the rhs and the lhs properties.
+      template<typename Lhs, typename Rhs>
+      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, ExpressionInterface<Real, Rhs> const& rhs) {
+        ValidateTags validate;
+        ValidationIndicator<Real, Tag> vi;
+
+        validate.eval(rhs, vi, cast());
+
+        checkLhsError(lhs, rhs.cast().getValue());
+
+        handleError(vi);
+
+        if (vi.isActive) {
+          setTag(lhs.cast().getTapeData().tag);
+        } else {
+          resetTag(lhs.cast().getTapeData().tag);
+        }
+
+        lhs.cast().value() = rhs.cast().getValue();
+      }
+
+      /// Verify all tags of the rhs and the lhs properties.
+      template<typename Lhs, typename Rhs>
+      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs,
+                 LhsExpressionInterface<Real, Gradient, Impl, Rhs> const& rhs) {
+        store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
+      }
+
+      /// Verify the lhs properties.
+      template<typename Lhs>
+      void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) {
+        checkLhsError(lhs, rhs);
+
+        resetTag(lhs.cast().getTapeData().tag);
+
+        lhs.cast().value() = rhs;
+      }
+
+      /// @}
+      /*******************************************************************************/
       /// @name Tagging specific functions.
       /// @{
 
@@ -154,37 +275,37 @@ namespace codi {
       /// Get tag of a CoDiPack active type.
       template<typename Lhs>
       Tag getTagFromVariable(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        return value.cast().getIdentifier().tag;
+        return value.cast().getTapeData().tag;
       }
 
       /// Set tag on a CoDiPack active type.
       template<typename Lhs>
       void setTagOnVariable(LhsExpressionInterface<Real, Gradient, Impl, Lhs> const& value) {
-        value.cast().getIdentifier().tag = this->curTag;
+        value.cast().getTapeData().tag = this->curTag;
       }
 
       /// Clear tag on a CoDiPack active type.
       template<typename Lhs>
       void clearTagOnVariable(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        value.cast().getIdentifier().tag = Tag();
+        value.cast().getTapeData().tag = Tag();
       }
 
       /// Clear properties on a CoDiPack active type.
       template<typename Lhs>
       void clearTagPropertiesOnVariable(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
-        value.cast().getIdentifier().properties.reset();
+        value.cast().getTapeData().properties.reset();
       }
 
       /// Set properties on a CoDiPack active type.
       template<typename Lhs>
       void setTagPropertyOnVariable(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value, TagFlags flag) {
-        value.cast().getIdentifier().properties.set(flag);
+        value.cast().getTapeData().properties.set(flag);
       }
 
       /// Check properties on a CoDiPack active type.
       template<typename Lhs>
       bool hasTagPropertyOnVariable(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value, TagFlags flag) {
-        return value.cast().getIdentifier().properties.test(flag);
+        return value.cast().getTapeData().properties.test(flag);
       }
 
       /// Set the callback and user data for a property error error.
@@ -286,20 +407,20 @@ namespace codi {
       }
 
       /// Check if a property for the lhs value is triggered.
-      CODI_INLINE void checkLhsError(Real& lhsValue, Identifier& lhsIdentifier, const Real& rhs) const {
-        if (lhsIdentifier.properties.test(TagFlags::DoNotChange)) {
+      CODI_INLINE void checkLhsError(Real& lhsValue, ActiveTypeTapeData& lhsData, const Real& rhs) const {
+        if (lhsData.properties.test(TagFlags::DoNotChange)) {
           if (lhsValue != rhs) {
             tagPropertyErrorCallback(lhsValue, rhs, TagFlags::DoNotChange, tagPropertyErrorUserData);
           }
-        } else if (lhsIdentifier.properties.test(TagFlags::DoNotWrite)) {
+        } else if (lhsData.properties.test(TagFlags::DoNotWrite)) {
           tagPropertyErrorCallback(lhsValue, rhs, TagFlags::DoNotWrite, tagPropertyErrorUserData);
         }
       }
 
       /// Check if the lhs value is changed.
       template<typename Lhs>
-      CODI_INLINE void checkLhsError(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, const Real& rhs) const {
-        checkLhsError(lhs.cast().value(), lhs.cast().getIdentifier(), rhs);
+      CODI_INLINE void checkLhsError(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) const {
+        checkLhsError(lhs.cast().value(), lhs.cast().getTapeData(), rhs);
       }
 
       /// Call tag error callback.
@@ -317,7 +438,7 @@ namespace codi {
       /// Verify tag, properties and lhs error.
       template<typename Lhs>
       CODI_INLINE void verifyRegisterValue(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value,
-                                           const Identifier& tag) {
+                                           ActiveTypeTapeData const& tag) {
         ValidationIndicator<Real, Tag> vi;
 
         verifyTag(vi, tag.tag);
@@ -336,7 +457,12 @@ namespace codi {
       CODI_INLINE void resetTag(Tag& tag) const {
         tag = Tag();
       }
-
       /// @}
+
+    private:
+      /// Cast to the implementation.
+      CODI_INLINE Impl& cast() {
+        return static_cast<Impl&>(*this);
+      }
   };
 }

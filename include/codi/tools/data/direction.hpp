@@ -61,7 +61,7 @@ namespace codi {
 
       static size_t constexpr dim = T_dim;  ///< See Direction.
 
-    private:
+    protected:
       Real vector[dim];
 
     public:

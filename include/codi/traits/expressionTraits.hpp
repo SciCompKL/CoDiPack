@@ -61,6 +61,12 @@ namespace codi {
     struct AggregatedTypeTraits;
   }
 
+  template<typename T_Real>
+  struct EmptyOperation;
+
+  template<typename T_Real, template<typename> class T_Operation, typename... T_ArgExprs>
+  struct ComputeExpression;
+
   /// Traits for everything that can be an expression e.g. codi::RealReverse, a + b, etc..
   namespace ExpressionTraits {
 
@@ -76,6 +82,15 @@ namespace codi {
      */
     template<typename... Logic>
     struct ValidateADLogicImpl;
+
+    /// Validation for zero arguments defines no logic.
+    template<>
+    struct ValidateADLogicImpl<> {
+      public:
+
+        /// The resulting AD logic type of an expression.
+        using ADLogic = void;
+    };
 
     /// Validation for one arguments just defines the input logic as the valid one.
     template<typename Logic>
@@ -198,6 +213,23 @@ namespace codi {
     /// Enable if wrapper for IsConstantExpression
     template<typename Expr, typename T = void>
     using EnableIfConstantExpression = typename std::enable_if<IsConstantExpression<Expr>::value, T>::type;
+
+    /// If the expression inherits from EmptyExpression. Is either std::false_type or std::true_type
+    template<typename Expr>
+    struct IsEmptyExpression : std::false_type {};
+
+#ifndef DOXYGEN_DISABLE
+    template<typename Real>
+    struct IsEmptyExpression<ComputeExpression<Real, EmptyOperation>> : std::true_type {};
+#endif
+
+    template<typename Expr>
+    /// Value entry of IsEmptyExpression
+    bool constexpr isEmptyExpression = IsEmptyExpression<Expr>::value;
+
+    /// Enable if wrapper for IsEmptyExpression
+    template<typename Expr, typename T = void>
+    using EnableIfEmptyExpression = typename std::enable_if<IsEmptyExpression<Expr>::value, T>::type;
 
     /// If the expression inherits from StaticContextActiveType. Is either std::false_type or std::true_type
     template<typename Expr>

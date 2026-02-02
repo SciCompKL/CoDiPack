@@ -103,7 +103,7 @@ namespace codi {
       /// @name Misc
 
       virtual size_t getVectorSize() const = 0;          ///< Vector size in the current tape evaluation.
-      virtual bool isLhsZero() = 0;                      ///< True if the adjoint set with setLhsAdjoint is zero.
+      virtual bool isLhsZero() const = 0;                ///< True if the adjoint set with setLhsAdjoint is zero.
       virtual VectorAccessInterface* clone() const = 0;  ///< Obtain a heap-allocated copy of the vector access inter-
                                                          ///< face. The user is responsible for deleting the pointer.
 

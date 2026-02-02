@@ -74,5 +74,5 @@ namespace codi {
 
   /// \copydoc codi::RealReverseIndexOpenMPGen
   template<size_t dim>
-  using RealReverseIndexVecOpenMP = RealReverseIndexOpenMPGen<double, Direction<OpenMPReverseAtomic<double>, dim>>;
+  using RealReverseIndexVecOpenMP = RealReverseIndexOpenMPGen<double, OpenMPReverseAtomic<Direction<double, dim>>>;
 }

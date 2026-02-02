@@ -1,7 +1,6 @@
 #if CODI_EnableOpDiLib
 //! [Example 23 - OpenMP Parallel Codes]
 #include <codi.hpp>
-#include <opdi.hpp>
 #include <iostream>
 
 #include <opdi/backend/macro/macroBackend.hpp>
@@ -19,6 +18,7 @@ int main(int nargs, char** args) {
   opdi::logic = new opdi::OmpLogic;
   opdi::logic->init();
   opdi::tool = new CoDiOpDiLibTool<Real>;
+  opdi::tool->init();
 
   // usual AD workflow in the serial parts of the code
 
@@ -55,14 +55,16 @@ int main(int nargs, char** args) {
   y.setGradient(1.0);
 
   opdi::logic->prepareEvaluate();  // prepare OpDiLib for evaluation
-
   tape.evaluate();
+  opdi::logic->postEvaluate();  // OpDiLib-specific postprocessing
 
   std::cout << "f(" << x << ") = " << y << std::endl;
   std::cout << "df/dx(" << x << ") = " << x.getGradient() << std::endl;
 
   // finalize OpDiLib
 
+  opdi::tool->finalize();
+  opdi::logic->finalize();
   opdi::backend->finalize();
   delete opdi::backend;
   delete opdi::logic;

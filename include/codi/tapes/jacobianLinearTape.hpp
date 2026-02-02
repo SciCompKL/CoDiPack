@@ -70,11 +70,12 @@ namespace codi {
       using Base = JacobianBaseTape<TapeTypes, JacobianLinearTape>;  ///< Base class abbreviation.
       friend Base;  ///< Allow the base class to call protected and private methods.
 
-      using Real = typename TapeTypes::Real;                  ///< See TapeTypesInterface.
-      using Gradient = typename TapeTypes::Gradient;          ///< See TapeTypesInterface.
-      using IndexManager = typename TapeTypes::IndexManager;  ///< See TapeTypesInterface.
-      using Identifier = typename TapeTypes::Identifier;      ///< See TapeTypesInterface.
-      using Position = typename Base::Position;               ///< See TapeTypesInterface.
+      using Real = typename TapeTypes::Real;                              ///< See TapeTypesInterface.
+      using Gradient = typename TapeTypes::Gradient;                      ///< See TapeTypesInterface.
+      using IndexManager = typename TapeTypes::IndexManager;              ///< See TapeTypesInterface.
+      using Identifier = typename TapeTypes::Identifier;                  ///< See TapeTypesInterface.
+      using ActiveTypeTapeData = typename TapeTypes::ActiveTypeTapeData;  ///< See TapeTypesInterface.
+      using Position = typename Base::Position;                           ///< See TapeTypesInterface.
 
       CODI_STATIC_ASSERT(IndexManager::IsLinear, "This class requires an index manager with a linear scheme.");
 
@@ -232,25 +233,28 @@ namespace codi {
       }
 
       /// Passes the statement to the writer.
-      template<typename Real>
+      template<typename TapeTypes>
       CODI_INLINE static void internalWriteTape(
           /* file interface pointer*/
-          codi::TapeWriterInterface<Real>* writer,
+          codi::TapeWriterInterface<TapeTypes>* writer,
           /* data from low level function byte data vector */
           size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
           /* data from low level function info data vector */
           size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos, Config::LowLevelFunctionToken* const tokenPtr,
           Config::LowLevelFunctionDataSize* const dataSizePtr,
           /* data from jacobianData */
-          size_t& curJacobianPos, size_t const& endJacobianPos, typename Real::Real const* const rhsJacobians,
-          typename Real::Identifier const* const rhsIdentifiers,
+          size_t& curJacobianPos, size_t const& endJacobianPos, Real const* const rhsJacobians,
+          Identifier const* const rhsIdentifiers,
           /* data from statementData */
           size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
           /* data from index handler */
           size_t const& startAdjointPos, size_t const& endAdjointPos) {
         CODI_UNUSED(endLLFByteDataPos, endLLFInfoDataPos, endJacobianPos, endStmtPos);
 
-        typename Real::Identifier curLhsIdentifier;
+        ByteDataView dataView = {};
+        LowLevelFunctionEntry<JacobianLinearTape, Real, Identifier> const* func = nullptr;
+
+        Identifier curLhsIdentifier;
         Config::ArgumentSize argsSize;
         size_t curAdjointPos = startAdjointPos;
         while (curAdjointPos < endAdjointPos) CODI_Likely {
@@ -258,7 +262,9 @@ namespace codi {
           curLhsIdentifier = curAdjointPos;
           argsSize = numberOfJacobians[curStmtPos];
           if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
-            writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+            Base::prepareLowLevelFunction(true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
+                                          dataView, func);
+            writer->writeLowLevelFunction(func, dataView);
           } else if (Config::StatementInputTag == argsSize) CODI_Unlikely {
             writer->writeStatement(curLhsIdentifier, curJacobianPos, rhsJacobians, rhsIdentifiers, argsSize);
           } else CODI_Likely {
@@ -268,5 +274,126 @@ namespace codi {
           curStmtPos += 1;
         }
       }
+
+    public:
+      /*******************************************************************************/
+      /// @name Functions from CustomIteratorTapeInterface
+      /// @{
+
+      using Base::iterateForward;
+      /// \copydoc codi::CustomIteratorTapeInterface::iterateForward
+      template<typename Callbacks>
+      CODI_INLINE void iterateForward(Callbacks&& callbacks, Position start, Position end) {
+        auto evalFunc =
+            [&callbacks](
+                /* data from call */
+                JacobianLinearTape& tape,
+                /* data from low level function byte data vector */
+                size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+                /* data from low level function info data vector */
+                size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
+                Config::LowLevelFunctionToken* const tokenPtr, Config::LowLevelFunctionDataSize* const dataSizePtr,
+                /* data from jacobian vector */
+                size_t& curJacobianPos, size_t const& endJacobianPos, Real* const rhsJacobians,
+                Identifier* const rhsIdentifiers,
+                /* data from statement vector */
+                size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
+                /* data from index handler */
+                size_t const& startAdjointPos, size_t const& endAdjointPos) CODI_LAMBDA_INLINE {
+              CODI_UNUSED(tape, endJacobianPos, endLLFByteDataPos, endLLFInfoDataPos, endStmtPos);
+
+              ByteDataView dataView = {};
+              LowLevelFunctionEntry<JacobianLinearTape, Real, Identifier> const* func = nullptr;
+
+              size_t curAdjointPos = startAdjointPos;
+              while (curAdjointPos < endAdjointPos) CODI_Likely {
+                curAdjointPos += 1;
+
+                Config::ArgumentSize argsSize = numberOfJacobians[curStmtPos];
+
+                if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+                  Base::prepareLowLevelFunction(true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr,
+                                                dataSizePtr, dataView, func);
+                  callbacks.handleLowLevelFunction(*func, dataView);
+                } else CODI_Likely {
+                  if (Config::StatementInputTag == argsSize) CODI_Unlikely {
+                    argsSize = 0;
+                  }
+
+                  Identifier lhsIdentifier = curAdjointPos;
+                  callbacks.handleStatement(lhsIdentifier, argsSize, &rhsJacobians[curJacobianPos],
+                                            &rhsIdentifiers[curJacobianPos]);
+
+                  codiAssert(lhsIdentifier ==
+                             (Identifier)curAdjointPos);  // Lhs identifiers can not be edited in a linear tape.
+
+                  curJacobianPos += argsSize;
+                }
+
+                curStmtPos += 1;
+              }
+            };
+
+        Base::llfByteData.evaluateForward(start, end, evalFunc, *this);
+      }
+
+      using Base::iterateReverse;
+      /// \copydoc codi::CustomIteratorTapeInterface::iterateReverse
+      template<typename Callbacks>
+      CODI_INLINE void iterateReverse(Callbacks&& callbacks, Position start, Position end) {
+        auto evalFunc =
+            [&callbacks](
+                /* data from call */
+                JacobianLinearTape& tape,
+                /* data from low level function byte data vector */
+                size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+                /* data from low level function info data vector */
+                size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
+                Config::LowLevelFunctionToken* const tokenPtr, Config::LowLevelFunctionDataSize* const dataSizePtr,
+                /* data from jacobian vector */
+                size_t& curJacobianPos, size_t const& endJacobianPos, Real* const rhsJacobians,
+                Identifier* const rhsIdentifiers,
+                /* data from statement vector */
+                size_t& curStmtPos, size_t const& endStmtPos, Config::ArgumentSize const* const numberOfJacobians,
+                /* data from index handler */
+                size_t const& startAdjointPos, size_t const& endAdjointPos) CODI_LAMBDA_INLINE {
+              CODI_UNUSED(tape, endJacobianPos, endLLFByteDataPos, endLLFInfoDataPos, endStmtPos);
+
+              ByteDataView dataView = {};
+              LowLevelFunctionEntry<JacobianLinearTape, Real, Identifier> const* func = nullptr;
+
+              size_t curAdjointPos = startAdjointPos;
+              while (curAdjointPos > endAdjointPos) CODI_Likely {
+                curStmtPos -= 1;
+
+                Config::ArgumentSize argsSize = numberOfJacobians[curStmtPos];
+
+                if (Config::StatementLowLevelFunctionTag == argsSize) CODI_Unlikely {
+                  Base::prepareLowLevelFunction(false, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr,
+                                                dataSizePtr, dataView, func);
+                  callbacks.handleLowLevelFunction(*func, dataView);
+                } else CODI_Likely {
+                  if (Config::StatementInputTag == argsSize) CODI_Unlikely {
+                    argsSize = 0;
+                  }
+
+                  curJacobianPos -= argsSize;
+
+                  Identifier lhsIdentifier = curAdjointPos;
+                  callbacks.handleStatement(lhsIdentifier, argsSize, &rhsJacobians[curJacobianPos],
+                                            &rhsIdentifiers[curJacobianPos]);
+
+                  codiAssert(lhsIdentifier ==
+                             (Identifier)curAdjointPos);  // Lhs identifiers can not be edited in a linear tape.
+                }
+
+                curAdjointPos -= 1;
+              }
+            };
+
+        Base::llfByteData.evaluateForward(start, end, evalFunc, *this);
+      }
+
+      /// @}
   };
 }

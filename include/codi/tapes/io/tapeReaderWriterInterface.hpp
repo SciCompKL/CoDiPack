@@ -168,10 +168,9 @@ namespace codi {
       }
 
       /// Used for statements that contain a low level function.
-      virtual void writeLowLevelFunction(size_t& curLLFByteDataPos, char* dataPtr, size_t& curLLFInfoDataPos,
-                                         Config::LowLevelFunctionToken* const tokenPtr,
-                                         Config::LowLevelFunctionDataSize* const dataSizePtr) {
-        CODI_UNUSED(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+      virtual void writeLowLevelFunction(LowLevelFunctionEntry<Tape, Real, Identifier> const* func,
+                                         ByteDataView& data) {
+        CODI_UNUSED(func, data);
       }
 
       /// After all the statements have been written, the finish method finalizes the writing process.
@@ -264,9 +263,9 @@ namespace codi {
 
       virtual Tape& getTape() = 0;  ///< Used to get a reference to the restored tape.
 
-      virtual std::vector<Identifier> const& getInputs() const& = 0;  ///< Used to get the restored inputs of the tape.
+      virtual std::vector<Identifier>& getInputs() = 0;  ///< Used to get the restored inputs of the tape.
 
-      virtual std::vector<Identifier> const& getOutputs() const& = 0;  ///< Used to get the restored outputs of the
-                                                                       ///< tape.
+      virtual std::vector<Identifier>& getOutputs() = 0;  ///< Used to get the restored outputs of the
+                                                          ///< tape.
   };
 }

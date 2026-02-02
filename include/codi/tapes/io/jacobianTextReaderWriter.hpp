@@ -61,17 +61,25 @@ namespace codi {
       using Real = typename Type::Real;                           ///< See TapeWriterInterface.
 
       FILE* fileHandleTxt = nullptr;  ///< File handle.
+      Tape* tape = nullptr;           ///< Tape handle
 
-      bool printIO;           ///< Flag to enable the writing of the IO file.
-      bool printColumnNames;  ///< Flag to enable column names.
+      bool printIO;                      ///< Flag to enable the writing of the IO file.
+      bool printColumnNames;             ///< Flag to enable column names.
+      bool printInputStatements = true;  ///< Flag to enable the output of input statements.
 
       /// Constructor.
       JacobianTextTapeWriter(std::string const& name, std::vector<Identifier> const& in,
                              std::vector<Identifier> const& out, bool ifIO, bool ifColumnNames)
           : CommonBaseTapeWriter<T_Type>(name, in, out), printIO(ifIO), printColumnNames(ifColumnNames) {};
 
+      /// Set if input statements should be printed.
+      void setInputStatementOutput(bool value) {
+        printInputStatements = value;
+      }
+
       /// \copydoc codi::TapeWriterInterface::start()
       void start(Tape& tape) {
+        this->tape = &tape;
         if (printIO) {
           this->printIoText(tape);
         }
@@ -88,11 +96,13 @@ namespace codi {
        */
       void writeStatement(Identifier const& curLhsIdentifier, size_t& curJacobianPos, Real const* const rhsJacobians,
                           Identifier const* const rhsIdentifiers, Config::ArgumentSize const& nJacobians) {
-        fprintf(fileHandleTxt, "\n%d  %hhu  [", curLhsIdentifier, static_cast<Config::ArgumentSize>(nJacobians));
-
         if (nJacobians == Config::StatementInputTag) CODI_Unlikely {
-          // Do nothing.
+          if (printInputStatements) {
+            fprintf(fileHandleTxt, "\n%d  %hhu  []", curLhsIdentifier, static_cast<Config::ArgumentSize>(nJacobians));
+          }
         } else CODI_Likely {
+          fprintf(fileHandleTxt, "\n%d  %hhu  [", curLhsIdentifier, static_cast<Config::ArgumentSize>(nJacobians));
+
           for (size_t argCount = 0; argCount < nJacobians; argCount++) {
             fprintf(fileHandleTxt, " %d ", rhsIdentifiers[curJacobianPos + argCount]);
           }
@@ -101,6 +111,27 @@ namespace codi {
           for (size_t argCount = 0; argCount < nJacobians; argCount++) {
             fprintf(fileHandleTxt, " %0.12e ", rhsJacobians[curJacobianPos + argCount]);
           }
+
+          fprintf(fileHandleTxt, "]");
+        }
+      }
+
+      /// Used for statements that contain a low level function.
+      void writeLowLevelFunction(LowLevelFunctionEntry<Tape, Real, Identifier> const* func, ByteDataView& data) {
+        std::vector<Identifier> inputs;
+        std::vector<Identifier> outputs;
+
+        func->template call<LowLevelFunctionEntryCallKind::IterateInputs>(tape, data, addIdentifier, &inputs);
+        data.reset();
+        func->template call<LowLevelFunctionEntryCallKind::IterateOutputs>(tape, data, addIdentifier, &outputs);
+
+        fprintf(fileHandleTxt, "\n%d [", (int)outputs.size());
+        for (size_t i = 0; i < outputs.size(); i += 1) {
+          fprintf(fileHandleTxt, " %d ", outputs[i]);
+        }
+        fprintf(fileHandleTxt, "] %d [", (int)inputs.size());
+        for (size_t i = 0; i < inputs.size(); i += 1) {
+          fprintf(fileHandleTxt, " %d ", inputs[i]);
         }
         fprintf(fileHandleTxt, "]");
       }
@@ -108,6 +139,13 @@ namespace codi {
       /// \copydoc codi::TapeWriterInterface::finish()
       void finish() {
         fclose(fileHandleTxt);
+      }
+
+    private:
+      /// Add identifier to vector.
+      static void addIdentifier(Identifier* id, void* userData) {
+        std::vector<Identifier>* vec = (std::vector<Identifier>*)userData;
+        vec->push_back(*id);
       }
   };
 
@@ -158,9 +196,16 @@ namespace codi {
         fscanf(fileHandleReadTxt, "|  LHS Index  |  # of Args  |  RHS Indices  | RHS Jacobian Values |");
 
         // Read the statements.
-        while (fscanf(fileHandleReadTxt, "\n%d  %hhu  [", &lhsIdentifier, &nArgs) == 2) {
+        while (fscanf(fileHandleReadTxt, "\n%d  ", &lhsIdentifier) == 1) {
+          int next = getc(fileHandleReadTxt);
+          if (next == '[') {
+            CODI_EXCEPTION("Can not read tape files with low level functions.");
+          }
+          ungetc(next, fileHandleReadTxt);
+
+          fscanf(fileHandleReadTxt, "%hhu  [", &nArgs);
           if (nArgs == Config::StatementLowLevelFunctionTag) CODI_Unlikely {
-            // TODO.
+            // Will throw in previous if.
           } else if (nArgs == Config::StatementInputTag) CODI_Unlikely {
             // Do nothing.
           } else CODI_Likely {

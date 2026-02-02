@@ -199,7 +199,7 @@ namespace codi {
 
   /**
    * @brief RAII lock for read.
-   *´
+   *
    * @tparam T_ReadWriteMutex  The underlying ReadWriteMutex.
    */
   template<typename T_ReadWriteMutex>

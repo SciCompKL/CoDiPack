@@ -65,10 +65,11 @@ namespace codi {
       using Type = CODI_DD(T_Type, CODI_DEFAULT_LHS_EXPRESSION);
       using Tape = typename Type::Tape;  ///< See LhsExpressionInterface.
 
-      using Real = typename Tape::Real;                   ///< See LhsExpressionInterface.
-      using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
-      using Identifier = typename Tape::Identifier;       ///< See LhsExpressionInterface.
-      using Gradient = typename Tape::Gradient;           ///< See LhsExpressionInterface.
+      using Real = typename Tape::Real;                    ///< See LhsExpressionInterface.
+      using PassiveReal = RealTraits::PassiveReal<Real>;   ///< Basic computation type.
+      using Identifier = typename Tape::Identifier;        ///< See LhsExpressionInterface.
+      using Gradient = typename Tape::Gradient;            ///< See LhsExpressionInterface.
+      using TapeData = typename Tape::ActiveTypeTapeData;  ///< See IdentifierInformationTapeInterface.
 
     protected:
 
@@ -109,6 +110,16 @@ namespace codi {
       /// \copydoc codi::LhsExpressionInterface::getIdentifier() const
       CODI_INLINE Identifier const& getIdentifier() const {
         return reference.getIdentifier();
+      }
+
+      /// \copydoc codi::LhsExpressionInterface::getTapeData()
+      CODI_INLINE TapeData& getTapeData() {
+        return reference.getTapeData();
+      }
+
+      /// \copydoc codi::LhsExpressionInterface::getTapeData() const
+      CODI_INLINE TapeData const& getTapeData() const {
+        return reference.getTapeData();
       }
 
       /// \copydoc codi::LhsExpressionInterface::value()

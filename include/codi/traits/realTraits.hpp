@@ -170,6 +170,7 @@ namespace codi {
 
         using Real = typename Type::Real;              ///< Type of a corresponding aggregate of primal values.
         using Identifier = typename Type::Identifier;  ///< Type of a corresponding aggregate of identifiers.
+        using TapeData = typename Type::TapeData;      ///< Type of a corresponding aggregate of tape data.
 
         /// Extract an aggregate of primal values from an aggregate of active types.
         CODI_INLINE static Real getValue(Type const& v);
@@ -177,11 +178,17 @@ namespace codi {
         /// Extract an aggregate of identifiers from an aggregate of active types.
         CODI_INLINE static Identifier getIdentifier(Type const& v);
 
+        /// Extract an aggregate of tape data from an aggregate of active types.
+        CODI_INLINE static TapeData getTapeData(Type const& v);
+
         /// Set the primal values of an aggregate of active types.
         CODI_INLINE static void setValue(Type& v, Real const& value);
 
         /// Set the identifiers of a type of aggregated active types.
         CODI_INLINE static void setIdentifier(Type& v, Identifier const& identifier);
+
+        /// Set the tape data of a type of aggregated active types.
+        CODI_INLINE static void setTapeData(Type& v, TapeData const& data);
     };
 
     /**
@@ -454,6 +461,7 @@ namespace codi {
 
         using Real = double;     ///< See DataExtraction::Real.
         using Identifier = int;  ///< See DataExtraction::Identifier.
+        using TapeData = int;    ///< See DataExtraction::TapeData.
 
         /// \copydoc DataExtraction::getValue()
         CODI_INLINE static Real getValue(Type const& v) {
@@ -467,6 +475,13 @@ namespace codi {
           return 0;
         }
 
+        /// \copydoc DataExtraction::getTapeData()
+        CODI_INLINE static TapeData getTapeData(Type const& v) {
+          CODI_UNUSED(v);
+
+          return 0;
+        }
+
         /// \copydoc DataExtraction::setValue()
         CODI_INLINE static void setValue(Type& v, Real const& value) {
           v = value;
@@ -475,6 +490,11 @@ namespace codi {
         /// \copydoc DataExtraction::setIdentifier()
         CODI_INLINE static void setIdentifier(Type& v, Identifier const& identifier) {
           CODI_UNUSED(v, identifier);
+        }
+
+        /// \copydoc DataExtraction::setTapeData()
+        CODI_INLINE static void setTapeData(Type& v, TapeData const& data) {
+          CODI_UNUSED(v, data);
         }
     };
 
@@ -493,6 +513,7 @@ namespace codi {
 
         using Real = typename TypeTraits::Real;
         using Identifier = std::array<CODI_DD(typename InnerType::Identifier, int), Elements>;
+        using TapeData = std::array<CODI_DD(typename InnerType::TapeData, int), Elements>;
 
         using RealTypeTraits = AggregatedTypeTraits<Real>;
 
@@ -519,6 +540,17 @@ namespace codi {
           return res;
         }
 
+        /// \copydoc DataExtraction::getTapeData()
+        CODI_INLINE static TapeData getTapeData(Type const& v) {
+          TapeData res;
+
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+            res[i.value] = InnerDataExtraction::getTapeData(TypeTraits::template arrayAccess<i.value>(v));
+          });
+
+          return res;
+        }
+
         /// \copydoc DataExtraction::setValue()
         CODI_INLINE static void setValue(Type& v, Real const& value) {
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
@@ -531,6 +563,13 @@ namespace codi {
         CODI_INLINE static void setIdentifier(Type& v, Identifier const& identifier) {
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
             InnerDataExtraction::setIdentifier(TypeTraits::template arrayAccess<i.value>(v), identifier[i.value]);
+          });
+        }
+
+        /// \copydoc DataExtraction::setTapeData()
+        CODI_INLINE static void setTapeData(Type& v, TapeData const& data) {
+          static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
+            InnerDataExtraction::setTapeData(TypeTraits::template arrayAccess<i.value>(v), data[i.value]);
           });
         }
     };

@@ -97,11 +97,13 @@ left hand side identifier from the data stream in a linear index management sche
 \snippet developer/simpleTape.cpp Identifiers - Registration
 
 The identifiers are stored in the AD type provided by CoDiPack. The initialization of the identifier in
-the AD value is done by the function `initIdentifier` required by the codi::InternalStatementRecordingTapeInterface. We
+the AD value is done by the function `initTapeData` required by the codi::InternalStatementRecordingTapeInterface. We
 implement an online activity analysis in this tape. Therefore, all identifiers in the AD values can be initialized with
 zero. The zero identifier is used in our implementation to track _passive_ values. These are values that do not depend
-on the input values. How this is done is explained in the next section.
-\snippet developer/simpleTape.cpp Identifiers - Initialization
+on the input values. How this is done is explained in the next section. In addition the
+codi::IdentifierInformationTapeInterface requires the function 'getIdentifier' for a const and non-const argument. Since
+we do not have any tape specific data beside the identifier, these function are the identity.
+\snippet developer/simpleTape.cpp Identifiers - Initialization and handling
 
 #### Storing of expressions/operators
 

@@ -48,6 +48,8 @@ define define_codi_driver
   $(BUILD_DIR)/$(1).runner.exe : DRIVER_LIB = $(7)
 endef
 
+COMMA=,
+
 VECTOR_DIM = 5
 
 # filter out tests that require variable adjoint interfaces in primal tapes
@@ -70,9 +72,11 @@ $(eval $(call define_codi_driver,D1_fwdVec,"drivers/codi/forward1stOrder.hpp",Co
 
 $(eval $(call define_codi_driver,D1_rwsJacLin,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverse,$(ALL_TESTS),-DREVERSE_TAPE,))
 $(eval $(call define_codi_driver,D1_rwsJacInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseIndex,$(ALL_TESTS),-DREVERSE_TAPE,))
+$(eval $(call define_codi_driver,D1_rwsJacDebugInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseIndexGen<double$(COMMA)double$(COMMA)codi::DebugMultiUseIndexManager<int>>,$(ALL_TESTS),-DREVERSE_TAPE,))
 $(eval $(call define_codi_driver,D1_rwsJacIndOmp,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReverseIndexOpenMP,$(ALL_TESTS),$(OPEN_MP_FLAGS),$(OPEN_MP_LINK)))
 $(eval $(call define_codi_driver,D1_rwsPrimLin,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimal,$(PRIMAL_TAPE_TESTS_NO_VAI),-DREVERSE_TAPE,))
 $(eval $(call define_codi_driver,D1_rwsPrimInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimalIndex,$(PRIMAL_TAPE_TESTS_NO_VAI),-DREVERSE_TAPE,))
+$(eval $(call define_codi_driver,D1_rwsPrimDebugInd,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimalIndexGen<double$(COMMA)double$(COMMA)codi::DebugMultiUseIndexManager<int>>,$(PRIMAL_TAPE_TESTS_NO_VAI),-DREVERSE_TAPE,))
 $(eval $(call define_codi_driver,D1_rwsPrimLinInterface,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimal,$(PRIMAL_TAPE_TESTS_VAI),-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes,))
 $(eval $(call define_codi_driver,D1_rwsPrimIndInterface,"drivers/codi/reverse1stOrder.hpp",CoDiReverse1stOrder,codi::RealReversePrimalIndex,$(PRIMAL_TAPE_TESTS_VAI),-DREVERSE_TAPE -DCODI_VariableAdjointInterfaceInPrimalTapes,))
 

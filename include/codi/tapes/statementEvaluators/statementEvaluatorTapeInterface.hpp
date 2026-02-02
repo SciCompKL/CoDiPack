@@ -49,12 +49,15 @@ namespace codi {
     ResetPrimals,      ///< Restore the primal values.
     Reverse,           ///< Evaluate expression in a reverse mode.
     WriteInformation,  ///< Get write information.
+    IterateInputs,     ///< Iterate over the inputs of the statement.
+    IterateOutputs,    ///< Iterate over the outputs of the statement.
     N_Elements         ///< Number of elements.
   };
 
 #define CODI_STMT_CALL_GEN_ARGS                                                                             \
   StatementCall::ClearAdjoints, StatementCall::Forward, StatementCall::Primal, StatementCall::ResetPrimals, \
-      StatementCall::Reverse, StatementCall::WriteInformation
+      StatementCall::Reverse, StatementCall::WriteInformation, StatementCall::IterateInputs,                \
+      StatementCall::IterateOutputs
 
   /**
    * @brief Tape side interface for StatementEvaluatorInterface.

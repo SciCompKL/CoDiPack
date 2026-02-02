@@ -61,6 +61,7 @@ namespace codi {
     public:
 
       using Index = CODI_DD(T_Index, int);  ///< See ParallelReuseIndexManager.
+      using ActiveTypeIndexData = Index;    ///< Same as the index.
       using ParallelToolbox = CODI_DD(T_ParallelToolbox,
                                       CODI_DEFAULT_PARALLEL_TOOLBOX);        ///< See ParallelReuseIndexManager.
       using Base = ReuseIndexManagerBase<Index, ParallelReuseIndexManager>;  ///< Base class abbreviation.

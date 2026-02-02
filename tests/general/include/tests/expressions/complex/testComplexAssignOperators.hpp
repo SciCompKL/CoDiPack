@@ -47,7 +47,7 @@ struct TestComplexAssignOperators : public TestInterface {
     using Complex = TestComplex<T>;
 
     static int constexpr in_complex_count = 2;
-    static int constexpr out_complex_count = 16;
+    static int constexpr out_complex_count = 18;
     static int constexpr out_real_count = 0;
 
     static int constexpr out_real_offset = out_complex_count * 2;
@@ -89,6 +89,10 @@ struct TestComplexAssignOperators : public TestInterface {
       yC[13] = xC[0]; yC[13] /= passive(xC[1]);
       yC[14] = xC[0]; yC[14] /=          x[2];
       yC[15] = xC[0]; yC[15] /=  passive(x[2]);
+      yC[16].real(x[0]);
+      yC[16].imag(x[1]);
+      yC[17].real(x[0] + x[1]);
+      yC[17].imag(x[0] + x[1]);
       // clang-format on
 
       assignToReal(y, yC, out_complex_count);

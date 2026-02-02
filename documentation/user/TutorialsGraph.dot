@@ -76,6 +76,8 @@ digraph Tutorials {
 
   E28 [label="E28 - Complex numbers"];
 
+  E29 [label="E29 - Tape cache optimization"];
+
   // Edges (sorted)
   E02:e -> E08:w;
   E02:e -> E09:w;
@@ -102,6 +104,7 @@ digraph Tutorials {
   T02:e -> E23:w;
   T02:e -> E25:w;
   T02:e -> E28:w;
+  T02:e -> E29:w;
   T02:e -> T03:w;
   T02:e -> T04:w;
   T02:e -> T05:w;

@@ -43,6 +43,7 @@
 #include "../config.h"
 #include "../expressions/aggregate/aggregatedActiveType.hpp"
 #include "../expressions/aggregate/arrayAccessExpression.hpp"
+#include "../expressions/emptyExpression.hpp"
 #include "../expressions/lhsExpressionInterface.hpp"
 #include "../expressions/logic/compileTimeTraversalLogic.hpp"
 #include "../expressions/logic/constructStaticContext.hpp"
@@ -90,7 +91,9 @@ namespace codi {
       using Data = CODI_DD(CODI_T(T_Data<Chunk, Nested>),
                            CODI_T(DataInterface<Nested>));  ///< See PrimalValueTapeTypes.
 
-      using Identifier = typename IndexManager::Index;    ///< See IndexManagerInterface.
+      using Identifier = typename IndexManager::Index;  ///< See IndexManagerInterface.
+      using ActiveTypeTapeData =
+          typename IndexManager::ActiveTypeIndexData;     ///< Take the active real data from the index manager.
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
 
       constexpr static bool IsLinearIndexHandler = IndexManager::IsLinear;  ///< True if the index manager is linear.
@@ -146,6 +149,7 @@ namespace codi {
       using IndexManager = typename TapeTypes::IndexManager;              ///< See TapeTypesInterface.
       using StatementEvaluator = typename TapeTypes::StatementEvaluator;  ///< See PrimalValueTapeTypes.
       using Identifier = typename TapeTypes::Identifier;                  ///< See PrimalValueTapeTypes.
+      using ActiveTypeTapeData = typename TapeTypes::ActiveTypeTapeData;  ///< See TapeTypesInterface.
 
       using EvalHandle = typename TapeTypes::EvalHandle;  ///< See PrimalValueTapeTypes.
 
@@ -174,6 +178,7 @@ namespace codi {
 
     protected:
 
+      ///< Expressions for manual statement pushes.
       static EvalHandle const jacobianExpressions[Config::MaxArgumentSize];
 
       MemberStore<IndexManager, Impl, TapeTypes::IsStaticIndexHandler> indexManager;  ///< Index manager.
@@ -284,20 +289,20 @@ namespace codi {
       /// @name Functions from InternalStatementRecordingTapeInterface
       /// @{
 
-      /// \copydoc codi::InternalStatementRecordingTapeInterface::initIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::initTapeData()
       template<typename Real>
-      CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void initTapeData(Real& value, ActiveTypeTapeData& data) {
         CODI_UNUSED(value);
 
-        identifier = IndexManager::InactiveIndex;
+        indexManager.get().initIndex(data);
       }
 
-      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyTapeData()
       template<typename Real>
-      CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void destroyTapeData(Real& value, ActiveTypeTapeData& data) {
         CODI_UNUSED(value);
 
-        indexManager.get().template freeIndex<Impl>(identifier);
+        indexManager.get().template freeIndex<Impl>(data);
       }
 
       /// @}
@@ -399,7 +404,9 @@ namespace codi {
 
           /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
-          CODI_INLINE void handleActive(Node const& node, size_t& numberOfActiveArguments) {
+          CODI_INLINE void handleActive(Node const& node, size_t& numberOfActiveArguments, IndexManager& indexManager) {
+            indexManager.validateRhsIndex(node.getTapeData());
+
             if (CODI_ENABLE_CHECK(Config::CheckZeroIndex, IndexManager::InactiveIndex != node.getIdentifier())) {
               numberOfActiveArguments += 1;
             }
@@ -459,7 +466,7 @@ namespace codi {
         codiAssert(ExpressionTraits::NumberOfActiveTypeArguments<Lhs>::value < Config::MaxArgumentSize);
 
         size_t activeArguments = 0;
-        countActiveArguments.eval(rhs.cast(), activeArguments);
+        countActiveArguments.eval(rhs.cast(), activeArguments, indexManager.get());
 
         if (CODI_ENABLE_CHECK(Config::CheckEmptyStatements, 0 != activeArguments)) {
           Config::LowLevelFunctionDataSize byteSize = reserveStmtData<Lhs, Rhs>(activeArguments, pointers);
@@ -513,7 +520,7 @@ namespace codi {
         if (storeArgumentAndStmtData<Lhs>(rhs, pointers)) {
           bool generatedNewIndex = false;
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-            generatedNewIndex |= indexManager.get().template assignIndex<Impl>(lhs.values[i.value].getIdentifier());
+            generatedNewIndex |= indexManager.get().template assignIndex<Impl>(lhs.values[i.value].getTapeData());
           });
           checkPrimalSize(generatedNewIndex);
 
@@ -550,7 +557,7 @@ namespace codi {
 
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
             lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
-            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getTapeData());
           });
         }
       }
@@ -570,13 +577,13 @@ namespace codi {
             return;
           } else {
             static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-              indexManager.get().template copyIndex<Impl>(lhs.values[i.value].getIdentifier(),
-                                                          rhs.values[i.value].getIdentifier());
+              indexManager.get().template copyIndex<Impl>(lhs.values[i.value].getTapeData(),
+                                                          rhs.values[i.value].getTapeData());
             });
           }
         } else {
           static_for<Elements>([&](auto i) CODI_LAMBDA_INLINE {
-            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getIdentifier());
+            indexManager.get().template freeIndex<Impl>(lhs.values[i.value].getTapeData());
           });
         }
 
@@ -593,7 +600,7 @@ namespace codi {
         StatementDataPointers pointers = {};
 
         if (storeArgumentAndStmtData<Lhs>(rhs, pointers)) {
-          bool generatedNewIndex = indexManager.get().template assignIndex<Impl>(lhs.cast().getIdentifier());
+          bool generatedNewIndex = indexManager.get().template assignIndex<Impl>(lhs.cast().getTapeData());
           checkPrimalSize(generatedNewIndex);
 
           Real& primalEntry = primals[lhs.cast().getIdentifier()];
@@ -618,7 +625,7 @@ namespace codi {
         }
 
         if (!primalStored) {
-          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getTapeData());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -634,10 +641,10 @@ namespace codi {
             store<Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Real, Rhs> const&>(rhs));
             return;
           } else {
-            indexManager.get().template copyIndex<Impl>(lhs.cast().getIdentifier(), rhs.cast().getIdentifier());
+            indexManager.get().template copyIndex<Impl>(lhs.cast().getTapeData(), rhs.cast().getTapeData());
           }
         } else {
-          indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
+          indexManager.get().template freeIndex<Impl>(lhs.cast().getTapeData());
         }
 
         lhs.cast().value() = rhs.cast().getValue();
@@ -647,7 +654,7 @@ namespace codi {
       /// Specialization for passive assignments.
       template<typename Lhs>
       CODI_INLINE void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) {
-        indexManager.get().template freeIndex<Impl>(lhs.cast().getIdentifier());
+        indexManager.get().template freeIndex<Impl>(lhs.cast().getTapeData());
 
         lhs.cast().value() = rhs;
       }
@@ -669,16 +676,17 @@ namespace codi {
 
         bool generatedNewIndex;
         if (unusedIndex) {
-          generatedNewIndex = indexManager.get().template assignUnusedIndex<Impl>(value.cast().getIdentifier());
+          generatedNewIndex = indexManager.get().template assignUnusedIndex<Impl>(value.cast().getTapeData());
         } else {
-          generatedNewIndex = indexManager.get().template assignIndex<Impl>(value.cast().getIdentifier());
+          generatedNewIndex = indexManager.get().template assignIndex<Impl>(value.cast().getTapeData());
         }
         checkPrimalSize(generatedNewIndex);
 
         Real& primalEntry = primals[value.cast().getIdentifier()];
         if (TapeTypes::IsLinearIndexHandler) {
-          statementData.pushData(Config::StatementInputTag,
-                                 StatementEvaluator::template createHandle<Impl, Impl, AssignStatement<Lhs, Lhs>>(), 0);
+          statementData.pushData(
+              Config::StatementInputTag,
+              StatementEvaluator::template createHandle<Impl, Impl, AssignStatement<Lhs, EmptyExpression<Real>>>(), 0);
         }
 
         Real oldValue = primalEntry;
@@ -1062,12 +1070,12 @@ namespace codi {
       /// @{
 
       /// \copydoc codi::ManualStatementPushTapeInterface::pushJacobianManual()
-      void pushJacobianManual(Real const& jacobian, Real const& value, Identifier const& index) {
+      void pushJacobianManual(Real const& jacobian, Real const& value, ActiveTypeTapeData const& data) {
         CODI_UNUSED(value);
 
         cast().incrementManualPushCounter();
 
-        *manualPushIdentifiers = index;
+        *manualPushIdentifiers = indexManager.get().getIndex(data);
         *manualPushJacobians = jacobian;
 
         manualPushIdentifiers += 1;
@@ -1087,7 +1095,7 @@ namespace codi {
       }
 
       /// \copydoc codi::ManualStatementPushTapeInterface::storeManual()
-      void storeManual(Real const& lhsValue, Identifier& lhsIndex, Config::ArgumentSize const& size) {
+      void storeManual(Real const& lhsValue, ActiveTypeTapeData& lhsData, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue);
 
         codiAssert(size < Config::MaxArgumentSize);
@@ -1098,14 +1106,14 @@ namespace codi {
         manualPushJacobians = pointers.passiveValues;
         manualPushIdentifiers = pointers.rhsIdentifiers;
 
-        indexManager.get().template assignIndex<Impl>(lhsIndex);
-        Real& primalEntry = primals[lhsIndex];
+        indexManager.get().template assignIndex<Impl>(lhsData);
+        Real& primalEntry = primals[indexManager.get().getIndex(lhsData)];
         statementData.pushData(size, PrimalValueBaseTape::jacobianExpressions[size], byteSize);
-        pushLhsData(lhsIndex, primalEntry, pointers);
+        pushLhsData(indexManager.get().getIndex(lhsData), primalEntry, pointers);
 
         primalEntry = lhsValue;
 
-        cast().initializeManualPushData(lhsValue, lhsIndex, size);
+        cast().initializeManualPushData(lhsValue, indexManager.get().getIndex(lhsData), size);
       }
 
       /// @}
@@ -1324,6 +1332,11 @@ namespace codi {
         return primals[identifier];
       }
 
+      /// \copydoc codi::PrimalEvaluationTapeInterface::getPrimalVector
+      Real* getPrimalVector() {
+        return primals.data();
+      }
+
       /// @}
       /*******************************************************************************/
       /// @name Function from StatementEvaluatorInnerTapeInterface and StatementEvaluatorInnerTapeInterface
@@ -1424,6 +1437,97 @@ namespace codi {
           CODI_INLINE static void evaluate(WriteInfo& CODI_RESTRICT writeInfo, Real* CODI_RESTRICT primalVector,
                                            STMT_COMMON_ARGS) {
             Base::internalEvaluate(writeInfo, primalVector, STMT_COMMON_CALL);
+          }
+      };
+
+      /*******************************************************************************/
+      /// IterateInputs implementation
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::IterateInputs, Stmt>
+          : public StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateInputs, Stmt>> {
+        public:
+          /// Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateInputs, Stmt>>;
+          using StaticRhs = typename Base::StaticRhs;  ///< See StatementCallGeneratorBase.
+
+          /// See LowLevelFunctionEntry::IterCallback.
+          using IterCallback = typename LowLevelFunctionEntry<Impl, Real, Identifier>::IterCallback;
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
+          CODI_INLINE static void evaluateInner(size_t const& CODI_RESTRICT maxOutputArgs,
+                                                size_t const& CODI_RESTRICT maxActiveArgs,
+                                                size_t const& CODI_RESTRICT maxConstantArgs,
+                                                size_t& CODI_RESTRICT linearAdjointPos, IterCallback func,
+                                                void* userData, STMT_COMMON_ARGS) {
+            CODI_UNUSED(linearAdjointPos);
+
+            StatementDataPointers pointers = {};
+            pointers.populate(maxOutputArgs, maxActiveArgs, numberOfPassiveArguments, maxConstantArgs, byteData);
+
+            for (Config::ArgumentSize i = 0; i < maxActiveArgs; i += 1) {
+              if (pointers.rhsIdentifiers[i] >= (Identifier)Config::MaxArgumentSize) {
+                func(&pointers.rhsIdentifiers[i], userData);
+              }
+            }
+          }
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
+          template<typename Func, typename... Args>
+          CODI_INLINE static void evaluateFull(Func const& func, Args&&... args) {
+            func(std::forward<Args>(args)...);
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
+          CODI_INLINE static void evaluate(size_t& CODI_RESTRICT linearAdjointPos, IterCallback func, void* userData,
+                                           STMT_COMMON_ARGS) {
+            Base::internalEvaluate(linearAdjointPos, func, userData, STMT_COMMON_CALL);
+          }
+      };
+
+      /*******************************************************************************/
+      /// IterateOutputs implementation
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::IterateOutputs, Stmt>
+          : public StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateOutputs, Stmt>> {
+        public:
+          /// Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateOutputs, Stmt>>;
+          using StaticRhs = typename Base::StaticRhs;  ///< See StatementCallGeneratorBase.
+
+          /// See LowLevelFunctionEntry::IterCallback.
+          using IterCallback = typename LowLevelFunctionEntry<Impl, Real, Identifier>::IterCallback;
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
+          CODI_INLINE static void evaluateInner(size_t const& CODI_RESTRICT maxOutputArgs,
+                                                size_t const& CODI_RESTRICT maxActiveArgs,
+                                                size_t const& CODI_RESTRICT maxConstantArgs,
+                                                size_t& CODI_RESTRICT linearAdjointPos, IterCallback func,
+                                                void* userData, STMT_COMMON_ARGS) {
+            StatementDataPointers pointers = {};
+            pointers.populate(maxOutputArgs, maxActiveArgs, numberOfPassiveArguments, maxConstantArgs, byteData);
+
+            for (size_t iLhs = 0; iLhs < maxOutputArgs; iLhs += 1) {
+              if (LinearIndexHandling) {
+                Identifier lhsIdentifier = linearAdjointPos + 1 + iLhs;
+                func(&lhsIdentifier, userData);
+
+                codiAssert(lhsIdentifier == (Identifier)(linearAdjointPos + 1 + iLhs));
+              } else {
+                func(&pointers.lhsIdentifiers[iLhs], userData);
+              }
+            }
+          }
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
+          template<typename Func, typename... Args>
+          CODI_INLINE static void evaluateFull(Func const& func, Args&&... args) {
+            func(std::forward<Args>(args)...);
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
+          CODI_INLINE static void evaluate(size_t& CODI_RESTRICT linearAdjointPos, IterCallback func, void* userData,
+                                           STMT_COMMON_ARGS) {
+            Base::internalEvaluate(linearAdjointPos, func, userData, STMT_COMMON_CALL);
           }
       };
 
@@ -2012,7 +2116,7 @@ namespace codi {
           CODI_INLINE static void evaluateFull(Func const& evalInner, size_t const& maxOutputArgs,
                                                size_t const& maxActiveArgs, size_t const& maxConstantArgs,
                                                Real* primalVector, STMT_COMMON_ARGS) {
-            CODI_UNUSED(evalInner, maxActiveArgs, maxConstantArgs, numberOfPassiveArguments);
+            CODI_UNUSED(evalInner, maxOutputArgs, maxActiveArgs, maxConstantArgs, numberOfPassiveArguments);
 
             StatementDataPointers pointers = {};
             pointers.populate(1, size, size, 0, byteData);
@@ -2027,6 +2131,95 @@ namespace codi {
           /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
           CODI_INLINE static void evaluate(Real* CODI_RESTRICT primalVector, STMT_COMMON_ARGS) {
             Base::internalEvaluate(primalVector, STMT_COMMON_CALL);
+          }
+      };
+
+      /// IterateInputs implementation
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::IterateInputs, Stmt>
+          : public StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateInputs, Stmt>> {
+        public:
+          /// Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateInputs, Stmt>>;
+
+          /// Callback for identifier iteration.
+          using IterCallback = typename LowLevelFunctionEntry<TapeImpl, Real, Identifier>::IterCallback;
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
+          CODI_INLINE static void evaluateInner(size_t const& CODI_RESTRICT maxOutputArgs,
+                                                size_t const& CODI_RESTRICT maxActiveArgs,
+                                                size_t const& CODI_RESTRICT maxConstantArgs,
+                                                size_t& CODI_RESTRICT linearAdjointPos, IterCallback func,
+                                                void* userData, STMT_COMMON_ARGS) {
+            CODI_UNUSED(linearAdjointPos);
+
+            StatementDataPointers pointers = {};
+            pointers.populate(maxOutputArgs, maxActiveArgs, numberOfPassiveArguments, maxConstantArgs, byteData);
+
+            for (Config::ArgumentSize i = 0; i < maxActiveArgs; i += 1) {
+              if (pointers.rhsIdentifiers[i] >= (Identifier)Config::MaxArgumentSize) {
+                func(&pointers.rhsIdentifiers[i], userData);
+              }
+            }
+          }
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
+          template<typename Func, typename... Args>
+          CODI_INLINE static void evaluateFull(Func const& func, Args&&... args) {
+            func(std::forward<Args>(args)...);
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
+          CODI_INLINE static void evaluate(size_t& CODI_RESTRICT linearAdjointPos, IterCallback func, void* userData,
+                                           STMT_COMMON_ARGS) {
+            Base::internalEvaluate(linearAdjointPos, func, userData, STMT_COMMON_CALL);
+          }
+      };
+
+      /*******************************************************************************/
+      /// IterateOutputs implementation
+      template<typename Stmt>
+      struct StatementCallGenerator<StatementCall::IterateOutputs, Stmt>
+          : public StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateOutputs, Stmt>> {
+        public:
+          /// Base class abbreviation.
+          using Base = StatementCallGeneratorBase<Stmt, StatementCallGenerator<StatementCall::IterateOutputs, Stmt>>;
+          using StaticRhs = typename Base::StaticRhs;  ///< See StatementCallGeneratorBase.
+
+          /// Callback for identifier iteration.
+          using IterCallback = typename LowLevelFunctionEntry<TapeImpl, Real, Identifier>::IterCallback;
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateInner()
+          CODI_INLINE static void evaluateInner(size_t const& CODI_RESTRICT maxOutputArgs,
+                                                size_t const& CODI_RESTRICT maxActiveArgs,
+                                                size_t const& CODI_RESTRICT maxConstantArgs,
+                                                size_t& CODI_RESTRICT linearAdjointPos, IterCallback func,
+                                                void* userData, STMT_COMMON_ARGS) {
+            StatementDataPointers pointers = {};
+            pointers.populate(maxOutputArgs, maxActiveArgs, numberOfPassiveArguments, maxConstantArgs, byteData);
+
+            for (size_t iLhs = 0; iLhs < maxOutputArgs; iLhs += 1) {
+              if (LinearIndexHandling) {
+                Identifier lhsIdentifier = linearAdjointPos + 1 + iLhs;
+                func(&lhsIdentifier, userData);
+
+                codiAssert(lhsIdentifier == (Identifier)(linearAdjointPos + 1 + iLhs));
+              } else {
+                func(&pointers.lhsIdentifiers[iLhs], userData);
+              }
+            }
+          }
+
+          /// \copydoc codi::StatementEvaluatorInnerTapeInterface::StatementCallGenerator::evaluateFull()
+          template<typename Func, typename... Args>
+          CODI_INLINE static void evaluateFull(Func const& func, Args&&... args) {
+            func(std::forward<Args>(args)...);
+          }
+
+          /// \copydoc codi::StatementEvaluatorTapeInterface::StatementCallGenerator::evaluate()
+          CODI_INLINE static void evaluate(size_t& CODI_RESTRICT linearAdjointPos, IterCallback func, void* userData,
+                                           STMT_COMMON_ARGS) {
+            Base::internalEvaluate(linearAdjointPos, func, userData, STMT_COMMON_CALL);
           }
       };
 

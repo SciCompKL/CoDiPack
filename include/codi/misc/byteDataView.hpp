@@ -54,7 +54,8 @@ namespace codi {
       char* pointer;  ///< Data pointer.
       size_t pos;     ///< Current data position.
 
-      size_t end;  ///< Size of the available data.
+      size_t start;  ///< Start of the available data.
+      size_t end;    ///< Size of the available data.
 
     public:
 
@@ -62,8 +63,14 @@ namespace codi {
       CODI_INLINE ByteDataView() = default;
 
       /// Constructor.
-      CODI_INLINE ByteDataView(char* pointer, size_t pos, size_t end) : pointer(pointer), pos(pos), end(end) {
+      CODI_INLINE ByteDataView(char* pointer, size_t pos, size_t end)
+          : pointer(pointer), pos(pos), start(pos), end(end) {
         codiAssert(pos <= end);
+      }
+
+      /// Get the end data position.
+      CODI_INLINE size_t getEnd() {
+        return end;
       }
 
       /// Get the current data position.
@@ -71,10 +78,16 @@ namespace codi {
         return pos;
       }
 
+      /// Get the start data position.
+      CODI_INLINE size_t getStart() {
+        return start;
+      }
+
       /// Initialize the object.
       CODI_INLINE void init(char* pointer, size_t pos, size_t end) {
         this->pointer = pointer;
         this->pos = pos;
+        this->start = pos;
         this->end = end;
 
         codiAssert(pos <= end);
@@ -107,6 +120,11 @@ namespace codi {
         codiAssert(pos <= end);
 
         return convPointer;
+      }
+
+      /// @brief Reset the data position to the start of the data.
+      CODI_INLINE void reset() {
+        pos = start;
       }
 
       /// Write a single entry of type \c T.

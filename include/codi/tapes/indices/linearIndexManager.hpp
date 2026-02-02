@@ -67,6 +67,7 @@ namespace codi {
     public:
 
       using Index = CODI_DD(T_Index, int);        ///< See LinearIndexManager.
+      using ActiveTypeIndexData = Index;          ///< Same as the index.
       using Base = IndexManagerInterface<Index>;  ///< Base class abbreviation.
 
       /*******************************************************************************/
@@ -165,9 +166,29 @@ namespace codi {
         return count;
       }
 
+      /// \copydoc IndexManagerInterface::initIndex
+      CODI_INLINE void initIndex(Index& index) {
+        index = Index();
+      }
+
       /// \copydoc IndexManagerInterface::updateLargestCreatedIndex
       CODI_INLINE void updateLargestCreatedIndex(Index const& index) {
         count = index;
+      }
+
+      /// \copydoc IndexManagerInterface::getIndex
+      CODI_INLINE Index const& getIndex(ActiveTypeIndexData const& data) {
+        return data;
+      }
+
+      /// \copydoc IndexManagerInterface::getIndex
+      CODI_INLINE Index& getIndex(ActiveTypeIndexData& data) {
+        return data;
+      }
+
+      /// \copydoc IndexManagerInterface::validateRhsIndex
+      void validateRhsIndex(ActiveTypeIndexData const& data) const {
+        codiAssert(data <= count);
       }
 
       /// @}

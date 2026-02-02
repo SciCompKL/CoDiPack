@@ -63,6 +63,8 @@ namespace codi {
 
       using Base = medi::ADToolBase<CoDiPackForwardTool, typename Type::Gradient, typename Type::PassiveReal, int>;
 
+      using CallbackFuncTyped = typename Base::CallbackFuncTyped;
+
       using OpHelper =
           medi::OperatorHelper<medi::FunctionHelper<Type, Type, typename Type::PassiveReal, typename Type::Identifier,
                                                     typename Type::Gradient, CoDiPackForwardTool<Type> > >;
@@ -151,6 +153,13 @@ namespace codi {
 
       static CODI_INLINE_NO_FA PrimalType getValue(Type const& value) {
         return value.getValue();
+      }
+
+      using Base::iterateIdentifiers;
+      void iterateIdentifiers(IndexType* indices, int elements, CallbackFuncTyped func, void* userData) const {
+        for (int i = 0; i < elements; i += 1) {
+          func(&indices[i], userData);
+        }
       }
 
       static CODI_INLINE_NO_FA void setIntoModifyBuffer(ModifiedType& modValue, Type const& value) {
