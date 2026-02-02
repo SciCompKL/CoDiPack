@@ -46,10 +46,15 @@ namespace codi {
   /// Low level function generation for matrixMatrixMultiplication.
   template<Eigen::StorageOptions eigenStore, typename Type>
   struct ExtFunc_matrixMatrixMultiplication {
+      using Real = typename Type::Real;              ///< Real of the type.
+      using Identifier = typename Type::Identifier;  ///< Identifier of the type.
       /// Abbreviation for vector access interface.
-      using AdjointVectorAccess = codi::VectorAccessInterface<typename Type::Real, typename Type::Identifier>*;
+      using AdjointVectorAccess = codi::VectorAccessInterface<Real, Identifier>*;
       /// Abbreviation for tape.
       using Tape = typename Type::Tape;
+
+      /// See LowLevelFunctionEntry.
+      using IterCallback = typename LowLevelFunctionEntry<Tape, Real, Identifier>::IterCallback;
 
       /// Id for this function.
       static codi::Config::LowLevelFunctionToken ID;
@@ -287,6 +292,109 @@ namespace codi {
         allocator.free();
       }
 
+    private:
+      CODI_INLINE static void iterateIds(Identifier* ids, size_t size, IterCallback func, void* userData) {
+        for (size_t i = 0; i < size; i += 1) {
+          func(&ids[i], userData);
+        }
+      }
+
+    public:
+      /// Function for iteration over inputs.
+      CODI_INLINE static void iterateInputs(Tape* tape, codi::ByteDataView& dataStore, IterCallback func,
+                                            void* userData) {
+        codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
+        codiAssert(allocator.isEmpty());  // No memory should be allocated. We would free it at the end.
+        using LLFH = codi::LowLevelFunctionCreationUtilities<2>;
+
+        // Traits for arguments.
+        using Trait_A = typename LLFH::ActiveStoreTrait<Type*>;
+        using Trait_B = typename LLFH::ActiveStoreTrait<Type*>;
+        using Trait_R = typename LLFH::ActiveStoreTrait<Type*>;
+        using Trait_n = typename LLFH::PassiveStoreTrait<int, uint8_t>;
+        using Trait_k = typename LLFH::PassiveStoreTrait<int, uint8_t>;
+        using Trait_m = typename LLFH::PassiveStoreTrait<int, uint8_t>;
+
+        // Declare variables.
+        typename LLFH::ActivityStoreType activityStore = {};
+        typename Trait_A::ArgumentStore A_store = {};
+        typename Trait_B::ArgumentStore B_store = {};
+        typename Trait_R::ArgumentStore R_store = {};
+        typename Trait_n::Store n = {};
+        typename Trait_k::Store k = {};
+        typename Trait_m::Store m = {};
+
+        bool active_A = false;
+        bool active_B = false;
+
+        // Restore data.
+        LLFH::restoreActivity(&dataStore, activityStore);
+        active_A = LLFH::getActivity(activityStore, 0);
+        active_B = LLFH::getActivity(activityStore, 1);
+        Trait_n::restore(&dataStore, allocator, 1, true, n);
+        Trait_k::restore(&dataStore, allocator, 1, true, k);
+        Trait_m::restore(&dataStore, allocator, 1, true, m);
+        Trait_A::restore(&dataStore, allocator, n * k, LLFH::createRestoreActions(true, false, active_A, active_B),
+                         A_store);
+        Trait_B::restore(&dataStore, allocator, k * m, LLFH::createRestoreActions(true, false, active_B, active_A),
+                         B_store);
+        Trait_R::restore(&dataStore, allocator, n * m, LLFH::createRestoreActions(false, true, false, true), R_store);
+
+        if (active_A) {
+          iterateIds(A_store.identifierIn(), n * k, func, userData);
+        }
+        if (active_B) {
+          iterateIds(B_store.identifierIn(), k * m, func, userData);
+        }
+
+        allocator.free();
+      }
+
+      /// Function for iteration over inputs.
+      CODI_INLINE static void iterateOutputs(Tape* tape, codi::ByteDataView& dataStore, IterCallback func,
+                                             void* userData) {
+        codi::TemporaryMemory& allocator = tape->getTemporaryMemory();
+        codiAssert(allocator.isEmpty());  // No memory should be allocated. We would free it at the end.
+        using LLFH = codi::LowLevelFunctionCreationUtilities<2>;
+
+        // Traits for arguments.
+        using Trait_A = typename LLFH::ActiveStoreTrait<Type*>;
+        using Trait_B = typename LLFH::ActiveStoreTrait<Type*>;
+        using Trait_R = typename LLFH::ActiveStoreTrait<Type*>;
+        using Trait_n = typename LLFH::PassiveStoreTrait<int, uint8_t>;
+        using Trait_k = typename LLFH::PassiveStoreTrait<int, uint8_t>;
+        using Trait_m = typename LLFH::PassiveStoreTrait<int, uint8_t>;
+
+        // Declare variables.
+        typename LLFH::ActivityStoreType activityStore = {};
+        typename Trait_A::ArgumentStore A_store = {};
+        typename Trait_B::ArgumentStore B_store = {};
+        typename Trait_R::ArgumentStore R_store = {};
+        typename Trait_n::Store n = {};
+        typename Trait_k::Store k = {};
+        typename Trait_m::Store m = {};
+
+        bool active_A = false;
+        bool active_B = false;
+
+        // Restore data.
+        LLFH::restoreActivity(&dataStore, activityStore);
+        active_A = LLFH::getActivity(activityStore, 0);
+        active_B = LLFH::getActivity(activityStore, 1);
+        Trait_n::restore(&dataStore, allocator, 1, true, n);
+        Trait_k::restore(&dataStore, allocator, 1, true, k);
+        Trait_m::restore(&dataStore, allocator, 1, true, m);
+        Trait_A::restore(&dataStore, allocator, n * k, LLFH::createRestoreActions(true, false, active_A, active_B),
+                         A_store);
+        Trait_B::restore(&dataStore, allocator, k * m, LLFH::createRestoreActions(true, false, active_B, active_A),
+                         B_store);
+        Trait_R::restore(&dataStore, allocator, n * m, LLFH::createRestoreActions(false, true, false, true), R_store);
+
+        iterateIds(R_store.identifierOut(), n * m, func, userData);
+
+        allocator.free();
+      }
+
       /// Store on tape.
       CODI_INLINE static void evalAndStore(Type const* A, Type const* B, Type* R, int n, int k, int m) {
         Tape& tape = Type::getTape();
@@ -389,7 +497,8 @@ namespace codi {
       CODI_INLINE static void registerOnTape() {
         if (codi::Config::LowLevelFunctionTokenInvalid == ID) {
           using Entry = codi::LowLevelFunctionEntry<Tape, typename Type::Real, typename Type::Identifier>;
-          ID = Type::getTape().registerLowLevelFunction(Entry(reverse, forward, nullptr, del));
+          ID = Type::getTape().registerLowLevelFunction(
+              Entry(reverse, forward, nullptr, del, iterateInputs, iterateOutputs));
         }
       }
   };

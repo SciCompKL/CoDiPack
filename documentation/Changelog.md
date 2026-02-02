@@ -1,6 +1,22 @@
 Changelog {#Changelog}
 ===========================
 
+### v3.?.? - ????-??-??
+ - Features:
+   * It is now possible to define custom tape evaluators for all CoDiPack tapes. The evaluators have access to the full
+     statement data and functionality for low level functions.
+   * Low level function and external functions can now iterate over their input and output identifiers.
+   * New tool for optimizing the cache access of reuse index tapes. See \ref Example_29_Tape_cache_optimization.
+
+ - Internal:
+   * Restructure of per value tape data handling. Each tape and each index manager in CoDiPack can now define data that
+     is stored in each value. This is a breaking interface change but it will not affect the default CoDiPack tapes.
+     This change is mostly used for debugging.
+
+ - Bugfix:
+   * Explicitly set the language of CoDiPack to C++ for CMake.
+   * Add missing setter functions to complex numbers.
+
 ### v3.0.0 - 2025-07-08
  - General:
    * Raised default cpp version of CoDiPack to 17. If you require a lower cpp version please use CoDiPack 2.*.

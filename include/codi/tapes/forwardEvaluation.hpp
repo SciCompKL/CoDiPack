@@ -78,7 +78,8 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, double);  ///< See ForwardEvaluation.
 
       using PassiveReal = RealTraits::PassiveReal<Real>;  ///< Basic computation type.
-      using Identifier = Gradient;  ///< Same as the gradient type. Tangent data is stored in the active types.
+      using Identifier = Gradient;          ///< Same as the gradient type. Tangent data is stored in the active types.
+      using ActiveTypeTapeData = Gradient;  ///< Same as the gradient type. Tangent data is stored in the active types.
 
       /*******************************************************************************/
       /// @name Implementation of InternalStatementRecordingTapeInterface
@@ -86,17 +87,17 @@ namespace codi {
 
       static bool constexpr AllowJacobianOptimization = true;  ///< See InternalStatementRecordingTapeInterface
 
-      /// \copydoc codi::InternalStatementRecordingTapeInterface::initIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::initTapeData()
       template<typename Real>
-      CODI_INLINE void initIdentifier(Real& value, Identifier& identifier) {
+      CODI_INLINE void initTapeData(Real& value, ActiveTypeTapeData& data) {
         CODI_UNUSED(value);
-        identifier = Identifier();
+        data = ActiveTypeTapeData();
       }
 
-      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyIdentifier()
+      /// \copydoc codi::InternalStatementRecordingTapeInterface::destroyTapeData()
       template<typename Real>
-      CODI_INLINE void destroyIdentifier(Real& value, Identifier& identifier) {
-        CODI_UNUSED(value, identifier);
+      CODI_INLINE void destroyTapeData(Real& value, ActiveTypeTapeData& data) {
+        CODI_UNUSED(value, data);
       }
 
       /// @}
@@ -207,6 +208,20 @@ namespace codi {
           Identifier const& identifier, AdjointsManagement adjointsManagement = AdjointsManagement::Automatic) const {
         CODI_UNUSED(adjointsManagement);
         return identifier;
+      }
+      /// @}
+      /*******************************************************************************/
+      /// @name Functions from IdentifierInformationTapeInterface which are required.
+      /// @{
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier const& getIdentifier(ActiveTypeTapeData const& data) {
+        return data;
+      }
+
+      /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
+      CODI_INLINE Identifier& getIdentifier(ActiveTypeTapeData& data) {
+        return data;
       }
 
       /// @}

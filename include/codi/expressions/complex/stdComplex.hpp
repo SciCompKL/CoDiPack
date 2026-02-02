@@ -138,6 +138,11 @@ namespace codi {
       using AssignComplex::operator/=;  ///< Use complex operator /=
 
       /// Constructor.
+      CODI_INLINE ActiveComplex(ActiveComplex const& arg) : Base() {
+        Base::store(arg, codi::EventHints::Statement::Copy);
+      }
+
+      /// Constructor.
       template<typename ArgR>
       CODI_INLINE ActiveComplex(ExpressionInterface<InnerReal, ArgR> const& argR) : Base() {
         Base::values[0] = argR.cast();
@@ -183,6 +188,13 @@ namespace codi {
 
       CODI_INLINE ~ActiveComplex() = default;  ///< Destructor
 
+      /// Assign operation for copy operations.
+      CODI_INLINE ActiveComplex& operator=(ActiveComplex const& arg) {
+        Base::store(arg, codi::EventHints::Statement::Copy);
+
+        return *this;
+      }
+
       /// Assign operation for the inner type of the complex number.
       template<typename ArgR>
       CODI_INLINE ActiveComplex& operator=(ExpressionInterface<InnerReal, ArgR> const& argR) {
@@ -200,30 +212,31 @@ namespace codi {
         return *this;
       }
 
-#if CODI_HasCpp20
       using Base::real;
 
+      /// Update the real part of the complex number.
       template<typename Arg>
       void real(ExpressionInterface<InnerReal, Arg> const& arg) {
         Base::values[0] = arg;
       }
 
+      /// Update the real part of the complex number.
       void real(InnerReal const& arg) {
         Base::values[0] = arg;
       }
 
       using Base::imag;
 
+      /// Update the imaginary part of the complex number.
       template<typename Arg>
       void imag(ExpressionInterface<InnerReal, Arg> const& arg) {
         Base::values[1] = arg;
       }
 
+      /// Update the imaginary part of the complex number.
       void imag(InnerReal const& arg) {
         Base::values[1] = arg;
       }
-
-#endif
   };
 
   namespace RealTraits {
@@ -293,7 +306,7 @@ namespace std {
     public:
 
       /// See complex.
-      using Tape = CODI_DD(T_Tape, CODI_T(codi::FullTapeInterface<double, double, int, codi::EmptyPosition>));
+      using Tape = CODI_DD(T_Tape, CODI_T(codi::FullTapeInterface<double, double, int, codi::EmptyPosition, int>));
 
       using Real = complex<typename Tape::Real>;     ///< See ActiveComplex::Real.
       using InnerActive = codi::ActiveType<Tape>;    ///< See ActiveComplex::InnerActive.

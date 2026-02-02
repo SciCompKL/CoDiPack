@@ -298,11 +298,16 @@ namespace codi {
         size_t curAdjointPos = startAdjointPos;
         StackArray<Identifier> lhsIdentifiers;
 
+        ByteDataView dataView = {};
+        LowLevelFunctionEntry<PrimalValueLinearTape, Real, Identifier> const* func = nullptr;
+
         while (curStatementPos < endStatementPos) {
           Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
 
           if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
-            writer->writeLowLevelFunction(curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr);
+            Base::prepareLowLevelFunction(true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr, dataSizePtr,
+                                          dataView, func);
+            writer->writeLowLevelFunction(func, dataView);
           } else CODI_Likely {
             WriteInfo writeInfo;
             StatementEvaluator::template call<StatementCall::WriteInformation, PrimalValueLinearTape>(
@@ -345,6 +350,112 @@ namespace codi {
         CODI_UNUSED(pos);
 
         // Primal values do not need to be reset.
+      }
+
+      /*******************************************************************************/
+      /// @name Functions from CustomIteratorTapeInterface
+      /// @{
+
+      using Base::iterateForward;
+      /// \copydoc codi::CustomIteratorTapeInterface::iterateForward
+      template<typename Callbacks>
+      CODI_INLINE void iterateForward(Callbacks&& callbacks, Position start, Position end) {
+        auto evalFunc =
+            [&callbacks](
+                /* data from call */
+                PrimalValueLinearTape& tape,
+                /* data from low level function byte data vector */
+                size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+                /* data from low level function info data vector */
+                size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
+                Config::LowLevelFunctionToken* const tokenPtr, Config::LowLevelFunctionDataSize* const dataSizePtr,
+                /* data from statementByteData */
+                size_t& curStatementBytePos, size_t const& endStatementBytePos, char* stmtDataPtr,
+                /* data from statementData */
+                size_t& curStatementPos, size_t const& endStatementPos,
+                Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalHandle,
+                Config::LowLevelFunctionDataSize* const stmtByteSize,
+                /* data from index handler */
+                size_t const& startAdjointPos, size_t const& endAdjointPos) CODI_LAMBDA_INLINE {
+              CODI_UNUSED(tape, endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endAdjointPos);
+
+              size_t curAdjointPos = startAdjointPos;
+              ByteDataView dataView = {};
+              LowLevelFunctionEntry<PrimalValueLinearTape, Real, Identifier> const* func = nullptr;
+
+              while (curStatementPos < endStatementPos) CODI_Likely {
+                Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
+
+                if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
+                  Base::prepareLowLevelFunction(true, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr,
+                                                dataSizePtr, dataView, func);
+                  callbacks.handleLowLevelFunction(*func, dataView);
+                } else CODI_Likely {
+                  if (Config::StatementInputTag == nPassiveValues) CODI_Unlikely {
+                    nPassiveValues = 0;
+                  }
+                  callbacks.handleStatement(stmtEvalHandle[curStatementPos], nPassiveValues, curAdjointPos,
+                                            &stmtDataPtr[curStatementBytePos]);
+
+                  curStatementBytePos += stmtByteSize[curStatementPos];
+                }
+
+                curStatementPos += 1;
+              }
+            };
+
+        Base::llfByteData.evaluateForward(start, end, evalFunc, *this);
+      }
+
+      using Base::iterateReverse;
+      /// \copydoc codi::CustomIteratorTapeInterface::iterateReverse
+      template<typename Callbacks>
+      CODI_INLINE void iterateReverse(Callbacks&& callbacks, Position start, Position end) {
+        auto evalFunc =
+            [&callbacks](
+                /* data from call */
+                PrimalValueLinearTape& tape,
+                /* data from low level function byte data vector */
+                size_t& curLLFByteDataPos, size_t const& endLLFByteDataPos, char* dataPtr,
+                /* data from low level function info data vector */
+                size_t& curLLFInfoDataPos, size_t const& endLLFInfoDataPos,
+                Config::LowLevelFunctionToken* const tokenPtr, Config::LowLevelFunctionDataSize* const dataSizePtr,
+                /* data from statementByteData */
+                size_t& curStatementBytePos, size_t const& endStatementBytePos, char* stmtDataPtr,
+                /* data from statementData */
+                size_t& curStatementPos, size_t const& endStatementPos,
+                Config::ArgumentSize const* const numberOfPassiveArguments, EvalHandle const* const stmtEvalHandle,
+                Config::LowLevelFunctionDataSize* const stmtByteSize,
+                /* data from index handler */
+                size_t const& startAdjointPos, size_t const& endAdjointPos) CODI_LAMBDA_INLINE {
+              CODI_UNUSED(tape, endLLFByteDataPos, endLLFInfoDataPos, endStatementBytePos, endAdjointPos);
+
+              size_t curAdjointPos = startAdjointPos;
+              ByteDataView dataView = {};
+              LowLevelFunctionEntry<PrimalValueLinearTape, Real, Identifier> const* func = nullptr;
+
+              while (curStatementPos > endStatementPos) CODI_Likely {
+                curStatementPos -= 1;
+
+                Config::ArgumentSize nPassiveValues = numberOfPassiveArguments[curStatementPos];
+
+                if (Config::StatementLowLevelFunctionTag == nPassiveValues) CODI_Unlikely {
+                  Base::prepareLowLevelFunction(false, curLLFByteDataPos, dataPtr, curLLFInfoDataPos, tokenPtr,
+                                                dataSizePtr, dataView, func);
+                  callbacks.handleLowLevelFunction(*func, dataView);
+                } else CODI_Likely {
+                  curStatementBytePos -= stmtByteSize[curStatementPos];
+
+                  if (Config::StatementInputTag == nPassiveValues) CODI_Unlikely {
+                    nPassiveValues = 0;
+                  }
+                  callbacks.handleStatement(stmtEvalHandle[curStatementPos], nPassiveValues, curAdjointPos,
+                                            &stmtDataPtr[curStatementBytePos]);
+                }
+              }
+            };
+
+        Base::llfByteData.evaluateReverse(start, end, evalFunc, *this);
       }
   };
 }

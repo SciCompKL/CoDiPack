@@ -1,0 +1,70 @@
+RealReverseIndex:
+Running: test2Ops
+d y_0/ d x_0 = 12
+Running: testOverwrite
+d y_0/ d x_0 = 12
+Running: testLLF
+d y_0/ d x_0 = 12
+Running: testLLFVec2
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 0
+d y_1/ d x_0 = 0
+d y_1/ d x_1 = 75
+Running: testLLInputOutput
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 0
+d y_1/ d x_0 = 0
+d y_1/ d x_1 = 75
+Running: testUnusedInput
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 0
+Running: testUnusedOutput
+d y_0/ d x_0 = 12
+d y_1/ d x_0 = 0
+Running: testUnusedIntermediate
+d y_0/ d x_0 = 12
+Running: testDuplicatedInput
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 0
+Running: testPassiveInput
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 1
+Running: testLLFPassiveOutput
+d y_0/ d x_0 = 12
+d y_1/ d x_0 = 0
+d y_2/ d x_0 = 0
+RealReversePrimalIndex:
+Running: test2Ops
+d y_0/ d x_0 = 12
+Running: testOverwrite
+d y_0/ d x_0 = 12
+Running: testLLF
+d y_0/ d x_0 = 12
+Running: testLLFVec2
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 0
+d y_1/ d x_0 = 0
+d y_1/ d x_1 = 75
+Running: testLLInputOutput
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 0
+d y_1/ d x_0 = 0
+d y_1/ d x_1 = 75
+Running: testUnusedInput
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 0
+Running: testUnusedOutput
+d y_0/ d x_0 = 12
+d y_1/ d x_0 = 0
+Running: testUnusedIntermediate
+d y_0/ d x_0 = 12
+Running: testDuplicatedInput
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 0
+Running: testPassiveInput
+d y_0/ d x_0 = 12
+d y_0/ d x_1 = 1
+Running: testLLFPassiveOutput
+d y_0/ d x_0 = 12
+d y_1/ d x_0 = 0
+d y_2/ d x_0 = 0

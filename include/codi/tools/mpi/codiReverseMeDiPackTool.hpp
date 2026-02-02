@@ -167,6 +167,7 @@ namespace codi {
 
       // Helper definition for CoDiPack.
       using Tape = CODI_DD(typename Type::Tape, CODI_DEFAULT_TAPE);
+      using IterCallback = typename ExternalFunction<Tape>::IterCallback;
 
       using OpHelper =
           medi::OperatorHelper<medi::FunctionHelper<Type, Type, typename Type::PassiveReal, typename Type::Gradient,
@@ -207,7 +208,8 @@ namespace codi {
       CODI_INLINE_NO_FA void addToolAction(medi::HandleBase* h) const {
         if (nullptr != h) {
           getTape().pushExternalFunction(
-              ExternalFunction<Tape>::create(callHandleReverse, h, deleteHandle, callHandleForward, callHandlePrimal));
+              ExternalFunction<Tape>::create(callHandleReverse, h, deleteHandle, callHandleForward, callHandlePrimal,
+                                             callHandleIterateInputs, callHandleIterateOutputs));
         }
       }
 
@@ -341,6 +343,20 @@ namespace codi {
 
         medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
         delete handle;
+      }
+
+      static void callHandleIterateInputs(Tape* tape, void* h, IterCallback func, void* userData) {
+        CODI_UNUSED(tape);
+
+        medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
+        handle->funcIterateInputIds(handle, (::medi::CallbackFunc)func, userData);
+      }
+
+      static void callHandleIterateOutputs(Tape* tape, void* h, IterCallback func, void* userData) {
+        CODI_UNUSED(tape);
+
+        medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
+        handle->funcIterateOutputIds(handle, (::medi::CallbackFunc)func, userData);
       }
 
       static Tape& getTape() {

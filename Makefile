@@ -146,6 +146,9 @@ doc:
 	@mkdir -p $(BUILD_DIR)/documentation
 	CODI_VERSION=$(CODI_VERSION) doxygen
 
+single_header:
+	quom --include_directory include include/codi.hpp $(BUILD_DIR)/codi_single.hpp
+
 .PHONY: format
 format:
 	find include tests/general/include tests/general/src tests/events/include tests/events/src -type f -exec $(CLANG_FORMAT) -i {} \;

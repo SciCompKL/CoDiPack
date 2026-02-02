@@ -67,6 +67,7 @@ namespace codi {
     public:
 
       using Index = CODI_DD(T_Index, int);                ///< See ReuseIndexManagerBase.
+      using ActiveTypeIndexData = Index;                  ///< Same as the index.
       using Impl = CODI_DD(T_Impl, CODI_IMPLEMENTATION);  ///< See ReuseIndexManagerBase.
       using Base = IndexManagerInterface<Index>;          ///< Base class abbreviation.
 
@@ -212,6 +213,11 @@ namespace codi {
         }
       }
 
+      /// \copydoc IndexManagerInterface::initIndex
+      CODI_INLINE void initIndex(Index& index) {
+        index = Index();
+      }
+
       /// \copydoc codi::IndexManagerInterface::updateLargestCreatedIndex
       CODI_NO_INLINE void updateLargestCreatedIndex(Index const& index) {
         /* This method calculates the number of new indices that needs to be added to the unusedIndices vector.
@@ -270,6 +276,23 @@ namespace codi {
         values.addUnsignedLongEntry("Indices stored", storedIndices, operation);
         values.addDoubleEntry("Memory used", memoryStoredIndices, operation, true, false);
         values.addDoubleEntry("Memory allocated", memoryAllocatedIndices, operation, false, true);
+      }
+
+      /// \copydoc IndexManagerInterface::validateRhsIndex
+      void validateRhsIndex(ActiveTypeIndexData const& data) const {
+        CODI_UNUSED(data);
+
+        codiAssert(data <= cast().getLargestCreatedIndex());
+      }
+
+      /// \copydoc IndexManagerInterface::getIndex
+      CODI_INLINE Index const& getIndex(Index const& data) {
+        return data;
+      }
+
+      /// \copydoc IndexManagerInterface::getIndex
+      CODI_INLINE Index& getIndex(Index& data) {
+        return data;
       }
 
       /// @}

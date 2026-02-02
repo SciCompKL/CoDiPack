@@ -86,7 +86,9 @@ namespace codi {
   ///
   /// @tparam The aggregated data type.
   template<typename T_Type>
-  struct AggregatedTypeVectorAccessWrapper<T_Type, RealTraits::EnableIfAggregatedActiveType<T_Type>> {
+  struct AggregatedTypeVectorAccessWrapper<T_Type, RealTraits::EnableIfAggregatedActiveType<T_Type>>
+      : public VectorAccessInterface<typename RealTraits::DataExtraction<T_Type>::Real,
+                                     typename RealTraits::DataExtraction<T_Type>::Identifier> {
     public:
 
       using Type = CODI_DD(
@@ -131,6 +133,11 @@ namespace codi {
         });
 
         return isZero;
+      }
+
+      /// \copydoc codi::VectorAccessInterface::clone()
+      VectorAccessInterface<Real, Identifier>* clone() const {
+        return new AggregatedTypeVectorAccessWrapper(&innerInterface);
       }
 
       /*******************************************************************************/

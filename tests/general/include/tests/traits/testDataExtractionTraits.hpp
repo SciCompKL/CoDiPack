@@ -67,11 +67,11 @@ struct TestDataExtractionTraits : public TestInterface {
 
       // Copy over the value with the data extraction
       DE::setValue(yC[0], DE::getValue(xC[0]));
-      DE::setIdentifier(yC[0], DE::getIdentifier(xC[0]));
+      DE::setTapeData(yC[0], DE::getTapeData(xC[0]));
 
       // Delete the old value
       DE::setValue(xC[0], typename DE::Real{});
-      DE::setIdentifier(xC[0], typename DE::Identifier{});
+      DE::setTapeData(xC[0], typename DE::TapeData{});
 
       assignToReal(y, yC, out_complex_count);
     }

@@ -40,6 +40,7 @@
 #include "../../traits/expressionTraits.hpp"
 #include "../computeExpression.hpp"
 #include "../constantExpression.hpp"
+#include "../emptyExpression.hpp"
 #include "../expressionInterface.hpp"
 #include "../static/staticContextActiveType.hpp"
 #include "nodeInterface.hpp"
@@ -216,7 +217,8 @@ namespace codi {
 
       // Helper for ResultType definition. This allows us to expand on the index sequence Is.
       template<size_t... Is>
-      static ComputeExpression<OpReal, Operation, ArgMod<Is>...> ResultTypeHelper(std::index_sequence<Is...>);
+      static ComputeExpression<OpReal, T_Operation /* Make clang happy */, ArgMod<Is>...> ResultTypeHelper(
+          std::index_sequence<Is...>);
 
       // Definition of the return type as the return value of ResultTypeHelper.
       using ResultType = remove_all<decltype(ResultTypeHelper(std::index_sequence_for<T_Args...>()))>;
@@ -225,6 +227,7 @@ namespace codi {
       template<size_t... Is>
       CODI_INLINE static ResultType constructHelper(Real* primalVector, Identifier const* const identifiers,
                                                     PassiveReal const* const constantData, std::index_sequence<Is...>) {
+        CODI_UNUSED(primalVector, identifiers, constantData);  // Required for empty sequence Is
         return ResultType(ArgConstructor<Is>::construct(primalVector, identifiers, constantData)...);
       }
 

@@ -95,5 +95,8 @@ namespace codi {
 
       /// Revert the primals to the state indicated by pos.
       void revertPrimals(Position const& pos);
+
+      /// Get the pointer to the internal primal value vector.
+      Real* getPrimalVector();
   };
 }
