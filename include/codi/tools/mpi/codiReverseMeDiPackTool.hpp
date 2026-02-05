@@ -54,6 +54,8 @@ namespace codi {
 
 #ifndef DOXYGEN_DISABLE
 
+  #define MEDI_1_4_OR_GREATER MEDI_MAJOR_VERSION > 1 || (MEDI_MAJOR_VERSION == 1 && MEDI_MINOR_VERSION >= 4)
+
   template<typename T_Type>
   struct CoDiMeDiAdjointInterfaceWrapper : public medi::AdjointInterface {
     public:
@@ -347,16 +349,25 @@ namespace codi {
 
       static void callHandleIterateInputs(Tape* tape, void* h, IterCallback func, void* userData) {
         CODI_UNUSED(tape);
-
+  #if MEDI_1_4_OR_GREATER
         medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
         handle->funcIterateInputIds(handle, (::medi::CallbackFunc)func, userData);
+  #else
+        CODI_UNUSED(h, func, userData);
+        CODI_EXCEPTION("Identifier iteration requires at leas MeDiPack 1.4.0.");
+  #endif
       }
 
       static void callHandleIterateOutputs(Tape* tape, void* h, IterCallback func, void* userData) {
         CODI_UNUSED(tape);
 
+  #if MEDI_1_4_OR_GREATER
         medi::HandleBase* handle = static_cast<medi::HandleBase*>(h);
         handle->funcIterateOutputIds(handle, (::medi::CallbackFunc)func, userData);
+  #else
+        CODI_UNUSED(h, func, userData);
+        CODI_EXCEPTION("Identifier iteration requires at leas MeDiPack 1.4.0.");
+  #endif
       }
 
       static Tape& getTape() {
