@@ -188,6 +188,8 @@ namespace codi {
 
       /// \copydoc IndexManagerInterface::validateRhsIndex
       void validateRhsIndex(ActiveTypeIndexData const& data) const {
+        CODI_UNUSED(data);
+
         codiAssert(data <= count);
       }
 
