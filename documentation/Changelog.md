@@ -1,6 +1,10 @@
 Changelog {#Changelog}
 ===========================
 
+### v??? - ???
+ - Features:
+   * Specialization for Eigen math traits.
+
 ### v3.1.0 - 2026-02-02
  - Features:
    * It is now possible to define custom tape evaluators for all CoDiPack tapes. The evaluators have access to the full

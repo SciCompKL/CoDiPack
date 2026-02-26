@@ -87,6 +87,7 @@
 #if CODI_EnableEigen
   #include "codi/tools/helpers/linearSystem/eigenLinearSystem.hpp"
   #include "codi/tools/lowlevelFunctions/linearAlgebra/matrixMatrixMultiplication.hpp"
+  #include "codi/traits/eigenTraits.hpp"
 #endif
 
 #if CODI_EnableEnzyme
