@@ -95,9 +95,12 @@ int main(int nargs, char** args) {
   w = w * z;
 
   out << "Do not use error:" << std::endl;
-  tape.setTagPropertyOnVariable(x, codi::TagFlags::DoNotUse);
-  w = func(x, y);
-  tape.clearTagPropertiesOnVariable(x);
+  Real t = x;
+  tape.setTagPropertyOnVariable(t, codi::TagFlags::DoNotUse);
+  w = func(t, y); // Error is thrown.
+  t = func(x, y); // t is overwritten
+  w = func(t, y); // Error is not thrown.
+  w = func(x, y); // Reset w.
 
   out << "Do not change with same value:" << std::endl;
   tape.setTagPropertyOnVariable(w, codi::TagFlags::DoNotChange);

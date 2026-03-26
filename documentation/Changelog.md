@@ -5,6 +5,9 @@ Changelog {#Changelog}
  - Features:
    * Specialization for Eigen math traits.
 
+ - Bugfix:
+   * Tag property 'DoNotUse' is now properly reset on overwrite.
+
 ### v3.1.0 - 2026-02-02
  - Features:
    * It is now possible to define custom tape evaluators for all CoDiPack tapes. The evaluators have access to the full

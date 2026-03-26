@@ -207,6 +207,7 @@ namespace codi {
           } else {
             resetTag(lhs.values[i.value].getTapeData().tag);
           }
+          lhs.values[i.value].getTapeData().properties.reset(TagFlags::DoNotUse);
           lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
         });
       }
@@ -236,6 +237,7 @@ namespace codi {
         } else {
           resetTag(lhs.cast().getTapeData().tag);
         }
+        lhs.cast().getTapeData().properties.reset(TagFlags::DoNotUse);
 
         lhs.cast().value() = rhs.cast().getValue();
       }
