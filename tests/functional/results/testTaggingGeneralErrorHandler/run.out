@@ -10,4 +10,3 @@ Do not change error test:
 Property error 'DoNotChange' on value. current value: 12 new value: 4
 Do not write error test:
 Property error 'DoNotWrite' on value. current value: 4 new value: 0
-Complex:
