@@ -4,6 +4,7 @@ Changelog {#Changelog}
 ### v??? - ???
  - Features:
    * Specialization for Eigen math traits.
+   * New generalized error handler for tag tapes.
 
  - Bugfix:
    * Tag property 'DoNotUse' is now properly reset on overwrite.

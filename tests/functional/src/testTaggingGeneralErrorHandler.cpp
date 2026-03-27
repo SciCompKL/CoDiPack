@@ -45,18 +45,16 @@ Real func(const Real& x, const Real& y) {
   return x * y;
 }
 
-static void tagPropertyErrorCallback(double const& currentValue, double const& newValue, codi::TagFlags flag, void* userData) {
+static void tagErrorCallback(codi::ValidationEntry<double, int> const& data, int const& curTag, void* userData) {
   std::ofstream* out = (std::ofstream*)userData;
 
-  *out << "Property error '" << std::to_string(flag) << "' on value. current value: " << currentValue << " new value: " << newValue << "" << std::endl;
+  if (data.isTagError) {
+   *out << "Use of variable with bad tag '" << data.tagError << "', should be '" << curTag << "'." << std::endl;
+  }
+  if (data.isPropertyError) {
+    *out << "Property error '" << std::to_string(data.propertyError) << "' on value. current value: " << *data.value << " new value: " << data.newValue << "" << std::endl;
+  }
 }
-
-static void tagErrorCallback(int const& correctTag, int const& wrongTag, void* userData) {
-  std::ofstream* out = (std::ofstream*)userData;
-
-  *out << "Use of variable with bad tag '" << wrongTag << "', should be '" << correctTag << "'." << std::endl;
-}
-
 
 int main(int nargs, char** args) {
 
@@ -68,8 +66,7 @@ int main(int nargs, char** args) {
 
   codi::PreaccumulationHelper<Real> ph;
   Tape& tape = Real::getTape();
-  tape.setTagErrorCallback(tagErrorCallback, &out);
-  tape.setTagPropertyErrorCallback(tagPropertyErrorCallback, &out);
+  tape.setErrorCallback(tagErrorCallback, &out);
   tape.setCurTag(42);
   tape.setActive();
 
@@ -114,10 +111,6 @@ int main(int nargs, char** args) {
   out << "Do not write error test:" << std::endl;
   tape.setTagPropertyOnVariable(w, codi::TagFlags::DoNotWrite);
   w = func(x, z);
-
-  out << "Complex:" << std::endl;
-  std::complex<Real> c(x, y);
-  std::complex<Real> wc = c * c + c;
 
   tape.registerOutput(y);
 
