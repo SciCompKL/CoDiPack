@@ -35,6 +35,7 @@
 #pragma once
 
 #include "../../expressions/logic/helpers/forEachLeafLogic.hpp"
+#include "../../expressions/aggregate/aggregatedActiveType.hpp"
 #include "../../misc/enumBitset.hpp"
 #include "../indices/indexManagerInterface.hpp"
 #include "../interfaces/fullTapeInterface.hpp"
@@ -46,17 +47,35 @@ namespace codi {
 
   /// Helper class for statement validation.
   template<typename Real, typename Tag>
-  struct ValidationIndicator {
-      bool isActive;     ///< true if an active rhs is detected. tag != 0
-      bool hasError;     ///< true if an error is detected.
-      bool hasTagError;  ///< true if a tag not the current required tag.
-      bool hasUseError;  ///< true if a value is used in the wrong way.
-      Tag errorTag;      ///< Value of the wrong tag.
-      Real value;        ///< Primal value of the value with the tag error.
+  struct ValidationEntry {
+      bool isTagError;        ///< true if the tag on the value is wrong.
+      bool isPropertyError;   ///< true if a property on the value is wrong.
+      Tag tagError;           ///< Wrong tag.
+      TagFlags propertyError; ///< Wrong property.
+      Real const* value;      ///< Address of the offending value.
+      Real newValue;          ///< New value for property errors.
+  };
 
-      /// Constructor.
-      ValidationIndicator()
-          : isActive(false), hasError(false), hasTagError(false), hasUseError(false), errorTag(), value() {}
+  /// Helper class for statement validation.
+  template<typename Real, typename Tag>
+  struct ValidationIndicator {
+      /// Stores all problematic entries
+      std::vector<ValidationEntry<Real, Tag>> errorEntries = {};
+
+      /// Add a new entry.
+      void addEntry(ValidationEntry<Real, Tag> const& entry) {
+        errorEntries.push_back(entry);
+      }
+
+      /// Clear all errors.
+      void reset() {
+        errorEntries.resize(0);
+      }
+
+      /// Test if there is an error.
+      bool hasError() {
+        return !errorEntries.empty();
+      }
   };
 
   /**
@@ -74,7 +93,7 @@ namespace codi {
       using Real = CODI_DD(T_Real, double);       ///< See TagTapeBase.
       using Tag = CODI_DD(T_Tag, int);            ///< See TagTapeBase.
       using Gradient = CODI_DD(T_Gradient, int);  ///< See TagTapeBase.
-      using Impl = CODI_DD(T_Impl, int);          ///< See TagTapeBase.
+      using Impl = CODI_DD(T_Impl, TagTapeBase);  ///< See TagTapeBase.
 
       using Identifier = int;                   ///< See TapeTypesInterface.
       using ActiveTypeTapeData = TagData<Tag>;  ///< See TapeTypesInterface.
@@ -85,6 +104,9 @@ namespace codi {
 
       /// Callback for a tag error.
       using TagErrorCallback = void (*)(Tag const& correctTag, Tag const& wrongTag, void* userData);
+
+      /// Callback for all errors.
+      using ErrorCallback = void (*)(ValidationEntry<Real, Tag> const& data, Tag const& curTag, void* userData);
 
       static Tag constexpr PassiveTag = Tag(0);   ///< Tag indicating an inactive value.
       static Tag constexpr InvalidTag = Tag(-1);  ///< Tag indicating an invalid value.
@@ -99,12 +121,17 @@ namespace codi {
       TagErrorCallback tagErrorCallback;  ///< User defined callback for tag errors.
       void* tagErrorUserData;             ///< User data in call to callback for tag errors.
 
+      ErrorCallback errorCallback;  ///< User defined callback for tag and property errors. Has priority over the other callbacks.
+      void* errorUserData;          ///< User data in call to callback for errors.
+
       bool preaccumulationHandling;  ///< Parameter to enable/disable preaccumulation handling.
       Tag preaccumulationTag;        ///< Tag used for preaccumulation specialized handling.
 
       Identifier tempIdentifier = 0;           ///< Temporary for identifier values.
       Identifier const activeIdentifier = 1;   ///< Temporary for active identifier.
       Identifier const passiveIdentifier = 0;  ///< Temporary for passive identifier.
+
+      ValidationIndicator<Real, Tag> vi = {}; ///< Helper for error detection.
 
     public:
 
@@ -115,6 +142,8 @@ namespace codi {
             tagPropertyErrorUserData(nullptr),
             tagErrorCallback(defaultTagErrorCallback),
             tagErrorUserData(this),
+            errorCallback(nullptr),
+            errorUserData(nullptr),
             preaccumulationHandling(true),
             preaccumulationTag(1337) {}
 
@@ -124,10 +153,12 @@ namespace codi {
 
           /// \copydoc codi::ForEachLeafLogic::handleActive
           template<typename Node>
-          CODI_INLINE void handleActive(Node const& node, ValidationIndicator<Real, Tag>& vi, Impl& tape) {
+          CODI_INLINE void handleActive(Node const& node, ValidationIndicator<Real, Tag>& vi, Impl& tape, bool& isActive) {
             ActiveTypeTapeData tagData = node.getTapeData();
-            tape.verifyTag(vi, tagData.tag);
-            tape.verifyProperties(vi, node.getValue(), tagData.properties);
+
+            tape.verifyRhsAccess(node.getValue(), tagData, vi);
+
+            isActive |= tagData.tag != 0;
           }
       };
 
@@ -140,6 +171,7 @@ namespace codi {
         std::swap(tagErrorUserData, other.tagErrorUserData);
         std::swap(preaccumulationHandling, other.preaccumulationHandling);
         std::swap(preaccumulationTag, other.preaccumulationTag);
+        std::swap(vi, other.vi);
       }
 
       /*******************************************************************************/
@@ -181,6 +213,7 @@ namespace codi {
         CODI_UNUSED(value, data);
       }
 
+      /// Verify all tags of the rhs and properties from the lhs and rhs.
       template<typename Aggregated, typename Type, typename Lhs, typename Rhs>
       CODI_INLINE void store(AggregatedActiveType<Aggregated, Type, Lhs>& lhs,
                              ExpressionInterface<Aggregated, Rhs> const& rhs) {
@@ -188,21 +221,21 @@ namespace codi {
 
         int constexpr Elements = AggregatedTraits::Elements;
 
-        ValidationIndicator<Real, Tag> vi[Elements];
+        std::array<bool, Elements> isActive = {};
 
         Aggregated real = rhs.cast().getValue();
 
-        static_for<Elements>([this, &vi, &lhs, &rhs, &real](auto i) CODI_LAMBDA_INLINE {
+        static_for<Elements>([this, &isActive, &lhs, &rhs, &real](auto i) CODI_LAMBDA_INLINE {
           ValidateTags validate;
 
-          validate.eval(ArrayAccessExpression<Aggregated, i.value, Rhs>(rhs), vi[i.value], cast());
-          checkLhsError(lhs.values[i.value], AggregatedTraits::template arrayAccess<i.value>(real));
+          validate.eval(ArrayAccessExpression<Aggregated, i.value, Rhs>(rhs), vi, cast(), isActive[i.value]);
+          verifyLhsWrite(lhs.values[i.value], AggregatedTraits::template arrayAccess<i.value>(real));
 
-          handleError(vi[i.value]);
+          handleError(vi);
         });
 
-        static_for<Elements>([this, &vi, &lhs, &real](auto i) CODI_LAMBDA_INLINE {
-          if (vi[i.value].isActive) {
+        static_for<Elements>([this, &isActive, &lhs, &real](auto i) CODI_LAMBDA_INLINE {
+          if (isActive[i.value]) {
             setTag(lhs.values[i.value].getTapeData().tag);
           } else {
             resetTag(lhs.values[i.value].getTapeData().tag);
@@ -220,19 +253,18 @@ namespace codi {
         store<Aggregated, Type, Lhs, Rhs>(lhs, static_cast<ExpressionInterface<Aggregated, Rhs> const&>(rhs));
       }
 
-      /// Verify all tags of the rhs and the lhs properties.
+      /// Verify all tags of the rhs and properties from the lhs and rhs.
       template<typename Lhs, typename Rhs>
       void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, ExpressionInterface<Real, Rhs> const& rhs) {
         ValidateTags validate;
-        ValidationIndicator<Real, Tag> vi;
+        bool isActive = false;
+        validate.eval(rhs, vi, cast(), isActive);
 
-        validate.eval(rhs, vi, cast());
-
-        checkLhsError(lhs, rhs.cast().getValue());
+        verifyLhsWrite(lhs.cast().getValue(), lhs.cast().getTapeData(), rhs.cast().getValue(), vi);
 
         handleError(vi);
 
-        if (vi.isActive) {
+        if (isActive) {
           setTag(lhs.cast().getTapeData().tag);
         } else {
           resetTag(lhs.cast().getTapeData().tag);
@@ -252,7 +284,8 @@ namespace codi {
       /// Verify the lhs properties.
       template<typename Lhs>
       void store(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) {
-        checkLhsError(lhs, rhs);
+        verifyLhsWrite(lhs.cast().getValue(), lhs.cast().getTapeData(), rhs, vi);
+        handleError(vi);
 
         resetTag(lhs.cast().getTapeData().tag);
 
@@ -322,6 +355,13 @@ namespace codi {
         tagErrorUserData = userData;
       }
 
+      /// Set a general error handle for both, tag and property, errors. If this error handler is set,
+      /// the others are no longer called.
+      void setErrorCallback(ErrorCallback const& callback, void* userData) {
+        errorCallback = callback;
+        errorUserData = userData;
+      }
+
       /// @brief Enable or disable specialized handling for preaccumulation. Default: true
       /// Uses a special tag to sanitize preaccumulation regions.
       CODI_INLINE void setPreaccumulationHandlingEnabled(bool enabled) {
@@ -345,43 +385,56 @@ namespace codi {
 
     protected:
 
-      /// Checks if the tag is correct. Errors are set on the ValidationIndicator object.
-      CODI_INLINE void verifyTag(ValidationIndicator<Real, Tag>& vi, Tag const& tag) const {
-        if (PassiveTag != tag && InvalidTag != tag) {
-          vi.isActive = true;
-          if (tag != curTag) {
-            vi.hasError = true;
-            vi.hasTagError = true;
-            vi.errorTag = tag;
+      /// Create a tag error entry.
+      ValidationEntry<Real, Tag> makeTagError(Tag tag, Real const* value) {
+        return {true, false, tag, TagFlags::MaxElement, value, Real()};
+      }
+
+      /// Create a property error entry.
+      ValidationEntry<Real, Tag> makeProeprtyError(TagFlags flag, Real const* value, Real newValue = {}) {
+        return {false, true, 0, flag, value, newValue};
+      }
+
+      /// Check tag and property errors.
+      void verifyRhsAccess(Real const& value, ActiveTypeTapeData const& data, ValidationIndicator<Real, Tag>& vi) {
+        verifyRhsAccessForTag(value, data, vi);
+        verifyRhsAccessForProperty(value, data, vi);
+      }
+
+      /// Check tag errors. Raises an error for tags that are not equal to the current tag. Ignores passive tags.
+      void verifyRhsAccessForTag(Real const& value, ActiveTypeTapeData const& data, ValidationIndicator<Real, Tag>& vi) {
+        if (PassiveTag != data.tag && InvalidTag != data.tag) {
+          if (data.tag != curTag) {
+            vi.addEntry(makeTagError(data.tag, &value));
           }
         }
       }
 
-      /// Checks if the tag is correct and creates an error.
-      CODI_INLINE void verifyTag(Tag const& tag) const {
-        ValidationIndicator<Real, Tag> vi;
-
-        verifyTag(vi, tag);
-        handleError(vi);
-      }
-
-      /// Checks if the tag properties are correct.
-      CODI_INLINE void verifyProperties(ValidationIndicator<Real, Tag>& vi, Real const& value,
-                                        const EnumBitset<TagFlags>& properties) const {
-        if (properties.test(TagFlags::DoNotUse)) {
-          vi.hasError = true;
-          vi.hasUseError = true;
-          vi.value = value;
+      /// Check properties for rhs values. Validates the 'DoNotUse' property.
+      void verifyRhsAccessForProperty(Real const& value, ActiveTypeTapeData const& data, ValidationIndicator<Real, Tag>& vi) {
+        if (data.properties.test(TagFlags::DoNotUse)) {
+          vi.addEntry(makeProeprtyError(TagFlags::DoNotUse, &value));
         }
       }
 
-      /// Checks if the tag and the properties are correct.
-      CODI_INLINE void verifyTagAndProperties(Tag const& tag, Real const& value,
-                                              const EnumBitset<TagFlags>& properties) const {
-        ValidationIndicator<Real, Tag> vi;
+      /// Validates the lhs properties.
+      CODI_INLINE void verifyLhsWrite(Real const& lhsValue, ActiveTypeTapeData const& lhsData, Real const& rhsValue, ValidationIndicator<Real, Tag>& vi) {
+        if (lhsData.properties.test(TagFlags::DoNotChange)) {
+          if (lhsValue != rhsValue) {
+            vi.addEntry(makeProeprtyError(TagFlags::DoNotChange, &lhsValue, rhsValue));
+          }
+        } else if (lhsData.properties.test(TagFlags::DoNotWrite)) {
+          vi.addEntry(makeProeprtyError(TagFlags::DoNotWrite, &lhsValue));
+        }
+      }
 
-        verifyTag(vi, tag);
-        verifyProperties(vi, value, properties);
+      /// Verify tag, properties and lhs error.
+      template<typename Lhs>
+      CODI_INLINE void verifyRegisterValue(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value,
+                                           ActiveTypeTapeData const& tag) {
+        verifyRhsAccess(value.cast().getValue(), value.cast().getTapeData(), vi);
+        verifyLhsWrite(value.cast().getValue(), value.cast().getTapeData(), value.cast().getValue(), vi);
+
         handleError(vi);
       }
 
@@ -408,46 +461,34 @@ namespace codi {
         std::cerr << std::endl;
       }
 
-      /// Check if a property for the lhs value is triggered.
-      CODI_INLINE void checkLhsError(Real& lhsValue, ActiveTypeTapeData& lhsData, const Real& rhs) const {
-        if (lhsData.properties.test(TagFlags::DoNotChange)) {
-          if (lhsValue != rhs) {
-            tagPropertyErrorCallback(lhsValue, rhs, TagFlags::DoNotChange, tagPropertyErrorUserData);
-          }
-        } else if (lhsData.properties.test(TagFlags::DoNotWrite)) {
-          tagPropertyErrorCallback(lhsValue, rhs, TagFlags::DoNotWrite, tagPropertyErrorUserData);
+      /// Default callback for ErrorCallback. (Currently not used)
+      static void defaultErrorCallback(ValidationEntry<Real, Tag> const& data, Tag const& curTag, void* userData) {
+        if (data.isTagError) {
+          defaultTagErrorCallback(curTag, data.tagError, userData);
         }
-      }
-
-      /// Check if the lhs value is changed.
-      template<typename Lhs>
-      CODI_INLINE void checkLhsError(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& lhs, Real const& rhs) const {
-        checkLhsError(lhs.cast().value(), lhs.cast().getTapeData(), rhs);
+        if (data.isPropertyError) {
+          defaultPropertyErrorCallback(*data.value, data.newValue, data.propertyError, userData);
+        }
       }
 
       /// Call tag error callback.
       CODI_INLINE void handleError(ValidationIndicator<Real, Tag>& vi) const {
-        if (vi.hasError) {
-          if (vi.hasTagError) {
-            tagErrorCallback(curTag, vi.errorTag, tagErrorUserData);
-          }
-          if (vi.hasUseError) {
-            tagPropertyErrorCallback(vi.value, vi.value, TagFlags::DoNotUse, tagPropertyErrorUserData);
+        if (vi.hasError()) {
+          for(ValidationEntry<Real, Tag> const& entry : vi.errorEntries) {
+            if(nullptr != errorCallback) {
+              errorCallback(entry, curTag, errorUserData);
+            } else {
+              if (entry.isTagError) {
+                tagErrorCallback(curTag, entry.tagError, tagErrorUserData);
+              }
+              if (entry.isPropertyError) {
+                tagPropertyErrorCallback(*entry.value, entry.newValue, entry.propertyError, tagPropertyErrorUserData);
+              }
+            }
           }
         }
-      }
 
-      /// Verify tag, properties and lhs error.
-      template<typename Lhs>
-      CODI_INLINE void verifyRegisterValue(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value,
-                                           ActiveTypeTapeData const& tag) {
-        ValidationIndicator<Real, Tag> vi;
-
-        verifyTag(vi, tag.tag);
-        verifyProperties(vi, value.cast().getValue(), tag.properties);
-        handleError(vi);
-
-        checkLhsError(value, value.cast().getValue());
+        vi.reset();
       }
 
       /// Set tag on value.

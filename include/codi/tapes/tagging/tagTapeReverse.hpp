@@ -291,8 +291,9 @@ namespace codi {
       void storeManual(Real const& lhsValue, ActiveTypeTapeData& lhsIndex, Config::ArgumentSize const& size) {
         CODI_UNUSED(lhsValue, size);
 
-        Base::checkLhsError(lhsValue, lhsIndex, lhsValue);
-        setTag(lhsIndex.tag);
+        Base::setTag(lhsIndex.tag);
+        Base::verifyLhsWrite(lhsValue, lhsIndex, lhsValue, Base::vi);
+        Base::handleError(Base::vi);
       }
 
       /// @}
