@@ -78,9 +78,9 @@ namespace codi {
    * The format is (Matlab):
    * [1, 2, 3;
    *  4, 5, 6;
-   *  7, 8, 8]
+   *  7, 8, 9]
    */
-  template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>>
+  template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>::type>
   Stream& operator<<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {
     out << "[";
     for (size_t i = 0; i < jacobian.getM(); ++i) {
