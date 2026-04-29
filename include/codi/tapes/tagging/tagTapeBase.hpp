@@ -132,6 +132,7 @@ namespace codi {
       Identifier const passiveIdentifier = 0;  ///< Temporary for passive identifier.
 
       ValidationIndicator<Real, Tag> vi = {}; ///< Helper for error detection.
+      bool doActivityAnalysis = true;         ///< Perform activity analysis for tags.
 
     public:
 
@@ -172,6 +173,7 @@ namespace codi {
         std::swap(preaccumulationHandling, other.preaccumulationHandling);
         std::swap(preaccumulationTag, other.preaccumulationTag);
         std::swap(vi, other.vi);
+        std::swap(doActivityAnalysis, other.doActivityAnalysis);
       }
 
       /*******************************************************************************/
@@ -235,12 +237,7 @@ namespace codi {
         });
 
         static_for<Elements>([this, &isActive, &lhs, &real](auto i) CODI_LAMBDA_INLINE {
-          if (isActive[i.value]) {
-            setTag(lhs.values[i.value].getTapeData().tag);
-          } else {
-            resetTag(lhs.values[i.value].getTapeData().tag);
-          }
-          lhs.values[i.value].getTapeData().properties.reset(TagFlags::DoNotUse);
+          updateLhsTagData(lhs.values[i.value].getTapeData(), isActive[i.value]);
           lhs.values[i.value].value() = AggregatedTraits::template arrayAccess<i.value>(real);
         });
       }
@@ -264,13 +261,7 @@ namespace codi {
 
         handleError(vi);
 
-        if (isActive) {
-          setTag(lhs.cast().getTapeData().tag);
-        } else {
-          resetTag(lhs.cast().getTapeData().tag);
-        }
-        lhs.cast().getTapeData().properties.reset(TagFlags::DoNotUse);
-
+        updateLhsTagData(lhs.cast().getTapeData(), isActive);
         lhs.cast().value() = rhs.cast().getValue();
       }
 
@@ -287,8 +278,7 @@ namespace codi {
         verifyLhsWrite(lhs.cast().getValue(), lhs.cast().getTapeData(), rhs, vi);
         handleError(vi);
 
-        resetTag(lhs.cast().getTapeData().tag);
-
+        updateLhsTagData(lhs.cast().getTapeData(), false);
         lhs.cast().value() = rhs;
       }
 
@@ -296,6 +286,11 @@ namespace codi {
       /*******************************************************************************/
       /// @name Tagging specific functions.
       /// @{
+
+      /// Enable or disable the activity analysis for the tags. Disabling will mark all active types with the current tag.
+      void setDoActivityAnalysis(bool active) {
+        doActivityAnalysis = active;
+      }
 
       /// Set the current tag of the tape.
       void setCurTag(const Tag& tag) {
@@ -393,6 +388,16 @@ namespace codi {
       /// Create a property error entry.
       ValidationEntry<Real, Tag> makeProeprtyError(TagFlags flag, Real const* value, Real newValue = {}) {
         return {false, true, 0, flag, value, newValue};
+      }
+
+      /// Update the tag data for a lhs write. Updates the properties and sets the tag based on the activity.
+      void updateLhsTagData(ActiveTypeTapeData& lhsData, bool isActive) const {
+        if (!doActivityAnalysis || isActive) {
+          setTag(lhsData.tag);
+        } else {
+          resetTag(lhsData.tag);
+        }
+        lhsData.properties.reset(TagFlags::DoNotUse);
       }
 
       /// Check tag and property errors.
