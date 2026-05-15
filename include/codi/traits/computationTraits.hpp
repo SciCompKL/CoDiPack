@@ -147,7 +147,7 @@ namespace codi {
       using Jacobian = T;
       using Return = T;
 
-      static Return transpose(Jacobian const& jacobian) {
+      CODI_INLINE static Return transpose(Jacobian const& jacobian) {
         return jacobian;
       }
   };
