@@ -1,7 +1,7 @@
 Changelog {#Changelog}
 ===========================
 
-### v??? - ???
+### v3.1.1 - 2026-07-01
  - Features:
    * Specialization for Eigen math traits.
    * New generalized error handler for tag tapes.
