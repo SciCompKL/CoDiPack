@@ -80,7 +80,7 @@ namespace codi {
    *  4, 5, 6;
    *  7, 8, 9]
    */
-  template<typename Stream, typename Jac, typename = enable_if_base_of<Jac, JacobianInterface<typename Jac::T>>::type>
+  template<typename Stream, typename Jac, typename = typename enable_if_base_of<JacobianInterface<typename Jac::T>, Jac>::type>
   Stream& operator<<(Stream& out, CODI_DD(Jac, CODI_T(JacobianInterface<double>)) const& jacobian) {
     out << "[";
     for (size_t i = 0; i < jacobian.getM(); ++i) {

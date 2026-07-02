@@ -435,8 +435,7 @@ namespace codi {
 
       /// Verify tag, properties and lhs error.
       template<typename Lhs>
-      CODI_INLINE void verifyRegisterValue(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value,
-                                           ActiveTypeTapeData const& tag) {
+      CODI_INLINE void verifyRegisterValue(LhsExpressionInterface<Real, Gradient, Impl, Lhs>& value) {
         verifyRhsAccess(value.cast().getValue(), value.cast().getTapeData(), vi);
         verifyLhsWrite(value.cast().getValue(), value.cast().getTapeData(), value.cast().getValue(), vi);
 

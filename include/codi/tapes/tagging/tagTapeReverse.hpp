@@ -393,13 +393,13 @@ namespace codi {
       template<typename Lhs>
       void registerInput(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& value) {
         Base::setTag(value.cast().getTapeData().tag);
-        Base::verifyRegisterValue(value, value.cast().getTapeData());  // verification is mainly for the properties
+        Base::verifyRegisterValue(value);  // verification is mainly for the properties
       }
 
       /// Verify tag.
       template<typename Lhs>
       void registerOutput(LhsExpressionInterface<Real, Gradient, TagTapeReverse, Lhs>& value) {
-        Base::verifyRegisterValue(value, value.cast().getTapeData());
+        Base::verifyRegisterValue(value);
       }
 
       /// Set tape to active.
