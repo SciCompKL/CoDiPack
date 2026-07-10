@@ -468,7 +468,11 @@ namespace std {
   }
 
   using codi::abs;
+  using codi::arg;
+  using codi::conj;
   using codi::imag;
+  using codi::norm;
+  using codi::polar;
+  using codi::proj;
   using codi::real;
-
 }
