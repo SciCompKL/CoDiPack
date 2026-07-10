@@ -80,6 +80,10 @@
 #include "codi/traits/numericLimits.hpp"
 #include "codi/traits/tapeTraits.hpp"
 
+#if CODI_HasCpp20
+  #include "codi/traits/concepts.hpp"
+#endif
+
 #if CODI_EnableMPI
   #include "codi/tools/mpi/codiMpiTypes.hpp"
 #endif

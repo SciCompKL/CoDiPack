@@ -1,6 +1,13 @@
 Changelog {#Changelog}
 ===========================
 
+### v3.1.2 - 2026-07-13
+ - Features:
+   * Concepts for expression traits.
+
+ - Bugfix:
+   * Missing using declarations for complex operations.
+
 ### v3.1.1 - 2026-07-01
  - Features:
    * Specialization for Eigen math traits.
