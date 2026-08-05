@@ -8,6 +8,9 @@ Changelog {#Changelog}
    * Missing activity analysis for tags.
    * Debug index manager returns the largest created index.
 
+ - Other:
+   * Added list of license exemptions for open source software.
+
 ### v3.1.2 - 2026-07-13
  - Features:
    * Concepts for expression traits.

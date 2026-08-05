@@ -43,6 +43,8 @@ For further details please visit our [CoDiPack](http://scicomp.rptu.de/software/
 
 CoDiPack is released under the GPLv3 license. For other licensing options please contact us.
 
+Current exemptions to the licence can be found at [EXEMPTIONS.md](EXEMPTIONS.md).
+
 ### CMake
 
 CMake should be able to find CoDiPack either if `CMAKE_PREFIX_PATH` contains the CoDiPack directory or if the parameter `CoDiPack_DIR` is provided to CMake. If you install CoDiPack into a directory which is in the default search path for CMake then you do not need to specify any additional path.
