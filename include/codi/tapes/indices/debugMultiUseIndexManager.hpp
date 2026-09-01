@@ -118,6 +118,7 @@ namespace codi {
       bool valid;
       Index reservedIndices;
       Index nextNewIdentifier;
+      Index maximumIdentifier;
       std::uint8_t curTag = 1;                   // Do not use the zero tag.
       std::vector<std::vector<Index>> indexUse;  ///< Reference counting for each index.
 
@@ -128,6 +129,7 @@ namespace codi {
           : valid(true),
             reservedIndices(reservedIndices),
             nextNewIdentifier(reservedIndices + 1),
+            maximumIdentifier(nextNewIdentifier),
             indexUse(2, std::vector<Index>(Config::SmallChunkSize)) {
         resizeVectors();
       }
@@ -164,6 +166,7 @@ namespace codi {
 
         Index index = nextNewIdentifier;
         nextNewIdentifier += 1;
+        maximumIdentifier = std::max(maximumIdentifier, nextNewIdentifier);
 
         if (getLargestCreatedIndex() < 0) {
           CODI_EXCEPTION("Overfow of identifiers.");
@@ -252,7 +255,7 @@ namespace codi {
 
       /// \copydoc codi::IndexManagerInterface::getLargestCreatedIndex
       CODI_INLINE Index getLargestCreatedIndex() const {
-        return nextNewIdentifier - 1;
+        return maximumIdentifier - 1;
       }
 
       /// @}
