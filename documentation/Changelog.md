@@ -4,6 +4,8 @@ Changelog {#Changelog}
 ### v??? - ????-??-??
  - Bugfix:
    * Wrong reset of primal values in primal value state keep state forward evaluations.
+   * Tags are now handled as ids again.
+   * Missing activity analysis for tags.
 
 ### v3.1.2 - 2026-07-13
  - Features:

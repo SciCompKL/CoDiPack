@@ -95,7 +95,7 @@ namespace codi {
       using Gradient = CODI_DD(T_Gradient, int);  ///< See TagTapeBase.
       using Impl = CODI_DD(T_Impl, TagTapeBase);  ///< See TagTapeBase.
 
-      using Identifier = int;                   ///< See TapeTypesInterface.
+      using Identifier = Tag;                   ///< See TapeTypesInterface.
       using ActiveTypeTapeData = TagData<Tag>;  ///< See TapeTypesInterface.
 
       /// Callback for a change in a lhs value.
@@ -127,7 +127,6 @@ namespace codi {
       bool preaccumulationHandling;  ///< Parameter to enable/disable preaccumulation handling.
       Tag preaccumulationTag;        ///< Tag used for preaccumulation specialized handling.
 
-      Identifier tempIdentifier = 0;           ///< Temporary for identifier values.
       Identifier const activeIdentifier = 1;   ///< Temporary for active identifier.
       Identifier const passiveIdentifier = 0;  ///< Temporary for passive identifier.
 
@@ -159,7 +158,7 @@ namespace codi {
 
             tape.verifyRhsAccess(node.getValue(), tagData, vi);
 
-            isActive |= tagData.tag != 0;
+            isActive |= tape.isActive() && tagData.tag != 0;
           }
       };
 
@@ -182,17 +181,12 @@ namespace codi {
 
       /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
       CODI_INLINE Identifier const& getIdentifier(ActiveTypeTapeData const& data) {
-        if (data.tag != 0) {
-          return activeIdentifier;
-        } else {
-          return passiveIdentifier;
-        }
+        return data.tag;
       }
 
       /// \copydoc codi::IdentifierInformationTapeInterface::getIdentifier()
       CODI_INLINE Identifier& getIdentifier(ActiveTypeTapeData& data) {
-        tempIdentifier = getIdentifier(std::as_const(data));
-        return tempIdentifier;
+        return data.tag;
       }
 
       /// @}
