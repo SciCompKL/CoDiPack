@@ -1,6 +1,10 @@
 Changelog {#Changelog}
 ===========================
 
+### v??? - ????-??-??
+ - Bugfix:
+   * Wrong reset of primal values in primal value state keep state forward evaluations.
+
 ### v3.1.2 - 2026-07-13
  - Features:
    * Concepts for expression traits.

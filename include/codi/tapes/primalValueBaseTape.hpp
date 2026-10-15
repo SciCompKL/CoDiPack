@@ -1283,7 +1283,7 @@ namespace codi {
       template<typename AdjointVector>
       void evaluateForwardKeepState(Position const& start, Position const& end, AdjointVector&& data) {
         if (!TapeTypes::IsLinearIndexHandler) {
-          cast().internalResetPrimalValues(end);
+          cast().internalResetPrimalValues(start);
         }
 
         internalEvaluateForward<false>(start, end, std::forward<AdjointVector>(data));
