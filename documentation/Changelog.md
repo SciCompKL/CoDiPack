@@ -1,7 +1,7 @@
 Changelog {#Changelog}
 ===========================
 
-### v??? - ????-??-??
+### v3.1.3 - 2026-10-26
  - Bugfix:
    * Wrong reset of primal values in primal value state keep state forward evaluations.
    * Tags are now handled as ids again.
